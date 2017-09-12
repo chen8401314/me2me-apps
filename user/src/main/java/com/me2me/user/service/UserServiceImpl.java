@@ -1054,7 +1054,7 @@ public class UserServiceImpl implements UserService {
 		UserHobby deleteUserHobby = new UserHobby();
 		deleteUserHobby.setUid(user.getUid());
 		userMybatisDao.deleteUserHobby(deleteUserHobby);
-		Set<String> userHobbyTags = new LinkedHashSet<>();
+		Set<Long> userHobbyTags = new LinkedHashSet<>();
 		if (!StringUtils.isEmpty(hobby)) {
 			String[] hobbies = hobby.split(";");
 			for (String h : hobbies) {
@@ -1062,11 +1062,10 @@ public class UserServiceImpl implements UserService {
 				userHobby.setHobby(Long.parseLong(h));
 				userHobby.setUid(user.getUid());
 				userMybatisDao.createUserHobby(userHobby);
-				List<String> tags= userInitJdbcDao.getTagFromUserHobby(userHobby);
-				userHobbyTags.addAll(tags);
+				userHobbyTags.add(userHobby.getHobby());
 			}
+			userInitJdbcDao.batchInsertUserLikeTags(user.getUid(),userHobbyTags);
 		}
-		userInitJdbcDao.batchInsertUserLikeTags(user.getUid(),userHobbyTags);
         return Response.success(ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.status,ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.message);
     }
     
@@ -4194,6 +4193,7 @@ public class UserServiceImpl implements UserService {
 		deleteUserHobby.setUid(uid);
 		userMybatisDao.deleteUserHobby(deleteUserHobby);
 		if(!StringUtils.isEmpty(hobbys)){
+			Set<Long> userHobbyTags = new LinkedHashSet<>();
 			String[] hobbies = hobbys.split(",");
 			for (String h : hobbies) {
 				if(!StringUtils.isEmpty(h)){
@@ -4201,8 +4201,11 @@ public class UserServiceImpl implements UserService {
 					userHobby.setHobby(Long.parseLong(h));
 					userHobby.setUid(uid);
 					userMybatisDao.createUserHobby(userHobby);
+					userHobbyTags.add(userHobby.getHobby());
 				}
 			}
+			
+			userInitJdbcDao.batchInsertUserLikeTags(uid,userHobbyTags);
 		}
 	}
 	

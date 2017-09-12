@@ -4364,11 +4364,12 @@ public class LiveServiceImpl implements LiveService {
 //        contentService.clearData();
 
         log.info("first speak...");
-        long lastFragmentId = 0;
-        long total = 0;
-        if(createKingdomDto.getContentType() == 0){
+        if(createKingdomDto.getContentType() == 0 
+        		&& !CommonUtils.isNewVersion(createKingdomDto.getVersion(), "3.0.3")){
+        	long lastFragmentId = 0;
+            long total = 0;
         	//创建王国简介不再是第一次发言
-/*        	TopicFragmentWithBLOBs topicFragment = new TopicFragmentWithBLOBs();
+        	TopicFragmentWithBLOBs topicFragment = new TopicFragmentWithBLOBs();
         	topicFragment.setFragment(createKingdomDto.getFragment());
         	topicFragment.setUid(createKingdomDto.getUid());
         	topicFragment.setType(0);//第一次发言肯定是主播发言
@@ -4381,44 +4382,12 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setCreateTime(now);
             liveMybatisDao.createTopicFragment(topicFragment);
             lastFragmentId = topicFragment.getId();
-            total++;*/
-        }else{//图片
-//        	String[] imgs = createKingdomDto.getFragment().split(";");
-//        	Map<String, String> map = new HashMap<String, String>();
-//        	String extra = createKingdomDto.getExtra();
-//        	if(!StringUtils.isEmpty(extra)){
-//        		JSONArray obj = JSON.parseArray(extra);
-//        		if(!obj.isEmpty()){
-//        			for(int i=0;i<obj.size();i++){
-//        				map.put(String.valueOf(i), obj.getJSONObject(i).toJSONString());
-//        			}
-//        		}
-//        	}
-//
-//        	if(null != imgs && imgs.length > 0){
-//        		TopicFragmentWithBLOBs topicFragment = null;
-//        		String e = null;
-//        		for(int i=0;i<imgs.length;i++){
-//        			topicFragment = new TopicFragmentWithBLOBs();
-//                	topicFragment.setFragmentImage(imgs[i]);
-//                	topicFragment.setUid(createKingdomDto.getUid());
-//                	topicFragment.setType(0);//第一次发言肯定是主播发言
-//                	topicFragment.setContentType(1);
-//                	topicFragment.setTopicId(topic.getId());
-//                    topicFragment.setBottomId(0l);
-//                    topicFragment.setTopId(0l);
-//                    topicFragment.setSource(createKingdomDto.getSource());
-//                    topicFragment.setCreateTime(now);
-//                    e = map.get(String.valueOf(i));
-//                    if(null == e){
-//                    	e = "";
-//                    }
-//                    topicFragment.setExtra(e);
-//                    liveMybatisDao.createTopicFragment(topicFragment);
-//                    lastFragmentId = topicFragment.getId();
-//                    total++;
-//        		}
-//        	}
+            total++;
+            
+            //--add update kingdom cache -- modify by zcl -- begin --
+    		String value = lastFragmentId + "," + total;
+            cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
+            //--add update kingdom cache -- modify by zcl -- end --
         }
 
         //特殊王国需要做一点特殊处理
@@ -4431,10 +4400,6 @@ public class LiveServiceImpl implements LiveService {
         	}
         }
 
-        //--add update kingdom cache -- modify by zcl -- begin --
-//		String value = lastFragmentId + "," + total;
-//        cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
-        //--add update kingdom cache -- modify by zcl -- end --
         // 找到机器TAG
         
         Set<String> autoTagSet = new HashSet<>();
