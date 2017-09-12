@@ -1086,7 +1086,7 @@ public class LiveLocalJdbcDao {
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql,topicId);
 		if(null != list && list.size() > 0){
 			Map<String,Object> c = list.get(0);
-			int balancePrice = (Integer)c.get("balancePrice");
+			int balancePrice = ((Long)c.get("balancePrice")).intValue();
 			if(balancePrice > 0){
 				jdbcTemplate.update("update topic_data set harvest_price=harvest_price-? where id=?",new Object[]{balancePrice, topicId});
 			}
