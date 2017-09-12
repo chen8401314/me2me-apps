@@ -1082,12 +1082,12 @@ public class LiveServiceImpl implements LiveService {
             if(topicFragment.getContentType() == 24){
             	//24小时内
                 if(new Date().getTime()-topicFragment.getCreateTime().getTime()<=24*60*60*1000){
-                    String giftStatusstr = cacheService.get("GIFT_STATUS_"+uid+"_"+topicFragment.getId());
+                    String giftStatusstr = cacheService.get("GIFT_STATUS_"+getLiveTimeLineDto.getUid()+"_"+topicFragment.getId());
                     if (!StringUtils.isEmpty(giftStatusstr)) {
                     	giftStatus=0;
                     } else {
                     	giftStatus=1;
-                        cacheService.setex("GIFT_STATUS_"+uid+"_"+topicFragment.getId(),"1",60*60*48);
+                        cacheService.setex("GIFT_STATUS_"+getLiveTimeLineDto.getUid()+"_"+topicFragment.getId(),"1",60*60*48);
                     }
                 }
             }
@@ -3827,12 +3827,12 @@ public class LiveServiceImpl implements LiveService {
            if(topicFragment.getContentType() == 24){
            	//24小时内
                if(new Date().getTime()-topicFragment.getCreateTime().getTime()<=24*60*60*1000){
-                   String giftStatusstr = cacheService.get("GIFT_STATUS_"+uid+"_"+topicFragment.getId());
+                   String giftStatusstr = cacheService.get("GIFT_STATUS_"+getLiveDetailDto.getUid()+"_"+topicFragment.getId());
                    if (!StringUtils.isEmpty(giftStatusstr)) {
                    	giftStatus=0;
                    } else {
                    	giftStatus=1;
-                       cacheService.setex("GIFT_STATUS_"+uid+"_"+topicFragment.getId(),"1",60*60*48);
+                       cacheService.setex("GIFT_STATUS_"+getLiveDetailDto.getUid()+"_"+topicFragment.getId(),"1",60*60*48);
                    }
                }
            }
@@ -4058,12 +4058,12 @@ public class LiveServiceImpl implements LiveService {
             if(topicFragment.getContentType() == 24){
             	//24小时内
                 if(new Date().getTime()-topicFragment.getCreateTime().getTime()<=24*60*60*1000){
-                    String giftStatusstr = cacheService.get("GIFT_STATUS_"+uid+"_"+topicFragment.getId());
+                    String giftStatusstr = cacheService.get("GIFT_STATUS_"+getLiveDetailDto.getUid()+"_"+topicFragment.getId());
                     if (!StringUtils.isEmpty(giftStatusstr)) {
                     	giftStatus=0;
                     } else {
                     	giftStatus=1;
-                        cacheService.setex("GIFT_STATUS_"+uid+"_"+topicFragment.getId(),"1",60*60*48);
+                        cacheService.setex("GIFT_STATUS_"+getLiveDetailDto.getUid()+"_"+topicFragment.getId(),"1",60*60*48);
                     }
                 }
             }
@@ -9906,6 +9906,7 @@ public class LiveServiceImpl implements LiveService {
         json.put("only", onlyCode);
         json.put("image", Constant.QINIU_DOMAIN + "/" +giftInfo.getImage());
         json.put("count", count);
+        json.put("id", String.valueOf(giftId));
         json.put("name", giftInfo.getName());
         json.put("w", giftInfo.getImageWidth());
         json.put("h", giftInfo.getImageHeight());
