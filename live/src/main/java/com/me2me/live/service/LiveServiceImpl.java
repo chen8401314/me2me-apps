@@ -401,6 +401,7 @@ public class LiveServiceImpl implements LiveService {
         }
         
         liveCoverDto.setTitle(topic.getTitle());
+        liveCoverDto.setSummary(topic.getSummary());
         liveCoverDto.setCreateTime(topic.getCreateTime());
         liveCoverDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
         UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());

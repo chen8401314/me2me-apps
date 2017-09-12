@@ -89,6 +89,8 @@ public class LiveCoverDto implements BaseEntity{
     private String trackContent;
     private String trackImage;
     
+    private String summary;//王国简介
+    
 	private List<GiftElement> giftList = Lists.newArrayList();//为播放礼物列表
     
     //跑马灯信息列表
