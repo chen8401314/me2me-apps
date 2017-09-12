@@ -165,6 +165,7 @@ public class Live extends BaseController {
     	dto.setKConfig(request.getKConfig());
     	dto.setTags(request.getTags());
     	dto.setAutoTags(request.getAutoTags());
+    	dto.setVersion(request.getVersion());
     	return liveService.createKingdom(dto);
     }
 
