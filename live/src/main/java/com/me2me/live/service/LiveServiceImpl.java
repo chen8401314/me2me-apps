@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -6313,7 +6314,12 @@ public class LiveServiceImpl implements LiveService {
                 && !isAdmin){
             return Response.failure(ResponseStatus.YOU_DO_NOT_HAVE_PERMISSION.status,ResponseStatus.YOU_DO_NOT_HAVE_PERMISSION.message);
         }
-
+        TopicBadTagExample ex = new TopicBadTagExample();
+		ex.createCriteria().andTopicIdEqualTo(topicId).andTagIn(Arrays.asList(tags.split(";")));
+		if(badTagMapper.countByExample(ex)>0){
+			 return Response.failure(ResponseStatus.TAG_HAS_BEEN_FORBIDDEN.status,ResponseStatus.TAG_HAS_BEEN_FORBIDDEN.message);
+		}
+		
         List<String> newTagList = new ArrayList<String>();
         if(!StringUtils.isEmpty(tags)){
             String[] tmp = tags.split(";");
@@ -9809,6 +9815,7 @@ public class LiveServiceImpl implements LiveService {
 				TopicBadTag tb = new TopicBadTag();
 				tb.setReporterUid(uid);
 				tb.setTopicId(topicId);
+				tb.setCreateTime(new Date());
 				tb.setTag(tag);
 				badTagMapper.insert(tb);
 				// 从王国删除标签；

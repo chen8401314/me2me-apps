@@ -102,6 +102,14 @@ public interface TopicTagSearchMapper {
 	 * @return
 	 */
 	public List<TagInfo> getUserLikeTagAndSubTag(@Param("uid")long uid,@Param("isLike")int isLike);
+	/**
+	 * 取用户喜欢的标签。
+	 * @author zhangjiwei
+	 * @date Sep 12, 2017
+	 * @param uid
+	 * @return
+	 */
+	public List<TagInfo> getUserLikeTag(@Param("uid")long uid);
 	
 	@ResultType(Long.class)
 	@Select("select id as tagId,tag as tagName,cover_img as coverImg from topic_tag where tag=#{0}")

@@ -45,7 +45,9 @@ import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.enums.USER_OPRATE_TYPE;
 import com.me2me.common.page.PageBean;
+import com.me2me.common.utils.CollectionUtils;
 import com.me2me.common.utils.JPushUtils;
+import com.me2me.common.utils.ProbabilityUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -140,6 +142,7 @@ import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
+import com.plusnet.common.util.CollectionUtil;
 import com.plusnet.forecast.domain.ForecastContent;
 import com.plusnet.search.content.RecommendRequest;
 import com.plusnet.search.content.RecommendResponse;
@@ -4362,11 +4365,26 @@ public class ContentServiceImpl implements ContentService {
         while(likeBtnRatio>rightDigs.size()){		//随机序列。
         	rightDigs.add(RandomUtils.nextInt(0, 101));
         }
+        int maxButtonCount=2;	// 最多显示按钮数量
         for(HotContentElement ele:result.getTops()){
-        	ele.setIsShowLikeButton(rightDigs.contains(RandomUtils.nextInt(0, 101))?1:0);
+        	if(maxButtonCount>0){
+        		ele.setIsShowLikeButton(rightDigs.contains(RandomUtils.nextInt(0, 101))?1:0);
+        		if(ele.getIsShowLikeButton()==1){
+        			maxButtonCount--;
+        		}
+        	}else{
+        		ele.setIsShowLikeButton(0);
+        	}
         }
         for(HotContentElement ele:result.getHottestContentData()){
-        	ele.setIsShowLikeButton(rightDigs.contains(RandomUtils.nextInt(0, 101))?1:0);
+        	if(maxButtonCount>0){
+        		ele.setIsShowLikeButton(rightDigs.contains(RandomUtils.nextInt(0, 101))?1:0);
+        		if(ele.getIsShowLikeButton()==1){
+        			maxButtonCount--;
+        		}
+        	}else{
+        		ele.setIsShowLikeButton(0);
+        	}
         }
         // 排序topList
         if(null != listingKingdoms && listingKingdoms.size()>0){
@@ -4417,41 +4435,61 @@ public class ContentServiceImpl implements ContentService {
     }
     private List<HotTagElement> buildHotTagKingdoms(long uid, List<Long> blacklistUids,List<String> blackTags){
         List<com.me2me.content.dto.ShowHotListDTO.HotTagElement> dataList = new ArrayList<ShowHotListDTO.HotTagElement>();
-
-        Set<String> allTags = new LinkedHashSet<>();
-        
-        //用户在首页的标签上点击了喜欢,注意在喜欢了之后,在推荐和查询的时候,连同下方的子标签也会一起加入展示,除非用户手动对子标签选择了不喜欢
-        List<TagInfo> userLikeTagInfo= topicTagMapper.getUserLikeTagAndSubTag(uid,1);	// 白名单，推荐标签和子标签
-        Set<String> userLikeTags = new LinkedHashSet<>();
-        for(TagInfo info:userLikeTagInfo){
-        	userLikeTags.add(info.getTagName());
-        }
-        allTags.addAll(userLikeTags);
-        
-        //除以上两种标签外,通过用户行为产生的排名最高的前5个"体系标签",且评分必须超过20
-        List<String> favoTags = this.topicTagMapper.getUserFavoTags(uid,5);
-        for(String favoTag:favoTags){
-        	if(!blackTags.contains(favoTag)){
-        		allTags.add(favoTag);
-        	}
-        }
         
         //除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
         String strAdminTags = (String) userService.getAppConfigByKey("HOME_HOT_LABELS");
         List<String> adminTags = Arrays.asList(strAdminTags.split("\\n"));
-        int n=0;
-        for(String adminTag:adminTags){
-        	if(!StringUtils.isEmpty(adminTag) && n<20 && !blackTags.contains(adminTag)){	//除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
-        		allTags.add(adminTag);	
-        		n++;
+        
+        int tagCount = adminTags.size();
+        String[] finalTags = new String[tagCount];
+        
+        
+        int curPos =0;
+        //用户在首页的标签上点击了喜欢,注意在喜欢了之后,在推荐和查询的时候,连同下方的子标签也会一起加入展示,除非用户手动对子标签选择了不喜欢
+        List<TagInfo> userLikeTagInfo= topicTagMapper.getUserLikeTag(uid);	// 我明确喜欢的标签
+        for(TagInfo info:userLikeTagInfo){
+        	finalTags[curPos]=info.getTagName();
+        	curPos++;
+        	if(curPos>=tagCount){
+        		break;
         	}
         }
+        if(ProbabilityUtils.isInProb(40)){		//40%概率出现行为补贴。
+	      //除以上两种标签外,通过用户行为产生的排名最高的前5个"体系标签",且评分必须超过20
+	        List<String> favoTags = this.topicTagMapper.getUserFavoTags(uid,10);
+	        
+	        int rndSize= RandomUtils.nextInt(1, 3);
+	        if(curPos+rndSize>=tagCount){
+	        	curPos=tagCount-rndSize;
+	        }
+	                
+	        for(int i=0;i<rndSize && i<favoTags.size();i++){		// 填充1~2个行为标签。
+	        	String tag = favoTags.get(i);
+	        	if(!blackTags.contains(tag) && !CollectionUtils.contains(finalTags, tag)){
+	        		finalTags[curPos]=tag;
+	        		curPos++;
+	        	}
+	        }
+        }
+        
+        int n=0;
+        while(curPos<tagCount && n<adminTags.size()){		// 	填充剩余空位。
+        	String adminTag = adminTags.get(n);
+        	if(!StringUtils.isEmpty(adminTag) &&!blackTags.contains(adminTag) && !CollectionUtils.contains(finalTags, adminTag)){
+        		finalTags[curPos]=adminTag;
+        		curPos++;
+        	}
+        	n++;
+        }
+        
+        List<String> allTags= Arrays.asList(finalTags);
        
         for(String label:allTags){
+        	if(label==null) continue;
         	TagInfo info=topicTagMapper.getTagInfo(label);
         	long tagId= info.getTagId();
             HotTagElement element = new HotTagElement();
-           	element.setIsShowLikeButton(userLikeTags.contains(label)?0:1);
+           	element.setIsShowLikeButton(userLikeTagInfo.contains(label)?0:1);
            	if(info.getCoverImg()!=null){
            		element.setCoverImg(Constant.QINIU_DOMAIN+"/"+info.getCoverImg());
            	}

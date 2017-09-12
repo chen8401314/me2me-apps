@@ -66,4 +66,22 @@ public class CollectionUtils {
 	public static boolean contains(Object[] a,List b,boolean textMode){
 		return contains(Arrays.asList(a), b, textMode);
 	}
+	/**
+	 * 判断数组中是否存在指定的字符串。
+	 * @author zhangjiwei
+	 * @date Sep 12, 2017
+	 * @param finalTags
+	 * @param adminTag
+	 * @return
+	 */
+	public static boolean contains(String[] finalTags, String adminTag) {
+		if(finalTags!=null && adminTag!=null){
+			for(String fk:finalTags){
+				if(fk!=null && fk.equals(adminTag)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }
