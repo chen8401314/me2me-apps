@@ -356,21 +356,13 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 		return super.query(sql,uid);
 	}
 
-	public List<String> getTagFromUserHobby(UserHobby userHobby) {
-		List<Map<String,Object>> dataList =jdbc.queryForList("select tag from topic_tag where find_in_set(?,user_hobby_ids)",userHobby.getHobby());
-		List<String> ret = new ArrayList<>();
-		for(Map<String,Object> data:dataList){
-			ret.add((String) data.get("tag"));
-		}
-		return ret;
-	}
 
-	public void batchInsertUserLikeTags(Long uid, Set<String> userHobbyTags) {
+	public void batchInsertUserLikeTags(Long uid, Set<Long> userHobbyTags) {
 		jdbc.update("delete from user_dislike where uid=? and is_like=1 and type=2 and data in (?)",uid,userHobbyTags);
 		String sql ="insert into user_dislike (uid,data,is_like,type,create_time) values(?,?,1,2,now())";
 		List<Object[]> batchArgs = new ArrayList<>();
-		for(String tag:userHobbyTags){
-			batchArgs.add(new Object[]{uid,tag});
+		for(Long tagid:userHobbyTags){
+			batchArgs.add(new Object[]{uid,tagid});
 		}
 		jdbc.batchUpdate(sql, batchArgs );
 	}
