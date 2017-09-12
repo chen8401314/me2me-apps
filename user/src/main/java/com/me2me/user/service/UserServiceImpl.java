@@ -1064,8 +1064,8 @@ public class UserServiceImpl implements UserService {
 				userMybatisDao.createUserHobby(userHobby);
 				userHobbyTags.add(userHobby.getHobby());
 			}
+			userInitJdbcDao.batchInsertUserLikeTags(user.getUid(),userHobbyTags);
 		}
-		userInitJdbcDao.batchInsertUserLikeTags(user.getUid(),userHobbyTags);
         return Response.success(ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.status,ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.message);
     }
     
@@ -4193,6 +4193,7 @@ public class UserServiceImpl implements UserService {
 		deleteUserHobby.setUid(uid);
 		userMybatisDao.deleteUserHobby(deleteUserHobby);
 		if(!StringUtils.isEmpty(hobbys)){
+			Set<Long> userHobbyTags = new LinkedHashSet<>();
 			String[] hobbies = hobbys.split(",");
 			for (String h : hobbies) {
 				if(!StringUtils.isEmpty(h)){
@@ -4200,8 +4201,11 @@ public class UserServiceImpl implements UserService {
 					userHobby.setHobby(Long.parseLong(h));
 					userHobby.setUid(uid);
 					userMybatisDao.createUserHobby(userHobby);
+					userHobbyTags.add(userHobby.getHobby());
 				}
 			}
+			
+			userInitJdbcDao.batchInsertUserLikeTags(uid,userHobbyTags);
 		}
 	}
 	
