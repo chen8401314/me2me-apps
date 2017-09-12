@@ -90,7 +90,6 @@ public class ShowLiveDto implements BaseEntity {
     
     private int isLottery;//是否有抽奖  0 否  1是
     
-    private List<GiftElement> giftList = Lists.newArrayList();//为播放礼物列表
     @Data
     public static class TopicElement implements BaseEntity{
 		private static final long serialVersionUID = 986248317266706695L;
@@ -101,11 +100,4 @@ public class ShowLiveDto implements BaseEntity {
 		private int internalStatus;
     }
     
-    @Data
-    public static class GiftElement implements BaseEntity{
-		private static final long serialVersionUID = 986248317266716695L;
-		
-		private long giftId;
-		private int count;
-    }
 }

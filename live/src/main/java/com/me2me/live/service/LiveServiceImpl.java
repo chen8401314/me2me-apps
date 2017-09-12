@@ -702,6 +702,20 @@ public class LiveServiceImpl implements LiveService {
         // 记录操作日志
         contentService.addUserOprationLog(topic.getUid(), USER_OPRATE_TYPE.READ_KINGDOM, topic.getId());
         
+        List<GiftHistory> giftHistoryList = liveMybatisDao.getGiftList24h(topicId, DateUtil.addDay(new Date(), -1));
+     for (GiftHistory giftHistory : giftHistoryList) {
+         String giftStatusstr = cacheService.get("GIFT_STATUS_"+uid+"_"+giftHistory.getFragmentId());
+         if (StringUtils.isEmpty(giftStatusstr)) {
+         	if(liveCoverDto.getGiftList().size()<3){
+         	LiveCoverDto.GiftElement ge = new LiveCoverDto.GiftElement();
+         	ge.setGiftId(giftHistory.getGiftId());
+         	ge.setCount(giftHistory.getGiftCount());
+         	liveCoverDto.getGiftList().add(ge);
+         	}
+             cacheService.setex("GIFT_STATUS_"+uid+"_"+giftHistory.getFragmentId(),"1",60*60*48);
+         }
+		}
+        
         return Response.success(ResponseStatus.GET_LIVE_COVER_SUCCESS.status, ResponseStatus.GET_LIVE_COVER_SUCCESS.message, liveCoverDto);
     }
 
@@ -939,19 +953,6 @@ public class LiveServiceImpl implements LiveService {
         }else{
         	showLiveDto.setIsLottery(0);
         }
-        List<GiftHistory> giftHistoryList = liveMybatisDao.getGiftList24h(cid, DateUtil.addDay(new Date(), -1));
-        for (GiftHistory giftHistory : giftHistoryList) {
-            String giftStatusstr = cacheService.get("GIFT_STATUS_"+uid+"_"+giftHistory.getFragmentId());
-            if (StringUtils.isEmpty(giftStatusstr)) {
-            	if(showLiveDto.getGiftList().size()<3){
-            	ShowLiveDto.GiftElement ge = new ShowLiveDto.GiftElement();
-            	ge.setGiftId(giftHistory.getGiftId());
-            	ge.setCount(giftHistory.getGiftCount());
-            	showLiveDto.getGiftList().add(ge);
-            	}
-                cacheService.setex("GIFT_STATUS_"+uid+"_"+giftHistory.getFragmentId(),"1",60*60*48);
-            }
-		}
         return Response.success(showLiveDto);
     }
 

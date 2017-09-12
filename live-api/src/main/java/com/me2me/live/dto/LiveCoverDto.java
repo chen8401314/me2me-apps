@@ -89,6 +89,8 @@ public class LiveCoverDto implements BaseEntity{
     private String trackContent;
     private String trackImage;
     
+	private List<GiftElement> giftList = Lists.newArrayList();//为播放礼物列表
+    
     //跑马灯信息列表
     private List<TopicNewsElement> newsTopList = Lists.newArrayList();
 
@@ -113,4 +115,12 @@ public class LiveCoverDto implements BaseEntity{
 		private int internalStatus;
 		private int contentType;
     }
+
+	@Data
+	public static class GiftElement implements BaseEntity {
+		private static final long serialVersionUID = 986248317266716695L;
+
+		private long giftId;
+		private int count;
+	}
 }
