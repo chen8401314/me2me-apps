@@ -9899,6 +9899,7 @@ public class LiveServiceImpl implements LiveService {
         json.put("only", onlyCode);
         json.put("image", Constant.QINIU_DOMAIN + "/" +giftInfo.getImage());
         json.put("count", count);
+        json.put("id", String.valueOf(giftId));
         json.put("name", giftInfo.getName());
         json.put("w", giftInfo.getImageWidth());
         json.put("h", giftInfo.getImageHeight());
