@@ -366,7 +366,14 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 		}
 		jdbc.batchUpdate(sql, batchArgs );
 	}
-
+	public List<Long> getTagFromUserHobby(long userHobby) {
+		List<Map<String,Object>> dataList =jdbc.queryForList("select id from topic_tag where find_in_set(?,user_hobby_ids)",userHobby);
+		List<Long> ret = new ArrayList<>();
+		for(Map<String,Object> data:dataList){
+			ret.add(((Number) data.get("id")).longValue());
+		}
+		return ret;
+	}
 
 
 }

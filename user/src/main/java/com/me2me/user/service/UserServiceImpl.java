@@ -1062,7 +1062,8 @@ public class UserServiceImpl implements UserService {
 				userHobby.setHobby(Long.parseLong(h));
 				userHobby.setUid(user.getUid());
 				userMybatisDao.createUserHobby(userHobby);
-				userHobbyTags.add(userHobby.getHobby());
+				List<Long> tags= userInitJdbcDao.getTagFromUserHobby(userHobby.getHobby());
+				userHobbyTags.addAll(tags);
 			}
 			userInitJdbcDao.batchInsertUserLikeTags(user.getUid(),userHobbyTags);
 		}
@@ -4201,11 +4202,13 @@ public class UserServiceImpl implements UserService {
 					userHobby.setHobby(Long.parseLong(h));
 					userHobby.setUid(uid);
 					userMybatisDao.createUserHobby(userHobby);
-					userHobbyTags.add(userHobby.getHobby());
+					List<Long> tags= userInitJdbcDao.getTagFromUserHobby(userHobby.getHobby());
+					userHobbyTags.addAll(tags);
 				}
 			}
-			
-			userInitJdbcDao.batchInsertUserLikeTags(uid,userHobbyTags);
+			if(!userHobbyTags.isEmpty()){
+				userInitJdbcDao.batchInsertUserLikeTags(uid,userHobbyTags);
+			}
 		}
 	}
 	
