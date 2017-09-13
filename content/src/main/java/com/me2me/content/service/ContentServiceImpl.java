@@ -4492,7 +4492,7 @@ public class ContentServiceImpl implements ContentService {
         	long tagId= info.getTagId();
             HotTagElement element = new HotTagElement();
            	element.setIsShowLikeButton(userLikeTagInfo.contains(label)?0:1);
-           	if(info.getCoverImg()!=null){
+           	if(!org.apache.commons.lang3.StringUtils.isEmpty(info.getCoverImg())){
            		element.setCoverImg(Constant.QINIU_DOMAIN+"/"+info.getCoverImg());
            	}
            /* List<Map<String,Object>> topicList = null;
