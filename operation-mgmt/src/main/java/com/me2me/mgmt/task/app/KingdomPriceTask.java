@@ -87,6 +87,8 @@ public class KingdomPriceTask {
 		weightKeyList.add("ALGORITHM_PUSH_PRICE_REDUCE_LIMIT");
 		weightKeyList.add("ALGORITHM_UPDATE_UGCCOUNT_WEIGHT");
 		weightKeyList.add("HARVEST_PERCENT");
+		weightKeyList.add("ALGORITHM_Y_X_DOWN");
+		weightKeyList.add("ALGORITHM_Y_X_UP");
 	}
 	
 	@Scheduled(cron="0 2 0 * * ?")
@@ -153,7 +155,9 @@ public class KingdomPriceTask {
 		int pushPriceIncrLimit = this.getIntegerConfig("ALGORITHM_PUSH_PRICE_INCR_LIMIT", weightConfigMap, 50);//推送王国价值增长阈值
 		int pushPriceReduceLimit = this.getIntegerConfig("ALGORITHM_PUSH_PRICE_INCR_LIMIT", weightConfigMap, 50);//推送王国价值减少阈值
 		
-		int harvestPercent = this.getIntegerConfig("HARVEST_PERCENT", weightConfigMap, 30);
+		int harvestPercent = this.getIntegerConfig("HARVEST_PERCENT", weightConfigMap, 30);//收割米汤币百分比
+		double yxUp = this.getDoubleConfig("ALGORITHM_Y_X_UP", weightConfigMap, 50);//y/x上限
+		double yxDown = this.getDoubleConfig("ALGORITHM_Y_X_DOWN", weightConfigMap, 0.02);//y/x下限
 		
 		//获取补助配置
 		StringBuilder subsidyConfigSql = new StringBuilder();
@@ -579,6 +583,19 @@ public class KingdomPriceTask {
 					kc.setApprove(new BigDecimal((double)yy/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					kc.setDiligently(new BigDecimal((double)xx/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					
+					if(_x <= 0){
+						_x = 0.01;
+					}
+					if(_y <= 0){
+						_y = 0.01;
+					}
+					double y_x = _y/_x;
+					if(y_x > yxUp){//大于上限则调整y
+						_y = _x * yxUp;
+					}else if(y_x < yxDown){//小于下限则调整x
+						_x = _y/yxDown;
+					}
+					
 					double kv = Math.pow(Math.pow(_x, 2)+Math.pow(_y, 2),0.5);
 					
 					//特别补助
@@ -631,11 +648,43 @@ public class KingdomPriceTask {
 					if(x0<=0){
 						x0 = 1;
 					}
+					
+					double x01 = 0.01;
+					double y01 = 0.01;
+					if(y0/x0>yxUp){
+						x01 = x0;
+						y01 = x0*yxUp;
+					}else if(y0/x0<yxDown){
+						y01 = y0;
+						x01 = y0/yxDown;
+					}else{
+						x01 = x0;
+						y01 = y0;
+					}
+					
+					double __y = _y;
+					double __x = _x;
+					if((_y+y0)/(_x+x0) > yxUp){
+						__y = (_x+x0)*yxUp - y0;
+					}else if((_y+y0)/(_x+x0) < yxDown){
+						__x = (_y+y0)/yxDown - x0;
+					}
+					
+					__x = __x + x0 - x01;
+					__y = __y + y0 - y01;
+					
+					if(__x <= 0){
+						__x = 0.01;
+					}
+					if(__y <= 0){
+						__y = 0.01;
+					}
+					
 					int _kv = 0;
 					if(kv0 == 0){
-						_kv = (int)Math.pow(Math.pow(_x, 2)+Math.pow(_y, 2),0.5);
+						_kv = (int)Math.pow(Math.pow(__x, 2)+Math.pow(__y, 2),0.5);
 					}else{
-						_kv = (int)((Math.min(Math.pow(_x/x0, diligentlyWeight), _x/x0)+Math.min(Math.pow(_y/y0, approveWeight), _y/y0))*kv0/2);
+						_kv = (int)((Math.min(Math.pow(__x/x0, diligentlyWeight), __x/x0)+Math.min(Math.pow(__y/y0, approveWeight), __y/y0))*kv0/2);
 					}
 					
 					int d = 0;
