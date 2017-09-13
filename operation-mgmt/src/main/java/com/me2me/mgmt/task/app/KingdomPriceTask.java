@@ -259,7 +259,7 @@ public class KingdomPriceTask {
 				for(Map<String, Object> g : giftPriceList){
 					kc = kingCountMap.get(String.valueOf(g.get("topic_id")));
 					if(null != kc){
-						kc.setGiftPrice((Integer)g.get("giftPrice"));
+						kc.setGiftPrice(((BigDecimal)g.get("giftPrice")).intValue());
 					}
 				}
 			}
@@ -791,7 +791,7 @@ public class KingdomPriceTask {
 		}
 		String extra = (String)f.get("extra");
 		int source = ((Integer)f.get("source")).intValue();
-		if(type == 0 && contentType == 0){//主播发言
+		if((type == 0 || type == 52 || type == 57) && contentType == 0){//主播发言
 			kc.setUpdateTextCount(kc.getUpdateTextCount() + 1);
 			if(StringUtils.isNotBlank(fragment)){
 				kc.setUpdateTextWordCount(kc.getUpdateTextWordCount() + fragment.length());
