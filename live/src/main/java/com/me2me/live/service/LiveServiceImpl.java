@@ -7031,6 +7031,10 @@ public class LiveServiceImpl implements LiveService {
         tf.setId(null);
         Date now = new Date();
         tf.setCreateTime(now);
+        String extra = tf.getExtra();
+        JSONObject json = JSONObject.parseObject(extra);
+        json.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+        tf.setExtra(json.toJSONString());
         liveMybatisDao.createTopicFragment(tf);
         liveMybatisDao.deleteFragmentByIdForPhysics(fragmentId);
         
