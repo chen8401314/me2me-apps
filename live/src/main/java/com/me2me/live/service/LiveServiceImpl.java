@@ -7044,6 +7044,10 @@ public class LiveServiceImpl implements LiveService {
         tp.setOutTime(calendar.getTime());
         liveMybatisDao.updateTopic(tp);
         
+        int total = liveMybatisDao.countFragmentByTopicId(tf.getTopicId());
+        String value = tf.getId() + "," + total;
+        cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + tf.getTopicId(), value);
+        
         ResendVoteDto rv = new ResendVoteDto();
         rv.setFragmentId(tf.getId());
         return Response.success(ResponseStatus.RESEND_VOTE_SUCCESS.status, ResponseStatus.RESEND_VOTE_SUCCESS.message,rv);
@@ -10040,6 +10044,18 @@ public class LiveServiceImpl implements LiveService {
         }else{
         	int userCreateKingdomCount  = Integer.parseInt(userCreateKingdomCountStr);
         	dto.setCreateKingdomCount(userCreateKingdomCount);
+        }
+		//特殊用户创建王国无需耗费米汤币
+        String freeUser = userService.getAppConfigByKey("FREE_CREATEKINGDOM_USER");
+        //1免费创建  0需要扣费
+        if(!StringUtils.isEmpty(freeUser)){
+        	String freeUserIds[] = freeUser.split(",");
+        	for (String freeUserId : freeUserIds) {
+        		if(freeUserId.equals(uid+"")){
+        			dto.setNeedPrice(0);
+        			break;
+        		}
+			}
         }
 		return Response.success(dto);
 	}
