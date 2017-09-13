@@ -4359,6 +4359,7 @@ public class ContentServiceImpl implements ContentService {
             content2Dto.setOperationTime(map.get(content2Dto.getHid()+""));
         }
         this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList,topList);
+        
         // 随机显示喜欢不喜欢按钮
         int likeBtnRatio= userService.getIntegerAppConfigByKey("LIKE_BUTTON_APPEAR_RATIO");
         Set<Integer> rightDigs = new HashSet<>();
@@ -4386,9 +4387,10 @@ public class ContentServiceImpl implements ContentService {
         		ele.setIsShowLikeButton(0);
         	}
         }
+        
         // 排序topList
         if(null != listingKingdoms && listingKingdoms.size()>0){
-            List<BasicKingdomInfo> listingKingdomList =kingdomBuider.buildKingdoms(listingKingdoms, uid);
+            List<BasicKingdomInfo> listingKingdomList =kingdomBuider.buildListingKingdoms(listingKingdoms, uid);
             for(BasicKingdomInfo info:listingKingdomList){
                 info.setShowPriceBrand(0);// 首页不显示米币吊牌。
             }
@@ -4541,7 +4543,7 @@ public class ContentServiceImpl implements ContentService {
         	}
         	
             if(topicList!=null && topicList.size()>0){
-                List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildKingdoms(topicList, uid);
+                List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildListingKingdoms(topicList, uid);
                 element.setKingdomList(kingdoms);
             }
             int tagPersons=0;

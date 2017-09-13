@@ -48,6 +48,38 @@ public class KingdomBuilder {
 		return this.buildKingdoms(topicList, currentUid);
 	}
 	/**
+	 * 上市王国信息
+	 * @author zhangjiwei
+	 * @date Sep 13, 2017
+	 * @param topicList
+	 * @return
+	 */
+	public List<BasicKingdomInfo> buildListingKingdoms(List<Map<String,Object>> topicList, long currentUid){
+		if(topicList==null || topicList.isEmpty()){
+			return new ArrayList<>();
+		}
+		double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
+		double minRmb =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
+		List<BasicKingdomInfo> result = new ArrayList<>();
+		for (Map<String, Object> topic : topicList) {
+			BasicKingdomInfo data = new BasicKingdomInfo();
+			long topicId = (Long) topic.get("id");
+			long uid = Long.valueOf(topic.get("uid").toString());
+			data.setUid(uid);
+			data.setPrice((Integer) topic.get("price"));
+			data.setPriceRMB(exchangeKingdomPrice(data.getPrice()));
+			data.setTopicId(topicId);
+			data.setForwardCid(topicId);
+			data.setTitle((String) topic.get("title"));
+			data.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String) topic.get("live_image"));
+			data.setInternalStatus(getInternalStatus(topic, currentUid));
+			data.setShowPriceBrand(data.getPrice()!=null && data.getPrice()>=minPrice?1:0);
+			data.setShowRMBBrand(data.getPriceRMB()>=minRmb?1:0);// 显示吊牌
+			result.add(data);
+		}
+		return result;
+	}
+	/**
 	 * 构造王国实体类。
 	 * @author zhangjiwei
 	 * @date Jun 9, 2017
