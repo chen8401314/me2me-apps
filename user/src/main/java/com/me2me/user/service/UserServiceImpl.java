@@ -4901,7 +4901,8 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public ModifyUserCoinDto currentUserLevelStatus(long uid){
+    public ModifyUserCoinDto currentUserLevelStatus(long uid, int addCoin){
+    	userInitJdbcDao.incrUserCoin(uid, addCoin);
     	ModifyUserCoinDto modifyUserCoinDto = new ModifyUserCoinDto();
     	UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
     	modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());

@@ -10007,8 +10007,8 @@ public class LiveServiceImpl implements LiveService {
 		liveLocalJdbcDao.balanceTopicPriceAndStealPrice(topicId);
 		//3扣除可被收割数
 		liveLocalJdbcDao.decrTopicHarvestPrice(topicId, (int)harvestCoin);
-		//4增加自身米汤币
-		liveLocalJdbcDao.incrUserCoin(uid, (int)harvestCoin);
+		//4增加米汤币，并返回等级相关
+		ModifyUserCoinDto dto = userService.currentUserLevelStatus(uid, (int)harvestCoin);
 		//5增加收割记录(王国米汤币变更)
 		TopicPriceChangeLog tpcLog = new TopicPriceChangeLog();
         tpcLog.setCreateTime(new Date());
@@ -10022,7 +10022,6 @@ public class LiveServiceImpl implements LiveService {
 		HarvestKingdomCoinDTO result = new HarvestKingdomCoinDTO();
 		result.setGainCoin((int)harvestCoin);
 		
-		ModifyUserCoinDto dto = userService.currentUserLevelStatus(uid);
 		result.setUpgrade(dto.getUpgrade());
 		result.setCurrentLevel(dto.getCurrentLevel());
 		

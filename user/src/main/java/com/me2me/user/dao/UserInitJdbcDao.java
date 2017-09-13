@@ -280,6 +280,11 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 		String sql = "UPDATE user_profile SET available_coin = ? WHERE uid = ? ";
 		jdbc.update(sql,coin,uid);
 	}
+	
+	public void incrUserCoin(long uid, int coin){
+		String sql = "update user_profile set available_coin=available_coin+? where uid=?";
+		jdbc.update(sql, coin, uid);
+	}
 
 	public void modifyUserLevel(long uid , int level) {
 		String sql = "UPDATE user_profile SET `level` = ? WHERE uid = ? ";

@@ -1630,11 +1630,6 @@ public class LiveLocalJdbcDao {
 		String sql = "update topic_data set harvest_price=(CASE WHEN harvest_price>? then harvest_price-? ELSE 0 END) where topic_id=?";
 		jdbcTemplate.update(sql, decrPrice,decrPrice,topicId);
 	}
-	
-	public void incrUserCoin(long uid, int coin){
-		String sql = "update user_profile set available_coin=available_coin+? where uid=?";
-		jdbcTemplate.update(sql, coin, uid);
-	}
 
 	public List<String> getUserLikeTags(long uid) {
         List<String> retList = new ArrayList<>();
