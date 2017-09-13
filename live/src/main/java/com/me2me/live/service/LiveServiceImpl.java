@@ -10041,6 +10041,18 @@ public class LiveServiceImpl implements LiveService {
         	int userCreateKingdomCount  = Integer.parseInt(userCreateKingdomCountStr);
         	dto.setCreateKingdomCount(userCreateKingdomCount);
         }
+		//特殊用户创建王国无需耗费米汤币
+        String freeUser = userService.getAppConfigByKey("FREE_CREATEKINGDOM_USER");
+        //1免费创建  0需要扣费
+        if(!StringUtils.isEmpty(freeUser)){
+        	String freeUserIds[] = freeUser.split(",");
+        	for (String freeUserId : freeUserIds) {
+        		if(freeUserId.equals(uid+"")){
+        			dto.setNeedPrice(0);
+        			break;
+        		}
+			}
+        }
 		return Response.success(dto);
 	}
 }
