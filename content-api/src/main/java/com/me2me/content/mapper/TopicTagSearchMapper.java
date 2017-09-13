@@ -90,7 +90,7 @@ public interface TopicTagSearchMapper {
 	 * @return
 	 */
 	@ResultType(String.class)
-	@Select("select tag from topic_tag where id=#{0} or pid =#{0} and is_sys=1 and status=0")
+	@Select("select tag from topic_tag where  pid =#{0} and is_sys=1 and status=0")
 	public List<String> getSubSysTags(long tagId);
 	
 	/**
