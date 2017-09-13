@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -142,7 +141,6 @@ import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
-import com.plusnet.common.util.CollectionUtil;
 import com.plusnet.forecast.domain.ForecastContent;
 import com.plusnet.search.content.RecommendRequest;
 import com.plusnet.search.content.RecommendResponse;
@@ -1650,6 +1648,8 @@ public class ContentServiceImpl implements ContentService {
             liveForContentJdbcDao.deleteTopicTagByTopicId(content.getForwardCid());
             //删除和这个王国有关的所有榜单记录
             liveForContentJdbcDao.deleteTopicBillboard(content.getForwardCid());
+            //删除这个王国相关的上市记录
+            liveForContentJdbcDao.deleteTopicListed(content.getForwardCid());
         }else{
             //记录下删除记录
             liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.UGC.index, id, uid);

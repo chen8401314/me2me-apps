@@ -167,6 +167,11 @@ public class LiveForContentJdbcDao {
     	jdbcTemplate.execute(sb.toString());
     }
     
+    public void deleteTopicListed(long topicId){
+    	String sql = "delete from topic_listed where topic_id=?";
+    	jdbcTemplate.update(sql, topicId);
+    }
+    
     public Map<String,Object> getTopicUserConfig(long topicId, long uid){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select id,uid,topic_id,push_type from topic_user_config ");
