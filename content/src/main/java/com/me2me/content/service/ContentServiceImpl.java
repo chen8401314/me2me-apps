@@ -4449,7 +4449,9 @@ public class ContentServiceImpl implements ContentService {
         int curPos =0;
         //用户在首页的标签上点击了喜欢,注意在喜欢了之后,在推荐和查询的时候,连同下方的子标签也会一起加入展示,除非用户手动对子标签选择了不喜欢
         List<TagInfo> userLikeTagInfo= topicTagMapper.getUserLikeTag(uid);	// 我明确喜欢的标签
+        Set<String> userLikeTagSet= new HashSet<>();
         for(TagInfo info:userLikeTagInfo){
+        	userLikeTagSet.add(info.getTagName());
         	finalTags[curPos]=info.getTagName();
         	curPos++;
         	if(curPos>=tagCount){
@@ -4491,8 +4493,8 @@ public class ContentServiceImpl implements ContentService {
         	TagInfo info=topicTagMapper.getTagInfo(label);
         	long tagId= info.getTagId();
             HotTagElement element = new HotTagElement();
-           	element.setIsShowLikeButton(userLikeTagInfo.contains(label)?0:1);
-           	if(info.getCoverImg()!=null){
+           	element.setIsShowLikeButton(userLikeTagSet.contains(label)?0:1);
+           	if(!org.apache.commons.lang3.StringUtils.isEmpty(info.getCoverImg())){
            		element.setCoverImg(Constant.QINIU_DOMAIN+"/"+info.getCoverImg());
            	}
            /* List<Map<String,Object>> topicList = null;

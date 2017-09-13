@@ -4869,14 +4869,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ModifyUserCoinDto modifyUserCoin(long uid , int coin) {
-    	log.info("111");
 	    ModifyUserCoinDto modifyUserCoinDto = new ModifyUserCoinDto();
 	    UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
         modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
         int modifyCoin = userProfile.getAvailableCoin()+coin;
-        log.info("222");
 	    userInitJdbcDao.modifyUserCoin(uid,modifyCoin);
-	    log.info("333");
         String permissions = getAppConfigByKey(USER_PERMISSIONS);
         UserPermissionDto userPermissionDto = JSON.parseObject(permissions, UserPermissionDto.class);
         int lv = 0;
@@ -4889,7 +4886,6 @@ public class UserServiceImpl implements UserService {
             lv = 9;
         }
         if(lv <= userProfile.getLevel()){
-        	log.info("444");
             return modifyUserCoinDto;
         }else{
             for (UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()) {
@@ -4900,13 +4896,12 @@ public class UserServiceImpl implements UserService {
                     break;
                 }
             }
-            log.info("555");
             return modifyUserCoinDto;
         }
     }
     
     @Override
-    public ModifyUserCoinDto getCurrentUserLevelStatus(long uid){
+    public ModifyUserCoinDto currentUserLevelStatus(long uid){
     	ModifyUserCoinDto modifyUserCoinDto = new ModifyUserCoinDto();
     	UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
     	modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());

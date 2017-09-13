@@ -10018,7 +10018,7 @@ public class LiveServiceImpl implements LiveService {
 		HarvestKingdomCoinDTO result = new HarvestKingdomCoinDTO();
 		result.setGainCoin((int)harvestCoin);
 		
-		ModifyUserCoinDto dto = userService.getCurrentUserLevelStatus(uid);
+		ModifyUserCoinDto dto = userService.currentUserLevelStatus(uid);
 		result.setUpgrade(dto.getUpgrade());
 		result.setCurrentLevel(dto.getCurrentLevel());
 		

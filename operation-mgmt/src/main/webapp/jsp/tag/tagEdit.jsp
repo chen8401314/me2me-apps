@@ -145,6 +145,8 @@
                                                             <span class="fileupload-exists"><i class="fa fa-undo"></i>修改</span>
                                                             <input type="file" id="image2" name="image2" class="default">
                                                         </span>
+                                                        <input type="hidden" name="coverImg" id="coverImg" value="${dataObj.coverImg}"/>
+                                                        <a class="btn btn-primary" href="#" onclick="$('#coverImg').val('');$('.fileupload-new img').remove();"><i class="fa fa-paper-clip"></i>清除图片</a>
                                                         <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="fa fa-trash"></i>删除</a>
                                                     </div>
                                                 </div>
