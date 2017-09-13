@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
+import com.me2me.content.service.ContentService;
 import com.me2me.kafka.service.KafkaService;
 import com.me2me.live.dto.AggregationOptDto;
 import com.me2me.live.dto.CreateKingdomDto;
@@ -134,6 +135,9 @@ public class Live extends BaseController {
     
     @Autowired
     private SmsService smsService;
+    
+    @Autowired
+    private ContentService contentService;
     
     /**
      * 创建直接
@@ -1288,5 +1292,15 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getCreateKingdomInfo",method = RequestMethod.POST)
     public Response getCreateKingdomInfo(GetCreateKingdomInfoRequest request){
     	return liveService.getCreateKingdomInfo(request.getUid());
+    }
+    /**
+     * 获取创建王国信息内容
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/recommendSubTags",method = RequestMethod.POST)
+    public Response recommendSubTags(TopicTagCheckRequest request){
+    	return contentService.recommendSubTags(request.getTag());
     }
 }

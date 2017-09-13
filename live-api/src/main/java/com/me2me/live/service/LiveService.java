@@ -757,4 +757,6 @@ public interface LiveService {
     Response harvestKingdomCoin(long uid, long topicId);
     
 	Response getCreateKingdomInfo(long uid);
+
+
 }
