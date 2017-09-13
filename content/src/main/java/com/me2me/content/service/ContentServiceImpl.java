@@ -1650,6 +1650,8 @@ public class ContentServiceImpl implements ContentService {
             liveForContentJdbcDao.deleteTopicTagByTopicId(content.getForwardCid());
             //删除和这个王国有关的所有榜单记录
             liveForContentJdbcDao.deleteTopicBillboard(content.getForwardCid());
+            //删除这个王国相关的上市记录
+            liveForContentJdbcDao.deleteTopicListed(content.getForwardCid());
         }else{
             //记录下删除记录
             liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.UGC.index, id, uid);
