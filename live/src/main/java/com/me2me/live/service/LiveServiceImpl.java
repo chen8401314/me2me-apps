@@ -7044,6 +7044,10 @@ public class LiveServiceImpl implements LiveService {
         tp.setOutTime(calendar.getTime());
         liveMybatisDao.updateTopic(tp);
         
+        int total = liveMybatisDao.countFragmentByTopicId(tf.getTopicId());
+        String value = tf.getId() + "," + total;
+        cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + tf.getTopicId(), value);
+        
         ResendVoteDto rv = new ResendVoteDto();
         rv.setFragmentId(tf.getId());
         return Response.success(ResponseStatus.RESEND_VOTE_SUCCESS.status, ResponseStatus.RESEND_VOTE_SUCCESS.message,rv);
