@@ -4439,10 +4439,8 @@ public class ContentServiceImpl implements ContentService {
         List<com.me2me.content.dto.ShowHotListDTO.HotTagElement> dataList = new ArrayList<ShowHotListDTO.HotTagElement>();
         
         //除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
-        String strAdminTags = (String) userService.getAppConfigByKey("HOME_HOT_LABELS");
-        List<String> adminTags = Arrays.asList(strAdminTags.split("\\n"));
+        int tagCount =  userService.getIntegerAppConfigByKey("HOME_HOT_LABELS");
         
-        int tagCount = adminTags.size();
         String[] finalTags = new String[tagCount];
         
         
@@ -4475,12 +4473,13 @@ public class ContentServiceImpl implements ContentService {
 	        	}
 	        }
         }
-        
+        // 取系统标签，老邓说后台指定的标签仅仅是起个数量的作用。
+        List<String> sysTagList = topicTagMapper.getSysTags();
         int n=0;
-        while(curPos<tagCount && n<adminTags.size()){		// 	填充剩余空位。
-        	String adminTag = adminTags.get(n);
-        	if(!StringUtils.isEmpty(adminTag) &&!blackTags.contains(adminTag) && !CollectionUtils.contains(finalTags, adminTag)){
-        		finalTags[curPos]=adminTag;
+        while(curPos<tagCount && n<sysTagList.size()){		// 	填充剩余空位。
+        	String sysTag = sysTagList.get(n);
+        	if(!StringUtils.isEmpty(sysTag) &&!blackTags.contains(sysTag) && !CollectionUtils.contains(finalTags, sysTag)){
+        		finalTags[curPos]=sysTag;
         		curPos++;
         	}
         	n++;

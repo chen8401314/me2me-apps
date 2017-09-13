@@ -114,5 +114,10 @@ public interface TopicTagSearchMapper {
 	@ResultType(TagInfo.class)
 	@Select("select id as tagId,tag as tagName,cover_img as coverImg from topic_tag where tag=#{0}")
 	public TagInfo getTagInfo(String label);
+	
+	
+	@ResultType(String.class)
+	@Select("select tag from topic_tag where is_sys=1 and status=0 order by order_num asc")
+	public List<String> getSysTags();
 
 }
