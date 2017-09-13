@@ -75,6 +75,7 @@ import com.me2me.content.dto.MyPublishDto;
 import com.me2me.content.dto.OnlineBillBoardDto;
 import com.me2me.content.dto.PricedKingdomDto;
 import com.me2me.content.dto.RecommendContentDto;
+import com.me2me.content.dto.RecommentSubTagDto;
 import com.me2me.content.dto.ResultKingTopicDto;
 import com.me2me.content.dto.ReviewDelDTO;
 import com.me2me.content.dto.ReviewDto;
@@ -7662,4 +7663,12 @@ public class ContentServiceImpl implements ContentService {
 		userVisitLogMapper.insertSelective(record);
 	}
 
+	@Override
+	public Response recommendSubTags(String tag) {
+		TagInfo taginfo = topicTagMapper.getTagInfo(tag);
+		List<String> subTags = topicTagMapper.getSubTags(taginfo.getTagId());
+		RecommentSubTagDto dto = new RecommentSubTagDto();
+		dto.setSubTagList(subTags);
+		return Response.success(dto);
+	}
 }

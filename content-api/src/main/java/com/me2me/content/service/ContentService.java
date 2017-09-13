@@ -477,4 +477,12 @@ public interface ContentService{
      * @param topicId
      */
     void addUserOprationLog(long uid,USER_OPRATE_TYPE action,String extra);
+	/**
+	 * 标签编辑界面-》 推荐子标签
+	 * @author zhangjiwei
+	 * @date Sep 13, 2017
+	 * @param tag
+	 * @return
+	 */
+	Response recommendSubTags(String tag);
 }

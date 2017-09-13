@@ -119,5 +119,9 @@ public interface TopicTagSearchMapper {
 	@ResultType(String.class)
 	@Select("select tag from topic_tag where is_sys=1 and status=0 order by order_num asc")
 	public List<String> getSysTags();
+	
+	@ResultType(String.class)
+	@Select("select tag from topic_tag where  pid =#{0}  and status=0")
+	public List<String> getSubTags(long tagId);
 
 }
