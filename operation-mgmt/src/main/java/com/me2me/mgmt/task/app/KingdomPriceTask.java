@@ -259,7 +259,7 @@ public class KingdomPriceTask {
 				for(Map<String, Object> g : giftPriceList){
 					kc = kingCountMap.get(String.valueOf(g.get("topic_id")));
 					if(null != kc){
-						kc.setGiftPrice((Integer)g.get("giftPrice"));
+						kc.setGiftPrice(((BigDecimal)g.get("giftPrice")).intValue());
 					}
 				}
 			}
