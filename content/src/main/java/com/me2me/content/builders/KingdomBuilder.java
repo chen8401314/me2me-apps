@@ -58,6 +58,25 @@ public class KingdomBuilder {
 		if(topicList==null || topicList.isEmpty()){
 			return new ArrayList<>();
 		}
+		
+		List<Long> topicIdList = new ArrayList<Long>();
+		Long tid = null;
+		for(Map<String,Object> m : topicList){
+			tid = (Long)m.get("id");
+			if(!topicIdList.contains(tid)){
+				topicIdList.add(tid);
+			}
+		}
+		
+		Map<String, String> liveFavouriteMap = new HashMap<String, String>();
+		List<Map<String, Object>> liveFavouriteList = liveForContentJdbcDao.getLiveFavoritesByUidAndTopicIds(currentUid, topicIdList);
+		if (null != liveFavouriteList && liveFavouriteList.size() > 0) {
+			for (Map<String, Object> lf : liveFavouriteList) {
+				liveFavouriteMap.put(((Long) lf.get("topic_id")).toString(), "1");
+			}
+		}
+		
+		
 		double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
 		double minRmb =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
 		List<BasicKingdomInfo> result = new ArrayList<>();
@@ -72,7 +91,11 @@ public class KingdomBuilder {
 			data.setForwardCid(topicId);
 			data.setTitle((String) topic.get("title"));
 			data.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String) topic.get("live_image"));
-			data.setInternalStatus(getInternalStatus(topic, currentUid));
+			boolean isJoin = false;
+			if (null != liveFavouriteMap.get(String.valueOf(topicId))) {
+				isJoin = true;
+			}
+			data.setInternalStatus(getInternalStatus(topic, currentUid, isJoin));
 			data.setShowPriceBrand(data.getPrice()!=null && data.getPrice()>=minPrice?1:0);
 			data.setShowRMBBrand(data.getPriceRMB()>=minRmb?1:0);// 显示吊牌
 			result.add(data);
@@ -211,8 +234,10 @@ public class KingdomBuilder {
 				data.setIsFollowMe(0);
 			}
 			data.setContentType((Integer) topic.get("type"));
+			boolean isJoin = false;
 			if (null != liveFavouriteMap.get(String.valueOf(topicId))) {
 				data.setFavorite(1);
+				isJoin = true;
 			} else {
 				data.setFavorite(0);
 			}
@@ -229,7 +254,8 @@ public class KingdomBuilder {
 			data.setForwardCid(topicId);
 			data.setTitle((String) topic.get("title"));
 			data.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String) topic.get("live_image"));
-			data.setInternalStatus(getInternalStatus(topic, currentUid));
+			
+			data.setInternalStatus(getInternalStatus(topic, currentUid, isJoin));
 			if (null != topicMemberCountMap.get(String.valueOf(topicId))) {
 				data.setFavoriteCount(topicMemberCountMap.get(String.valueOf(topicId)).intValue() + 1);
 			} else {
@@ -268,7 +294,7 @@ public class KingdomBuilder {
 		return new BigDecimal(price).divide(exchangeRate, 2, RoundingMode.HALF_UP).doubleValue();
 	}
 	// 判断核心圈身份
-	private int getInternalStatus(Map<String, Object> topic, long uid) {
+	private int getInternalStatus(Map<String, Object> topic, long uid, boolean isJoin) {
 		int internalStatus = 0;
 		String coreCircle = (String) topic.get("core_circle");
 		if (null != coreCircle) {
@@ -280,11 +306,10 @@ public class KingdomBuilder {
 				}
 			}
 		}
-
-		// if (internalStatus == 0) {
-		// internalStatus = userService.getUserInternalStatus(uid,
-		// (Long)topic.get("uid"));
-		// }
+		
+		if(internalStatus == 0 && isJoin){
+			internalStatus = 1;
+		}
 
 		return internalStatus;
 	}
