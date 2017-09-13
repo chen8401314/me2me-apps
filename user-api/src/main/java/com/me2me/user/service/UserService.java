@@ -605,5 +605,5 @@ public interface UserService {
 	 * @param uid
 	 * @return
 	 */
-	ModifyUserCoinDto getCurrentUserLevelStatus(long uid);
+	ModifyUserCoinDto currentUserLevelStatus(long uid);
 }
