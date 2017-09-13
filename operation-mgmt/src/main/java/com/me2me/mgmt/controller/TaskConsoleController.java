@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONArray;
@@ -20,6 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.mgmt.dao.LocalJdbcDao;
+import com.me2me.user.service.UserService;
 
 @Controller
 @RequestMapping("/task")
@@ -31,6 +33,8 @@ public class TaskConsoleController {
 	private LocalJdbcDao localJdbcDao;
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	private UserService userService;
 	
 	@RequestMapping(value = "/ugcCollect")
 	@ResponseBody
@@ -299,5 +303,34 @@ public class TaskConsoleController {
 		}
 		
 		return topicId;
+	}
+	
+	@RequestMapping(value = "/refreshHarvest")
+	@ResponseBody
+	public String refreshHarvest(@RequestParam("tid")long topicId) {
+		String topicSql = "select * from topic t where t.id="+topicId;
+		List<Map<String, Object>> list = localJdbcDao.queryEvery(topicSql);
+		if(null == list || list.size() == 0){
+			return "王国不存在";
+		}
+		Map<String, Object> topic = list.get(0);
+		int price = (Integer)topic.get("price");
+		
+		int harvestPercent = 30;
+		String hp = userService.getAppConfigByKey("HARVEST_PERCENT");
+		if(!StringUtils.isEmpty(hp)){
+			harvestPercent = Integer.valueOf(hp);
+		}
+		int canHarvestPrice = price*harvestPercent/100;
+		if(canHarvestPrice<0){
+			canHarvestPrice = 0;
+		}
+		
+		String updateSql = "update topic_data set harvest_price=? where topic_id=?";
+		localJdbcDao.executeSqlWithParams(updateSql, canHarvestPrice, topicId);
+		
+		cacheService.set("TOPIC_HARVEST:"+topicId, String.valueOf(canHarvestPrice));
+		
+		return "刷新成功";
 	}
 }

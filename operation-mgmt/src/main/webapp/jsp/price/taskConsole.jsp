@@ -114,6 +114,26 @@ var runTask6 = function(){
 		}
 	});
 }
+
+var runTask7 = function(){
+	var htopicId = $("#htopicId").val();
+	if(htopicId == ''){
+		alert('王国ID必填');
+		return;
+	}
+	
+	$("#btnSearch7").attr("disabled",true);
+	$.ajax({
+		url : "${ctx}/task/refreshHarvest?tid="+htopicId,
+		async : false,
+		type : "GET",
+		contentType : "application/json;charset=UTF-8",
+		success : function(resp) {
+			alert(resp);
+			$("#btnSearch7").attr("disabled",false);
+		}
+	});
+}
 </script>
 </head>
 <body>
@@ -199,6 +219,22 @@ var runTask6 = function(){
 								<div class="panel-body">
 									<div class="form-inline" role="form">
 										<input type="button" id="btnSearch6" name="btnSearch6" value="开始执行" onclick="runTask6()" class="btn btn-info" />
+									</div>
+								</div>
+							</section>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-12">
+							<section class="panel">
+								<header class="panel-heading">单个刷新用户收割米汤币的数值</header>
+								<div class="panel-body">
+									<div class="form-inline" role="form">
+										<div class="form-inline" role="form">
+											待刷新王国ID
+											<input type="text" id="htopicId" name="htopicId" class="form-control">
+										</div>
+										<input type="button" id="btnSearch7" name="btnSearch7" value="开始刷新" onclick="runTask7()" class="btn btn-info" />
 									</div>
 								</div>
 							</section>
