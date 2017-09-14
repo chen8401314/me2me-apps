@@ -1593,7 +1593,18 @@ public class LiveLocalJdbcDao {
 		if(null == userHobbyTags || userHobbyTags.size() == 0){
 			return;
 		}
-		jdbcTemplate.update("delete from user_dislike where uid=? and is_like=1 and type=2 and data in (?)",uid,userHobbyTags);
+		StringBuilder delSql = new StringBuilder();
+		delSql.append("delete from user_dislike where uid=? and is_like=1 and type=2 and data in (");
+		int i=0;
+		for(Long tag:userHobbyTags){
+			if(i>0){
+				delSql.append(",");
+			}
+			delSql.append(tag.toString());
+			i++;
+		}
+		delSql.append(")");
+		jdbcTemplate.update(delSql.toString(),uid);
 		String sql ="insert into user_dislike (uid,data,is_like,type,create_time) values(?,?,1,2,now())";
 		List<Object[]> batchArgs = new ArrayList<>();
 		for(Long tag:userHobbyTags){
