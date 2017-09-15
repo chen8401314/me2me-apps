@@ -1262,7 +1262,7 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setExtra(speakDto.getExtra());
             boolean isOut = false;
             if(speakDto.getType() == 12 || speakDto.getType() == 13
-            		|| ((speakDto.getType() == 0 || speakDto.getType()==52) && (speakDto.getContentType()==0||speakDto.getContentType()==1||speakDto.getContentType()==22||speakDto.getContentType()==19||speakDto.getContentType()==72||speakDto.getContentType()==74||speakDto.getContentType()==23))
+            		|| ((speakDto.getType() == 0 || speakDto.getType()==52) && (speakDto.getContentType()==0||speakDto.getContentType()==1||speakDto.getContentType()==22||speakDto.getContentType()==19||speakDto.getContentType()==72||speakDto.getContentType()==74||speakDto.getContentType()==23||speakDto.getContentType()==18))
             		|| (speakDto.getType()==55 && (speakDto.getContentType()==0||speakDto.getContentType()==63||speakDto.getContentType()==51||speakDto.getContentType()==62||speakDto.getContentType()==72||speakDto.getContentType()==74))){
             	topicFragment.setOutType(1);
             	isOut = true;
