@@ -41,6 +41,10 @@
     </bean>
 
     <mvc:interceptors>
+     	<mvc:interceptor>
+            <mvc:mapping path="/**/*"/>
+            <bean class="com.me2me.web.handler.DevInterceptor"/>
+        </mvc:interceptor>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <mvc:exclude-mapping path="/api/mobile/**"/>
