@@ -3269,7 +3269,7 @@ public class ContentServiceImpl implements ContentService {
                         			contentElement.getAudioData().add(outElement);
             					}
             				}else{//图片区展示部分
-            					if(contentElement.getAudioData().size() < 4){
+            					if(contentElement.getImageData().size() < 4){
             						outElement = new ShowNewestDto.OutDataElement();
                         			outElement.setId((Long)topicOutData.get("id"));
                         			outElement.setType((Integer)topicOutData.get("type"));
