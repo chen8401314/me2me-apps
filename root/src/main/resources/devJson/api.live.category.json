@@ -1,1 +1,9 @@
-楼主讲的很透彻，32个赞！！！另外我想指出一点小错误，&quot;要想不出现乱码，在构造String过程中指定编码格式，使得编码解码时两者编码格式保持一致即可&quot;。这句话是否有问题呢？构造String字符串指定的是“解码”格式（decoding）,而非编码格式（encoding）。可以参考String的官方API。实质上，对应于unicode和utf-8的关系的理解，应该将unicode理解为抽象的编码，它对应的是抽象的“字符”；而utf-8只是unicode的一种具体实现方式而已（还有utf-16等具体实现方式），它对应为具体的“字节”。就本例而言，string对应的是抽象的“字符”，而byte对应的是编码后的具体“字节”。从unicode到utf-8是encoding，从utf-8到unicode是decoding。就这么多，也不知道我说明白没
+{
+  "accessToken": "7fc057457cfb4e9699b6e8999fc5969b",
+  "code": 200,
+  "data": {
+    categories:[
+    ]
+  },
+  "message": "ok"
+}
