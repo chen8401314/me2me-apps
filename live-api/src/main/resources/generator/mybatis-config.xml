@@ -29,7 +29,7 @@
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
 
-        <!--<table tableName="topic" domainObjectName="Topic"/>-->
+        <table tableName="topic" domainObjectName="Topic"/>
         <!-- <table tableName="topic_fragment" domainObjectName="TopicFragment"/> -->
         <!--<table tableName="live_favorite" domainObjectName="LiveFavorite"/>-->
         <!--<table tableName="live_read_history" domainObjectName="LiveReadHistory"/>-->
@@ -70,5 +70,6 @@
         <!-- <table tableName="user_dislike" domainObjectName="UserDislike" /> -->
         <!-- <table tableName="gift_info" domainObjectName="GiftInfo" /> -->
         <!-- <table tableName="gift_history" domainObjectName="GiftHistory" /> -->
+        <table tableName="topic_category" domainObjectName="TopicCategory" />
     </context>
 </generatorConfiguration>
