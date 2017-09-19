@@ -282,6 +282,9 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 	}
 	
 	public void incrUserCoin(long uid, int coin){
+		if(coin <= 0){
+			return;
+		}
 		String sql = "update user_profile set available_coin=available_coin+? where uid=?";
 		jdbc.update(sql, coin, uid);
 	}
