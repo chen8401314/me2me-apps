@@ -80,7 +80,7 @@ public class DevInterceptor implements HandlerInterceptor{
 				if(isValid){
 					targetFile+=".json";
 					InputStream inputStream=null;
-					response.setContentType("text/json; charset=utf-8");
+					response.setContentType("application/json; charset=utf-8");
 					Writer writer= response.getWriter();
 					try{
 						inputStream = DevInterceptor.class.getResourceAsStream("/devJson/"+targetFile);

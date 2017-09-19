@@ -46,4 +46,5 @@ public class CreateContentSuccessDto  implements BaseEntity{
     
     private long topicId;
     private int internalStatus;
+    private long fragmentId;
 }
