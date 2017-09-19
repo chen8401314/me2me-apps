@@ -23,6 +23,7 @@ public class Home {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
+                sb.append("\n");
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
