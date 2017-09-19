@@ -10,15 +10,17 @@ import com.me2me.common.web.Response;
 import com.me2me.web.request.AwardRequest;
 
 /**
- * Created by 马秀成 on 2016/10/18.
+ * 拦截所有没有映射的请求，不然请求不会进入dev拦截器。
+ * 
+ * @author zhangjiwei
  */
 @Controller
-public class TestController extends BaseController {
-    @ResponseBody
-    @RequestMapping(value = "/**/*")
-    public Response luckAward(AwardRequest request , HttpServletRequest rq){
-       
-    	return Response.failure(-1, "no data");
-    }
+public class DevController extends BaseController {
+	@ResponseBody
+	@RequestMapping(value = "/api/**/*")
+	public Response luckAward(AwardRequest request, HttpServletRequest rq) {
+
+		return Response.failure(-1, "no data");
+	}
 
 }

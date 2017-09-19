@@ -42,7 +42,7 @@
 
     <mvc:interceptors>
      	<mvc:interceptor>
-            <mvc:mapping path="/**/*"/>
+            <mvc:mapping path="/api/**/*"/>
             <bean class="com.me2me.web.handler.DevInterceptor"/>
         </mvc:interceptor>
         <mvc:interceptor>

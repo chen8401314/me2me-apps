@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Writer;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -19,6 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import com.qiniu.util.Json;
 
 public class DevInterceptor implements HandlerInterceptor{
 	private static Logger logger = LoggerFactory.getLogger(DevInterceptor.class);
@@ -75,12 +80,18 @@ public class DevInterceptor implements HandlerInterceptor{
 				if(isValid){
 					targetFile+=".json";
 					InputStream inputStream=null;
+					response.setContentType("text/json; charset=utf-8");
+					Writer writer= response.getWriter();
 					try{
 						inputStream = DevInterceptor.class.getResourceAsStream("/devJson/"+targetFile);
 						String json= IOUtils.toString(inputStream,"UTF-8");
-						response.setContentType("text/json; charset=utf-8");
-						response.getWriter().write(json);
-						response.getWriter().close();
+						Object obj = JSON.parse(json);
+						writer.write(JSON.toJSONString(obj,true));
+						writer.close();
+						return false;
+					}catch(JSONException e){
+						writer.write("json文件存在语法错误["+e.getMessage()+"]，请检查："+targetFile);
+						writer.close();
 						return false;
 					}catch(Exception e){
 						logger.error("开发模式 找不到文件:"+targetFile+",请检查classpath:/devJson目录是否有此文件");
