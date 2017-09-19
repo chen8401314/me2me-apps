@@ -24,5 +24,5 @@ public interface LiveExtService {
 	 * @param page 分页
 	 * @return
 	 */
-	Response kingdomByCategory(int uid,int kcid,int page);
+	Response kingdomByCategory(long uid,int kcid,int page);
 }

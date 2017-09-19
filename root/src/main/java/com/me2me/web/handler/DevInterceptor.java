@@ -1,8 +1,6 @@
 package com.me2me.web.handler;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.kafka.common.security.kerberos.BadFormatString;
 import org.elasticsearch.common.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +20,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
-import com.qiniu.util.Json;
 
 public class DevInterceptor implements HandlerInterceptor{
 	private static Logger logger = LoggerFactory.getLogger(DevInterceptor.class);
@@ -74,7 +70,7 @@ public class DevInterceptor implements HandlerInterceptor{
 			throws Exception {
 		if(isDevMode){
 			String requestUri = request.getRequestURI();
-				if(!StringUtils.isEmpty(requestUri)){
+			if(!StringUtils.isEmpty(requestUri)){
 				String targetFile = requestUri.substring(1).replaceAll("/$", "").replace("/", ".");
 				boolean isValid =props.getProperty(targetFile, "").equals("true");
 				if(isValid){
@@ -87,11 +83,9 @@ public class DevInterceptor implements HandlerInterceptor{
 						String json= IOUtils.toString(inputStream,"UTF-8");
 						Object obj = JSON.parse(json);
 						writer.write(JSON.toJSONString(obj,true));
-						writer.close();
 						return false;
 					}catch(JSONException e){
 						writer.write("json文件存在语法错误["+e.getMessage()+"]，请检查："+targetFile);
-						writer.close();
 						return false;
 					}catch(Exception e){
 						logger.error("开发模式 找不到文件:"+targetFile+",请检查classpath:/devJson目录是否有此文件");
@@ -99,6 +93,8 @@ public class DevInterceptor implements HandlerInterceptor{
 						if(inputStream!=null){
 							inputStream.close();
 						}
+						writer.flush();
+						writer.close();
 					}
 				}
 			}

@@ -1,6 +1,7 @@
 package com.me2me.live.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,10 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import com.me2me.live.mapper.TopicCategoryMapper;
 import com.me2me.live.mapper.TopicMapper;
-import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicCategory;
 import com.me2me.live.model.TopicCategoryExample;
-import com.me2me.live.model.TopicExample;
 
 @Repository
 public class LiveExtDao {
@@ -22,8 +21,6 @@ public class LiveExtDao {
 	private JdbcTemplate jdbcTemplate;
 	@Autowired
 	private TopicCategoryMapper categoryMapper;
-	@Autowired
-	private TopicMapper topicMapper;
 	
 	public List<TopicCategory> getAllCategory() {
 		TopicCategoryExample example = new TopicCategoryExample();
@@ -36,11 +33,29 @@ public class LiveExtDao {
 		return cat;
 		
 	}
-	public List<Topic> getCategoryKingdom(int kcid,int page) {
-		TopicExample example = new TopicExample();
-		example.createCriteria().andCategoryIdEqualTo(kcid);
-		example.setOrderByClause("update_time desc");
-		List<Topic> topicList = topicMapper.selectByExample(example);
-		return topicList;
+	public List<Map<String,Object>> getCategoryKingdom(int kcid,int page,int pageSize) {
+		String sql = "select * from topic where category_id=? order by update_time desc limit ?,?";
+		return jdbcTemplate.queryForList(sql, kcid,(page-1)*pageSize,pageSize);
+	}
+	/**
+	 * 查询最近n分钟升值最快的王国。
+	 * @author zhangjiwei
+	 * @date Sep 19, 2017
+	 * @param categoryId
+	 * @param limitMinute
+	 * @return
+	 */
+	public Map<String,Object> getCategoryCoverKingdom(int categoryId,int limitMinute){
+		String sql ="select t.title,t.live_img,t.id,t.uid,p.nick_name,p.avatar"+
+		" from topic t,user_profile p,("+
+		" select max(t1.out_time) as maxtime"+
+		" from topic t1"+
+		" where t1.category_id=?"+
+		" ) m"+
+		" where t.category_id=?"+
+		" and p.uid=t.uid"+
+		" and t.out_time>=date_add(m.maxtime,interval -? minute)" +
+		" order by t.price desc limit 1;";
+		return jdbcTemplate.queryForMap(sql,categoryId,categoryId,limitMinute);
 	}
 }
