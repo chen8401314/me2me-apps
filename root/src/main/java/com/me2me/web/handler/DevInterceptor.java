@@ -30,7 +30,7 @@ public class DevInterceptor implements HandlerInterceptor{
 		props =new Properties();
 		try {
 			props.load(DevInterceptor.class.getResourceAsStream("/dev_settings.properties"));
-			isDevMode= props.getProperty("devMode", "").equals("dev");
+			isDevMode= props.getProperty("devMode", "").equals("dev")||props.getProperty("devMode", "").equals("test");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
