@@ -1,0 +1,25 @@
+{
+    "accessToken":"7fc057457cfb4e9699b6e8999fc5969b",
+    "code":200,
+    "data":[
+        {
+            "uid":13,
+            "nickname":123,
+            "avatar":"http://p.3761.com/pic/231432169575.jpg",
+            "gender":0,
+            "vip":1,
+            "level":2,
+            "introduce":"爱笑"
+        },
+        {
+            "uid":14,
+            "nickname":1234,
+            "avatar":"http://img0.imgtn.bdimg.com/it/u=1057519802,4245354110&fm=27&gp=0.jpg",
+            "gender":1,
+            "vip":1,
+            "level":2,
+            "introduce":"爱笑"
+        }
+    ],
+    "message":"ok"
+}

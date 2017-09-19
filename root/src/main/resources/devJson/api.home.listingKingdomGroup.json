@@ -1,0 +1,25 @@
+{
+    "accessToken":"7fc057457cfb4e9699b6e8999fc5969b",
+    "code":200,
+    "data":{
+        "hotTagKingdomList":[
+            {
+                "topicId":123,
+                "coverImage":"http://www.baidu.com/long.png",
+                "title":"上市的第一个王国",
+                "showPriceBrand":1,
+                "price":98800,
+                "priceRMB":988
+            },
+            {
+                "topicId":124,
+                "coverImage":"http://www.baidu.com/long.png",
+                "title":"上市的第二个王国",
+                "showPriceBrand":1,
+                "price":198800,
+                "priceRMB":1988
+            }
+        ]
+    },
+    "message":"ok"
+}
