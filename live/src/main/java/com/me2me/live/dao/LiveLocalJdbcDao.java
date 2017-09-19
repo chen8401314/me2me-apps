@@ -21,8 +21,6 @@ import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.LiveFavoriteDelete;
 import com.me2me.live.model.TopicBarrage;
-import com.me2me.live.model.UserDislike;
-import com.me2me.live.model.UserDislikeExample;
 
 @Repository
 public class LiveLocalJdbcDao {
