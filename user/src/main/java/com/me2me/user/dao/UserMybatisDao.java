@@ -157,6 +157,9 @@ public class UserMybatisDao {
     @Autowired
     private UserDeviceInfoMapper userDeviceInfoMapper;
     
+    @Autowired
+    private UserInvitationHisMapper userInvitationHisMapper;
+    
     /**
      * 保存用户注册信息
      * @param user
@@ -1492,5 +1495,33 @@ public class UserMybatisDao {
     
     public void saveUserDeviceInfo(UserDeviceInfo udi){
     	userDeviceInfoMapper.insertSelective(udi);
+    }
+    
+    public UserInvitationHis getUserInvitationHisByUidAndFromUidAndTypeAndStatus(long uid, long fromUid, int type, int status){
+    	UserInvitationHisExample example = new UserInvitationHisExample();
+    	UserInvitationHisExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andFromUidEqualTo(fromUid);
+    	criteria.andTypeEqualTo(type);
+    	criteria.andStatusEqualTo(status);
+    	List<UserInvitationHis> list = userInvitationHisMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public void updateUserInvitationReceive(long uid, long fromUid, int type){
+    	UserInvitationHisExample example = new UserInvitationHisExample();
+    	UserInvitationHisExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andFromUidEqualTo(fromUid);
+    	criteria.andTypeEqualTo(type);
+    	criteria.andStatusEqualTo(0);
+    	
+    	UserInvitationHis record = new UserInvitationHis();
+    	record.setStatus(1);
+    	record.setReceiveTime(new Date());
+    	userInvitationHisMapper.updateByExampleSelective(record, example);
     }
 }

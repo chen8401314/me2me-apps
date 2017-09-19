@@ -964,6 +964,9 @@ public class LiveServiceImpl implements LiveService {
             	if(!StringUtils.isEmpty(tc.getCoverImg())){
             		showLiveDto.setKcImage(Constant.QINIU_DOMAIN+"/"+tc.getCoverImg());
             	}
+            	if(!StringUtils.isEmpty(tc.getIcon())){
+            		showLiveDto.setKcIcon(Constant.QINIU_DOMAIN+"/"+tc.getIcon());
+            	}
         	}
         }
         return Response.success(showLiveDto);
@@ -4650,6 +4653,9 @@ public class LiveServiceImpl implements LiveService {
                 	dto.setKcName(tc.getName());
                 	if(!StringUtils.isEmpty(tc.getCoverImg())){
                 		dto.setKcImage(Constant.QINIU_DOMAIN+"/"+tc.getCoverImg());
+                	}
+                	if(!StringUtils.isEmpty(tc.getIcon())){
+                		dto.setKcIcon(Constant.QINIU_DOMAIN+"/"+tc.getIcon());
                 	}
             	}
             }

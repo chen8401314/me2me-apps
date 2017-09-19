@@ -1497,6 +1497,10 @@ public class ContentServiceImpl implements ContentService {
                         	if(!StringUtils.isEmpty(kcImage)){
                         		contentElement.setKcImage(Constant.QINIU_DOMAIN+"/"+kcImage);
                         	}
+                        	String kcIcon = (String)kingdomCategory.get("icon");
+                        	if(StringUtils.isEmpty(kcIcon)){
+                        		contentElement.setKcIcon(Constant.QINIU_DOMAIN+"/"+kcIcon);
+                        	}
                     	}
                     }
                 	

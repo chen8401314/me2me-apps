@@ -5164,8 +5164,20 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public Response awardByInvitation(long uid, long fromUid, int type){
+		UserInvitationHis uih = userMybatisDao.getUserInvitationHisByUidAndFromUidAndTypeAndStatus(uid, fromUid, type, 0);//获取未领取过的
+		if(null == uih){
+			return Response.failure(500, "已经领取过，不能重复领取");
+		}
+		//增加个人米汤币
+		int addCoin = 0;
+		if(uih.getCoins().intValue() > 0){
+			addCoin = uih.getCoins().intValue();
+		}
+		ModifyUserCoinDto dto = this.currentUserLevelStatus(uid, uih.getCoins().intValue());
+		//标记领取状态
+		userMybatisDao.updateUserInvitationReceive(uid, fromUid, type);
 		
 		
-		return null;
+		return Response.success(200, "领取成功", dto);
 	}
 }
