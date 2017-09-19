@@ -1261,7 +1261,9 @@ public interface Specification {
 
         ISSUED_MESSAGE("个人王国下发消息",7),
 
-        LIVE_NAME("王国名",8);
+        LIVE_NAME("王国名",8),
+        
+        KINGDOM_CATEGORY("王国分类",9);
 
         public final String name;
         public final int index;

@@ -50,6 +50,7 @@ import com.me2me.live.mapper.TeaseInfoMapper;
 import com.me2me.live.mapper.TopicAggregationApplyMapper;
 import com.me2me.live.mapper.TopicAggregationMapper;
 import com.me2me.live.mapper.TopicBarrageMapper;
+import com.me2me.live.mapper.TopicCategoryMapper;
 import com.me2me.live.mapper.TopicDataMapper;
 import com.me2me.live.mapper.TopicDroparoundMapper;
 import com.me2me.live.mapper.TopicDroparoundTrailMapper;
@@ -115,6 +116,7 @@ import com.me2me.live.model.TopicAggregationApplyExample;
 import com.me2me.live.model.TopicAggregationExample;
 import com.me2me.live.model.TopicBarrage;
 import com.me2me.live.model.TopicBarrageExample;
+import com.me2me.live.model.TopicCategory;
 import com.me2me.live.model.TopicData;
 import com.me2me.live.model.TopicDataExample;
 import com.me2me.live.model.TopicDroparound;
@@ -303,6 +305,9 @@ public class LiveMybatisDao {
     
     @Autowired
     private GiftHistoryMapper giftHistoryMapper;
+    
+    @Autowired
+    private TopicCategoryMapper topicCategoryMapper;
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -2156,5 +2161,9 @@ public class LiveMybatisDao {
         example.setOrderByClause(" gift_price / gift_count desc ");
 		List<GiftHistory> list = giftHistoryMapper.selectByExample(example);
 		return list;
+	}
+	
+	public TopicCategory getTopicCategoryById(int id){
+		return topicCategoryMapper.selectByPrimaryKey(id);
 	}
 }

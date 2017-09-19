@@ -1267,4 +1267,9 @@ public class LiveForContentJdbcDao {
 		}
 		return dataList2;
 	}
+	
+	public List<Map<String, Object>> getAllKingdomCategory(){
+		String sql = "select * from topic_category";
+		return jdbcTemplate.queryForList(sql);
+	}
 }

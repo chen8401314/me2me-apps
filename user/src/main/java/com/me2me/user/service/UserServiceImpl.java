@@ -255,6 +255,15 @@ public class UserServiceImpl implements UserService {
 			            jsonObject.addProperty("messageType", 0);
 			            jsonObject.addProperty("type", -1);
 			            pushWithExtra(refereeUid+"", msg.toString(), JPushUtils.packageExtra(jsonObject));
+			            
+			            //保存邀请历史
+			            int invitingCoins = 0;//邀请的奖励
+			            int invitedCoins = 0;//被邀请的奖励
+			            try{
+			            	
+			            }catch(Exception e){
+			            	log.error("邀请或被邀请的配置错误", e);
+			            }
 					}
 				}
 			} catch (Exception e) {
@@ -5151,5 +5160,12 @@ public class UserServiceImpl implements UserService {
 		ufl.setActionType(actionType);
 		ufl.setCreateTime(new Date());
 		userMybatisDao.saveUserFirstLog(ufl);
+	}
+	
+	@Override
+	public Response awardByInvitation(long uid, long fromUid, int type){
+		
+		
+		return null;
 	}
 }

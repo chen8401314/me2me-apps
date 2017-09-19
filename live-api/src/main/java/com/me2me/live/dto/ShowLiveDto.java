@@ -90,6 +90,11 @@ public class ShowLiveDto implements BaseEntity {
     
     private int isLottery;//是否有抽奖  0 否  1是
     
+    private int kcid;
+    private String kcImage;
+    private String kcIcon;
+    private String kcName;
+    
     @Data
     public static class TopicElement implements BaseEntity{
 		private static final long serialVersionUID = 986248317266706695L;

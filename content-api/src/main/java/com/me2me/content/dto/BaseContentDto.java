@@ -112,4 +112,9 @@ public class BaseContentDto implements BaseEntity{
     private int price;
     
     private String tags;
+    
+    private int kcid;//分类ID
+    private String kcName;//分类名称
+    private String kcImage;//分类封面
+    private String kcIcon;//分类图标
 }

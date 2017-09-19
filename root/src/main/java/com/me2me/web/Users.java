@@ -1283,5 +1283,14 @@ public class Users extends BaseController {
         return userService.isObtainRedBag(isObtainRedBag);
     }
 
-
+    /**
+     * 邀请奖励领取接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/awardByInvitation",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response awardByInvitation(AwardByInvitationRequest request){
+    	return userService.awardByInvitation(request.getUid(), request.getFromUid(), request.getType());
+    }
 }

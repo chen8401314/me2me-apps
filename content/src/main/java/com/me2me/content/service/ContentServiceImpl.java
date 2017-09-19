@@ -1386,6 +1386,14 @@ public class ContentServiceImpl implements ContentService {
                 reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
             }
         }
+        //一次性查出所有分类信息
+        Map<String, Map<String, Object>> kingdomCategoryMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String, Object>> kcList = liveForContentJdbcDao.getAllKingdomCategory();
+        if(null != kcList && kcList.size() > 0){
+        	for(Map<String, Object> m : kcList){
+        		kingdomCategoryMap.put(String.valueOf(m.get("id")), m);
+        	}
+        }
 
         UserProfile userProfile = null;
         Map<String, Object> topicUserProfile = null;
@@ -1394,6 +1402,7 @@ public class ContentServiceImpl implements ContentService {
         ShowMyPublishDto.OutDataElement outElement = null;
         UserProfile atUserProfile = null;
         UserProfile lastUserProfile = null;
+        Map<String, Object> kingdomCategory = null;
         for (Content content : contents){
             ShowMyPublishDto.MyPublishElement contentElement = ShowMyPublishDto.createElement();
             userProfile = profileMap.get(String.valueOf(content.getUid()));
@@ -1478,6 +1487,19 @@ public class ContentServiceImpl implements ContentService {
                 //王国增加身份信息
                 Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
                 if(null != topic){
+                	int kcid = (Integer)topic.get("category_id");
+                	if(kcid > 0){
+                		kingdomCategory = kingdomCategoryMap.get(String.valueOf(kcid));
+                    	if(null != kingdomCategory){
+                    		contentElement.setKcid((Integer)kingdomCategory.get("id"));
+                    		contentElement.setKcName((String)kingdomCategory.get("name"));
+                    		String kcImage = (String)kingdomCategory.get("cover_img");
+                        	if(!StringUtils.isEmpty(kcImage)){
+                        		contentElement.setKcImage(Constant.QINIU_DOMAIN+"/"+kcImage);
+                        	}
+                    	}
+                    }
+                	
                 	contentElement.setLastUpdateTime((Long)topic.get("long_time"));
                     int internalStatust = this.getInternalStatus(topic, currentUid);
                     if(internalStatust==Specification.SnsCircle.OUT.index){

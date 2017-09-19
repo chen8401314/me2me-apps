@@ -41,5 +41,11 @@ public class SettingsDto implements BaseEntity {
     private String tags;
 
     private String recTags;
+    
+    private int kcid;
+    
+    private String kcImage;
+    
+    private String kcName;
 
 }

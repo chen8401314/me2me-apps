@@ -606,4 +606,13 @@ public interface UserService {
 	 * @return
 	 */
 	ModifyUserCoinDto currentUserLevelStatus(long uid, int addCoin);
+	
+	/**
+	 * 邀请奖励领取接口
+	 * @param uid
+	 * @param fromUid
+	 * @param type
+	 * @return
+	 */
+	Response awardByInvitation(long uid, long fromUid, int type);
 }

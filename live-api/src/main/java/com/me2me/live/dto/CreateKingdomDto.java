@@ -23,4 +23,5 @@ public class CreateKingdomDto implements BaseEntity {
 	private String autoTags;
 	private int subType=0;
 	private String version;
+	private int kcid;
 }

@@ -40,4 +40,7 @@ public class CreateKingdomRequest extends Request {
 	@Setter
     @Getter
 	private String autoTags;
+	@Setter
+    @Getter
+	private int kcid;
 }

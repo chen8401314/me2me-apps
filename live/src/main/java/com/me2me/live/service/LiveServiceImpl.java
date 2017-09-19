@@ -165,6 +165,7 @@ import com.me2me.live.model.TopicAggregationApply;
 import com.me2me.live.model.TopicBadTag;
 import com.me2me.live.model.TopicBadTagExample;
 import com.me2me.live.model.TopicBarrage;
+import com.me2me.live.model.TopicCategory;
 import com.me2me.live.model.TopicData;
 import com.me2me.live.model.TopicDroparound;
 import com.me2me.live.model.TopicDroparoundTrail;
@@ -954,6 +955,16 @@ public class LiveServiceImpl implements LiveService {
         	showLiveDto.setIsLottery(1);
         }else{
         	showLiveDto.setIsLottery(0);
+        }
+        if(topic.getCategoryId().intValue() > 0){
+        	TopicCategory tc = liveMybatisDao.getTopicCategoryById(topic.getCategoryId().intValue());
+        	if(null != tc){
+        		showLiveDto.setKcid(tc.getId());
+        		showLiveDto.setKcName(tc.getName());
+            	if(!StringUtils.isEmpty(tc.getCoverImg())){
+            		showLiveDto.setKcImage(Constant.QINIU_DOMAIN+"/"+tc.getCoverImg());
+            	}
+        	}
         }
         return Response.success(showLiveDto);
     }
@@ -4323,6 +4334,7 @@ public class LiveServiceImpl implements LiveService {
         }
         
         topic.setPrice(price + newStealPrice);
+        topic.setCategoryId(createKingdomDto.getKcid());
         liveMybatisDao.createTopic(topic);
 
         //创建直播之后添加到我的UGC
@@ -4631,6 +4643,17 @@ public class LiveServiceImpl implements LiveService {
 	                dto.setTags(builder.toString());
 	            }
             }
+            if(topic.getCategoryId().intValue() > 0){
+            	TopicCategory tc = liveMybatisDao.getTopicCategoryById(topic.getCategoryId().intValue());
+            	if(null != tc){
+            		dto.setKcid(tc.getId());
+                	dto.setKcName(tc.getName());
+                	if(!StringUtils.isEmpty(tc.getCoverImg())){
+                		dto.setKcImage(Constant.QINIU_DOMAIN+"/"+tc.getCoverImg());
+                	}
+            	}
+            }
+            
             log.info("get settings success");
         }
         return Response.success(dto);
@@ -4737,6 +4760,11 @@ public class LiveServiceImpl implements LiveService {
                 liveMybatisDao.updateTopic(topic);
                 liveLocalJdbcDao.updateTopicContentTitle(topic.getId(), dto.getParams());
                 log.info("update live success");
+                return Response.success();
+            }else if(dto.getAction() == Specification.SettingModify.KINGDOM_CATEGORY.index){
+            	topic.setCategoryId(Integer.valueOf(dto.getParams()));
+            	liveMybatisDao.updateTopic(topic);
+            	log.info("update kingdom category success");
                 return Response.success();
             }
 		} else {
