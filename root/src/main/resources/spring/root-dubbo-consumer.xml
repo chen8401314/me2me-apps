@@ -32,6 +32,8 @@
     <dubbo:reference interface="com.me2me.sms.service.SmsService" id="smsService"/>
     
     <dubbo:reference interface="com.me2me.pay.service.PayService" id="payService"/>
-
+	
+	<dubbo:reference interface="com.me2me.live.service.LiveExtService" id="liveExtService"/>
+	
 	<dubbo:consumer check="false" />
 </beans>

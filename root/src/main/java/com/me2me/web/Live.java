@@ -35,6 +35,7 @@ import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.model.LotteryInfo;
+import com.me2me.live.service.LiveExtService;
 import com.me2me.live.service.LiveService;
 import com.me2me.search.service.SearchService;
 import com.me2me.sms.service.SmsService;
@@ -138,6 +139,9 @@ public class Live extends BaseController {
     
     @Autowired
     private ContentService contentService;
+    
+    @Autowired
+    private LiveExtService liveExtService;
     
     /**
      * 创建直接
