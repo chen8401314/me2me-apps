@@ -1,8 +1,8 @@
 {
-  "accessToken": "7fc057457cfb4e9699b6e8999fc5969b",
-  "code": 200,
-  "message": "ok",
-  "data": {
+    "accessToken": "7fc057457cfb4e9699b6e8999fc5969b",
+    "code": 200,
+    "message": "ok",
+    "data": {
         "category":{
             "kcid":1,
             "kcImage":"xxx",
@@ -61,7 +61,7 @@
             "updateTime": 0,
             "kcid": 0,
             "kcIcon": "王国分类图标",
-            "kcName": "王国分类名"  
+            "kcName": "王国分类名"
         }]
     }
 }
