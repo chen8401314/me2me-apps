@@ -917,29 +917,65 @@ and c.status=0
 order by m.long_time desc
   </select>
   
+    <select id="getMyOwnKingdom" parameterType="com.me2me.content.dto.MyPublishDto" resultMap="ResultMapWithBLOBs">
+  select 
+    c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
+    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
+from content c,(
+select t.id,t.long_time
+from topic t
+where t.uid=#{uid,jdbcType=BIGINT}
+and t.long_time &lt; #{updateTime,jdbcType=BIGINT}
+order by t.long_time desc limit 10
+) m
+where c.forward_cid=m.id and c.type=3
+and c.status=0
+order by m.long_time desc
+  </select>
+  
   <select id="countMyKingdom" parameterType="com.me2me.content.dto.MyPublishDto" resultType="java.lang.Integer">
   select count(1)
 from topic t
 where t.uid=#{uid,jdbcType=BIGINT}
-or find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))
   </select>
 
   <select id="loadMyJoinKingdom" parameterType="com.me2me.content.dto.MyPublishDto" resultMap="ResultMapWithBLOBs">
-    select
+   select 
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
     c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
-    from content c,topic t,(select DISTINCT f.topic_id from live_favorite f where f.uid=#{uid,jdbcType=BIGINT}) m
-	where t.id=m.topic_id and c.forward_cid=t.id and c.type=3 and t.uid!=#{uid,jdbcType=BIGINT}
-	and not find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))
-	and t.long_time &lt; #{updateTime,jdbcType=BIGINT}
-	order by t.long_time desc limit 10
+from content c,(
+select t1.id,t1.long_time
+from topic t1,live_favorite f
+where t1.id=f.topic_id
+and f.uid=#{uid,jdbcType=BIGINT}
+and t1.uid!=#{uid,jdbcType=BIGINT}
+and t1.long_time &lt; #{updateTime,jdbcType=BIGINT}
+UNION
+select t2.id,t2.long_time
+from topic t2
+where t2.uid!=#{uid,jdbcType=BIGINT}
+and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t2.core_circle)-2))
+and t2.long_time &lt; #{updateTime,jdbcType=BIGINT}
+order by long_time desc limit 10
+) m
+where c.forward_cid=m.id and c.type=3
+and c.status=0
+order by m.long_time desc
   </select>
   
   <select id="countMyJoinKingdom" parameterType="com.me2me.content.dto.MyPublishDto" resultType="java.lang.Integer">
-    select count(1)
-    from content c,topic t,(select DISTINCT f.topic_id from live_favorite f where f.uid=#{uid,jdbcType=BIGINT}) m
-	where t.id=m.topic_id and c.forward_cid=t.id and c.type=3 and t.uid!=#{uid,jdbcType=BIGINT}
-	and not find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))
+  select count(1) from (
+select t1.id
+from topic t1,live_favorite f
+where t1.id=f.topic_id
+and f.uid=#{uid,jdbcType=BIGINT}
+and t1.uid!=#{uid,jdbcType=BIGINT}
+UNION
+select t2.id
+from topic t2
+where t2.uid!=#{uid,jdbcType=BIGINT}
+and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t2.core_circle)-2))
+) m
   </select>
 
   <select id="countMyPublishByType" parameterType="com.me2me.content.dto.MyPublishDto" resultType="java.lang.Integer">

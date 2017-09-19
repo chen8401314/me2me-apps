@@ -158,6 +158,8 @@ public interface ContentMapper {
     
     List<Content> loadMyKingdom(MyPublishDto dto);
     
+    List<Content> getMyOwnKingdom(MyPublishDto dto);
+    
     List<Content> loadMyJoinKingdom(MyPublishDto dto);
     
     int countMyJoinKingdom(MyPublishDto dto);

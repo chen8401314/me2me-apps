@@ -1251,9 +1251,9 @@ public class ContentServiceImpl implements ContentService {
         dto.setFlag(vFlag);
         ShowMyPublishDto showMyPublishDto = new ShowMyPublishDto();
         List<Content> contents = null;
-        if(type == 3){//我的王国（包括核心圈）
-        	contents = contentMybatisDao.loadMyKingdom(dto);
-        } else if(type == 4){
+        if(type == 3){//我的王国（自己是国王的）
+        	contents = contentMybatisDao.getMyOwnKingdom(dto);
+        } else if(type == 4){//我加入的王国（我是核心圈的，以及我加入的）
         	contents = contentMybatisDao.loadMyJoinKingdom(dto);
         } else{
         	contents = new ArrayList<Content>();
