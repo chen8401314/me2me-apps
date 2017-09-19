@@ -1,0 +1,92 @@
+{
+  "accessToken": "7fc057457cfb4e9699b6e8999fc5969b",
+  "code": 200,
+  "data":{
+    "openPushPositions": 0,
+    "bubblePositions":"1,2,3",
+    "data": [
+        {
+            "type": 13,
+            "cid": 123
+        },
+        {
+            "type": 14,
+            "cText": "通过Sunrise邀请加入米汤\n可获取50米汤币",
+            "btnText": "点击领取奖励",
+            "htStart": "2",
+            "htEnd": "8",
+            "avatar": "https://cdn.me-to-me.com/icon.png",
+            "avatarFrame": "",
+            "v_lv": 0,
+            "uid":123,
+            "invitationType":1,
+            "btnAction": 1
+        },
+        {
+            "type": 3,
+            "title": "曹昌昊的兴趣爱好",
+            "audioData": [],
+            "avatar": "https://cdn.me-to-me.com/icon.png",
+            "avatarFrame": "",
+            "cid": 8586,
+            "topicId": 8586,
+            "content": "曹昌昊的兴趣爱好",
+            "contentType": 0,
+            "coverImage": "https://cdn.me-to-me.com/deb2270f53a4165bfb819b56bd57eca0",
+            "createTime": 1505439912000,
+            "favorite": 0,
+            "favoriteCount": 1,
+            "updateTime": 1505439912000,
+            "imageData": [],
+            "isFollowMe": 0,
+            "isFollowed": 0,
+            "isShowLikeButton": 0,
+            "level": 1,
+            "likeCount": 0,
+            "nickName": "曹昌昊",
+            "personCount": 0,
+            "price": 0,
+            "priceRMB": 0,
+            "readCount": 7,
+            "reviewCount": 0,
+            "showPriceBrand": 0,
+            "showRMBBrand": 0,
+            "showTag": 0,
+            "tags": "曹昌昊的兴趣爱好",
+            "textData": [],
+            "topicPrice": 0,
+            "topicRMB": 0,
+            "transferPrice": 0,
+            "ugcData": [],
+            "uid": 12734,
+            "kcid": 0,
+            "kcIcon": "王国分类图标",
+            "kcName": "王国分类名"
+        },
+        {
+            "type": 12
+        },
+        {
+            "type": 11,
+            "cid": 1000
+        },
+        {
+            "type": 51,
+            "cid": 220,
+            "title": "最新上市王国"
+        },
+        {
+            "type": 52,
+            "cid": 221,
+            "title": "最有料的国王"
+        },
+        {
+            "type": 53,
+            "cid": 222,
+            "size": 3,
+            "title": "最热标签在这里"
+        }
+    ]
+},
+  "message": "ok"
+}

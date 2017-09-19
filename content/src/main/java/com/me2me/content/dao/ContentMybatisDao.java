@@ -553,6 +553,20 @@ public class ContentMybatisDao {
     	return contentMapper.loadMyKingdom(dto);
     }
     
+    /**
+     * 获取只属于自己的王国
+     * @param dto
+     * @return
+     */
+    public List<Content> getMyOwnKingdom(MyPublishDto dto){
+    	return contentMapper.getMyOwnKingdom(dto);
+    }
+    
+    /**
+     * 获取加入的或则是核心圈的王国
+     * @param dto
+     * @return
+     */
     public List<Content> loadMyJoinKingdom(MyPublishDto dto){
     	return contentMapper.loadMyJoinKingdom(dto);
     }
