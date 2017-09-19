@@ -937,7 +937,6 @@ order by m.long_time desc
   select count(1)
 from topic t
 where t.uid=#{uid,jdbcType=BIGINT}
-or find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))
   </select>
 
   <select id="loadMyJoinKingdom" parameterType="com.me2me.content.dto.MyPublishDto" resultMap="ResultMapWithBLOBs">
@@ -965,10 +964,18 @@ order by m.long_time desc
   </select>
   
   <select id="countMyJoinKingdom" parameterType="com.me2me.content.dto.MyPublishDto" resultType="java.lang.Integer">
-    select count(1)
-    from content c,topic t,(select DISTINCT f.topic_id from live_favorite f where f.uid=#{uid,jdbcType=BIGINT}) m
-	where t.id=m.topic_id and c.forward_cid=t.id and c.type=3 and t.uid!=#{uid,jdbcType=BIGINT}
-	and not find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))
+  select count(1) from (
+select t1.id
+from topic t1,live_favorite f
+where t1.id=f.topic_id
+and f.uid=#{uid,jdbcType=BIGINT}
+and t1.uid!=#{uid,jdbcType=BIGINT}
+UNION
+select t2.id
+from topic t2
+where t2.uid!=#{uid,jdbcType=BIGINT}
+and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t2.core_circle)-2))
+) m
   </select>
 
   <select id="countMyPublishByType" parameterType="com.me2me.content.dto.MyPublishDto" resultType="java.lang.Integer">
