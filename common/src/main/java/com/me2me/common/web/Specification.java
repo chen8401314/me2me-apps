@@ -1532,6 +1532,19 @@ public interface Specification {
             this.index = index;
         }
     }
+    
+    enum UserInvitationType{
+    	INVITING("邀请", 1),
+    	INVITED("被邀请", 2);
+    	
+    	public final String name;
+        public final int index;
+        
+        UserInvitationType(String name,int index){
+        	this.name = name;
+            this.index = index;
+        }
+    }
 }
 
     

@@ -4,9 +4,15 @@
   "data": {
     "categories":[
     	{
-             "kcName": "haha",
-             "kcid":1,
-             "kcIcon":"http://cdn.me-to-me.com/default.jpg",
+             "kcName": "啦啦",
+             "kcid":3,
+             "kcIcon":"http://cdn.me-to-me.com/icon.png",
+             "kcImage":"http://cdn.me-to-me.com/default.jpg"
+        },
+        {
+             "kcName": "哦哦",
+             "kcid":3,
+             "kcIcon":"http://cdn.me-to-me.com/icon.png",
              "kcImage":"http://cdn.me-to-me.com/default.jpg"
         }
     ]

@@ -201,6 +201,7 @@ public class UserServiceImpl implements UserService {
             log.error("get im token failure", e);
         }
 
+        Date now = new Date();
         log.info("user is create");
         UserProfile userProfile = new UserProfile();
         userProfile.setUid(user.getUid());
@@ -212,64 +213,14 @@ public class UserServiceImpl implements UserService {
         userProfile.setGender(-1);
         //生日默认给一个不可能的值
         userProfile.setBirthday("1800-1-1");
-        userProfile.setCreateTime(new Date());
-        userProfile.setUpdateTime(new Date());
+        userProfile.setCreateTime(now);
+        userProfile.setUpdateTime(now);
         userProfile.setChannel(userSignUpDto.getChannel());
         userProfile.setPlatform(userSignUpDto.getPlatform());
         userProfile.setRegisterVersion(userSignUpDto.getRegisterVersion());
         //判断是否有推广员
-		if (!StringUtils.isEmpty(userSignUpDto.getOpeninstallData())) {
-			try {
-				long refereeUid = 0;
-				if(userSignUpDto.getOpeninstallData().contains("=")){//IOS的坑，尽然不是json，这里给其擦屁股
-					String openinstallData = userSignUpDto.getOpeninstallData().trim();
-					openinstallData = openinstallData.substring(1, openinstallData.length()-1).trim();
-					String[] tmp = openinstallData.split("=");
-					if(null != tmp && tmp.length>1 && !StringUtils.isEmpty(tmp[1].trim())){
-						refereeUid = Long.valueOf(tmp[1].trim());
-					}
-				}else{
-					JSONObject openinstallDataJson = JSONObject.parseObject(userSignUpDto.getOpeninstallData());
-					if(null != openinstallDataJson.get("uid")){
-						refereeUid = openinstallDataJson.getLong("uid");
-					}
-				}
-				
-				if (refereeUid > 0) {
-					// 判断推广员是否存在
-					UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(refereeUid);
-					if (refereeUserProfile != null) {
-						userProfile.setRefereeUid(refereeUid);
-						// 判断是否已经关注过了
-						if (userMybatisDao.getUserFollow(user.getUid(), refereeUid) == null) {
-							// 创建关注
-							UserFollow userFollow = new UserFollow();
-							userFollow.setSourceUid(user.getUid());
-							userFollow.setTargetUid(refereeUid);
-							userMybatisDao.createFollow(userFollow);
-							applicationEventBus.post(new FollowEvent(user.getUid(), refereeUid));
-						}
-						StringBuffer msg = new StringBuffer();
-						msg.append("你的好友").append(userProfile.getNickName()).append("已经入驻啦！赶快打开米汤一起畅聊吧！");		
-					    JsonObject jsonObject = new JsonObject();
-			            jsonObject.addProperty("messageType", 0);
-			            jsonObject.addProperty("type", -1);
-			            pushWithExtra(refereeUid+"", msg.toString(), JPushUtils.packageExtra(jsonObject));
-			            
-			            //保存邀请历史
-			            int invitingCoins = 0;//邀请的奖励
-			            int invitedCoins = 0;//被邀请的奖励
-			            try{
-			            	
-			            }catch(Exception e){
-			            	log.error("邀请或被邀请的配置错误", e);
-			            }
-					}
-				}
-			} catch (Exception e) {
-				log.error("openinstallData json failure", e);
-			}
-		}
+        this.processReferee(userSignUpDto.getOpeninstallData(), user.getUid(), userProfile);
+
         List<UserAccountBindStatusDto> array = Lists.newArrayList();
         // 添加手机绑定
         array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
@@ -329,6 +280,116 @@ public class UserServiceImpl implements UserService {
         String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+signUpSuccessDto.getUid();
         cacheService.setex(key,signUpSuccessDto.getUid()+"",7*24*60*60);
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
+    }
+    
+    private void processReferee(String openinstallData, long currentUid, UserProfile userProfile){
+    	if(StringUtils.isEmpty(openinstallData)){
+    		return;
+    	}
+    	try {
+			long refereeUid = 0;
+			long fromTopicId = 0;
+			if(openinstallData.contains("=")){//IOS的坑，尽然不是json，这里给其擦屁股
+				Map<String, String> paramMap = new HashMap<String, String>();
+				openinstallData = CommonUtils.replaceBlank(openinstallData);//去除空格、制表符、回车、换行
+				openinstallData = openinstallData.substring(1, openinstallData.length()-1).trim();//去除{}
+				String[] arr = openinstallData.split(",");
+				if(null != arr && arr.length > 0){
+					for(String param : arr){
+						if(!StringUtils.isEmpty(param)){
+							String[] pArr = param.split("=");
+							if(null != pArr && pArr.length > 1 && !StringUtils.isEmpty(pArr[0]) 
+									&& !StringUtils.isEmpty(pArr[1])){
+								paramMap.put(pArr[0], pArr[1]);
+							}
+						}
+					}
+				}
+				if(null != paramMap.get("uid")){
+					refereeUid = Long.valueOf(paramMap.get("uid"));
+				}
+				if(null != paramMap.get("topicId")){
+					fromTopicId = Long.valueOf(paramMap.get("topicId"));
+				}
+			}else{
+				JSONObject openinstallDataJson = JSONObject.parseObject(openinstallData);
+				if(null != openinstallDataJson.get("uid")){
+					refereeUid = openinstallDataJson.getLongValue("uid");
+				}
+				if(null != openinstallDataJson.get("topicId")){
+					fromTopicId = openinstallDataJson.getLongValue("topicId");
+				}
+			}
+			
+			if (refereeUid > 0) {
+				// 判断推广员是否存在
+				UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(refereeUid);
+				if (refereeUserProfile != null) {
+					userProfile.setRefereeUid(refereeUid);
+					// 判断是否已经关注过了
+					if (userMybatisDao.getUserFollow(currentUid, refereeUid) == null) {
+						// 创建关注
+						UserFollow userFollow = new UserFollow();
+						userFollow.setSourceUid(currentUid);
+						userFollow.setTargetUid(refereeUid);
+						userMybatisDao.createFollow(userFollow);
+						applicationEventBus.post(new FollowEvent(currentUid, refereeUid));
+					}
+					StringBuffer msg = new StringBuffer();
+					msg.append("你的好友").append(userProfile.getNickName()).append("已经入驻啦！赶快打开米汤一起畅聊吧！");		
+				    JsonObject jsonObject = new JsonObject();
+		            jsonObject.addProperty("messageType", 0);
+		            jsonObject.addProperty("type", -1);
+		            pushWithExtra(refereeUid+"", msg.toString(), JPushUtils.packageExtra(jsonObject));
+		            
+		            //保存邀请历史
+		            int invitingCoins = 0;//邀请的奖励
+		            int invitedCoins = 0;//被邀请的奖励
+		            try{
+		            	String invitingCoinsStr = this.getAppConfigByKey("INVITING_COINS");
+		            	if(!StringUtils.isEmpty(invitingCoinsStr)){
+		            		invitingCoins = Integer.valueOf(invitingCoinsStr);
+		            		if(invitingCoins<0){
+		            			invitingCoins = 0;
+		            		}
+		            	}
+		            	String invitedCoinsStr = this.getAppConfigByKey("INVITED_COINS");
+		            	if(!StringUtils.isEmpty(invitedCoinsStr)){
+		            		invitedCoins = Integer.valueOf(invitedCoinsStr);
+		            		if(invitedCoins<0){
+		            			invitedCoins = 0;
+		            		}
+		            	}
+		            }catch(Exception e){
+		            	log.error("邀请或被邀请的配置错误", e);
+		            }
+		            //保存邀请奖励
+		            Date now = new Date();
+		            UserInvitationHis invitingHis = new UserInvitationHis();
+		            invitingHis.setCoins(invitingCoins);
+		            invitingHis.setCreateTime(now);
+		            invitingHis.setFromCid(fromTopicId);
+		            invitingHis.setFromUid(currentUid);
+		            invitingHis.setStatus(0);
+		            invitingHis.setType(Specification.UserInvitationType.INVITING.index);
+		            invitingHis.setUid(refereeUid);
+		            userMybatisDao.saveUserInvitationHis(invitingHis);
+		            
+		            //保存被邀请奖励
+		            UserInvitationHis invitedHis = new UserInvitationHis();
+		            invitedHis.setCoins(invitedCoins);
+		            invitedHis.setCreateTime(now);
+		            invitedHis.setFromCid(fromTopicId);
+		            invitedHis.setFromUid(refereeUid);
+		            invitedHis.setStatus(0);
+		            invitedHis.setType(Specification.UserInvitationType.INVITED.index);
+		            invitedHis.setUid(currentUid);
+		            userMybatisDao.saveUserInvitationHis(invitedHis);
+				}
+			}
+		} catch (Exception e) {
+			log.error("openinstallData json failure", e);
+		}
     }
 
     @Override
@@ -409,49 +470,7 @@ public class UserServiceImpl implements UserService {
         String mobileBind = JSON.toJSONString(array);
         userProfile.setThirdPartBind(mobileBind);
         //判断是否有推广员
-		if (!StringUtils.isEmpty(userSignUpDto.getOpeninstallData())) {
-			try {
-				long refereeUid = 0;
-				if(userSignUpDto.getOpeninstallData().contains("=")){//IOS的坑，尽然不是json，这里给其擦屁股
-					String openinstallData = userSignUpDto.getOpeninstallData().trim();
-					openinstallData = openinstallData.substring(1, openinstallData.length()-1).trim();
-					String[] tmp = openinstallData.split("=");
-					if(null != tmp && tmp.length>1 && !StringUtils.isEmpty(tmp[1].trim())){
-						refereeUid = Long.valueOf(tmp[1].trim());
-					}
-				}else{
-					JSONObject openinstallDataJson = JSONObject.parseObject(userSignUpDto.getOpeninstallData());
-					if(null != openinstallDataJson.get("uid")){
-						refereeUid = openinstallDataJson.getLong("uid");
-					}
-				}
-
-				if (refereeUid > 0) {
-					// 判断推广员是否存在
-					UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(refereeUid);
-					if (refereeUserProfile != null) {
-						userProfile.setRefereeUid(refereeUid);
-						// 判断是否已经关注过了
-						if (userMybatisDao.getUserFollow(newUser.getUid(), refereeUid) == null) {
-							// 创建关注
-							UserFollow userFollow = new UserFollow();
-							userFollow.setSourceUid(newUser.getUid());
-							userFollow.setTargetUid(refereeUid);
-							userMybatisDao.createFollow(userFollow);
-							applicationEventBus.post(new FollowEvent(newUser.getUid(), refereeUid));
-						}
-						StringBuffer msg = new StringBuffer();
-						msg.append("你的好友").append(userProfile.getNickName()).append("已经入驻啦！赶快打开米汤一起畅聊吧！");		
-					    JsonObject jsonObject = new JsonObject();
-			            jsonObject.addProperty("messageType", 0);
-			            jsonObject.addProperty("type", -1);
-			            pushWithExtra(refereeUid+"", msg.toString(), JPushUtils.packageExtra(jsonObject));
-					}
-				}
-			} catch (Exception e) {
-				log.error("openinstallData json failure", e);
-			}
-		}
+        this.processReferee(userSignUpDto.getOpeninstallData(), newUser.getUid(), userProfile);
         
         userMybatisDao.createUserProfile(userProfile);
         log.info("userProfile is create");
@@ -2833,49 +2852,7 @@ public class UserServiceImpl implements UserService {
         String thirdPartBind = JSON.toJSONString(array);
         userProfile.setThirdPartBind(thirdPartBind);
         //判断是否有推广员
-		if (!StringUtils.isEmpty(thirdPartSignUpDto.getOpeninstallData())) {
-			try {
-				long refereeUid = 0;
-				if(thirdPartSignUpDto.getOpeninstallData().contains("=")){//IOS的坑，尽然不是json，这里给其擦屁股
-					String openinstallData = thirdPartSignUpDto.getOpeninstallData().trim();
-					openinstallData = openinstallData.substring(1, openinstallData.length()-1).trim();
-					String[] tmp = openinstallData.split("=");
-					if(null != tmp && tmp.length>1 && !StringUtils.isEmpty(tmp[1].trim())){
-						refereeUid = Long.valueOf(tmp[1].trim());
-					}
-				}else{
-					JSONObject openinstallDataJson = JSONObject.parseObject(thirdPartSignUpDto.getOpeninstallData());
-					if(null != openinstallDataJson.get("uid")){
-						refereeUid = openinstallDataJson.getLong("uid");
-					}
-				}
-				
-				if (refereeUid > 0) {
-					// 判断推广员是否存在
-					UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(refereeUid);
-					if (refereeUserProfile != null) {
-						userProfile.setRefereeUid(refereeUid);
-						// 判断是否已经关注过了
-						if (userMybatisDao.getUserFollow(user1.getUid(), refereeUid) == null) {
-							// 创建关注
-							UserFollow userFollow = new UserFollow();
-							userFollow.setSourceUid(user1.getUid());
-							userFollow.setTargetUid(refereeUid);
-							userMybatisDao.createFollow(userFollow);
-							applicationEventBus.post(new FollowEvent(user1.getUid(), refereeUid));
-						}
-						StringBuffer msg = new StringBuffer();
-						msg.append("你的好友").append(userProfile.getNickName()).append("已经入驻啦！赶快打开米汤一起畅聊吧！");		
-					    JsonObject jsonObject = new JsonObject();
-			            jsonObject.addProperty("messageType", 0);
-			            jsonObject.addProperty("type", -1);
-			            pushWithExtra(refereeUid+"", msg.toString(), JPushUtils.packageExtra(jsonObject));
-					}
-				}
-			} catch (Exception e) {
-				log.error("openinstallData json failure", e);
-			}
-		}
+        this.processReferee(thirdPartSignUpDto.getOpeninstallData(), user1.getUid(), userProfile);
         
         userMybatisDao.createUserProfile(userProfile);
         log.info("UserProfile is create");
