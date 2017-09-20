@@ -79,6 +79,7 @@ import com.me2me.content.dto.RecommentSubTagDto;
 import com.me2me.content.dto.ResultKingTopicDto;
 import com.me2me.content.dto.ReviewDelDTO;
 import com.me2me.content.dto.ReviewDto;
+import com.me2me.content.dto.SearchAdBannerListDto;
 import com.me2me.content.dto.ShowArticleCommentsDto;
 import com.me2me.content.dto.ShowArticleReviewDto;
 import com.me2me.content.dto.ShowAttentionDto;
@@ -102,6 +103,7 @@ import com.me2me.content.mapper.EmotionPackDetailMapper;
 import com.me2me.content.mapper.EmotionPackMapper;
 import com.me2me.content.mapper.TopicTagSearchMapper;
 import com.me2me.content.mapper.UserVisitLogMapper;
+import com.me2me.content.model.AdBanner;
 import com.me2me.content.model.ArticleLikesDetails;
 import com.me2me.content.model.ArticleReview;
 import com.me2me.content.model.ArticleTagsDetails;
@@ -7697,4 +7699,30 @@ public class ContentServiceImpl implements ContentService {
 		dto.setSubTagList(subTags);
 		return Response.success(dto);
 	}
+    @Override
+    public Response searchAdBannerListPage(int status,int page, int pageSize){
+     	int totalRecord = contentMybatisDao.getAdBannerCount(status);
+    	int totalPage = (totalRecord + pageSize - 1) / pageSize;
+    	if(page>totalPage){
+    		page=totalPage;
+    	}
+    	if(page<1){
+    		page=1;
+    	}
+    	int start = (page-1)*pageSize;
+    	List<AdBanner> list = contentMybatisDao.getAdBannerList(status,start, pageSize);
+    	SearchAdBannerListDto dto = new SearchAdBannerListDto();
+        dto.setTotalRecord(totalRecord);
+        dto.setTotalPage(totalPage);
+        for(AdBanner adBanner : list){
+        	SearchAdBannerListDto.AdBannerElement e = dto.createAdBannerElement();
+        	e.setId(adBanner.getId());
+        	e.setAdBannerName(adBanner.getAdBannerName());
+        	e.setBannerPosition(adBanner.getBannerPosition());
+        	e.setCreateTime(adBanner.getCreateTime());
+        	e.setStatus(adBanner.getStatus());
+            dto.getResult().add(e);
+        }
+        return Response.success(dto);
+    }
 }

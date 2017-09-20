@@ -485,4 +485,12 @@ public interface ContentService{
 	 * @return
 	 */
 	Response recommendSubTags(String tag);
+	/**
+	 * 广告位分页查询
+	 * @author chenxiang
+	 * @date 2017-09-19
+	 * @param status page pageSize
+	 * @return
+	 */
+    public Response searchAdBannerListPage(int status,int page, int pageSize);
 }

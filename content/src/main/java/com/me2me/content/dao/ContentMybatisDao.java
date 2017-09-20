@@ -75,6 +75,15 @@ public class ContentMybatisDao {
     
     @Autowired
     private ContentShareHistoryMapper contentShareHistoryMapper;
+    
+    @Autowired
+    private AdBannerMapper adBannerMapper;
+    
+    @Autowired
+    private AdInfoMapper adInfoMapper;
+    
+    @Autowired
+    private AdRecordMapper adRecordMapper;
 
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
@@ -900,5 +909,32 @@ public class ContentMybatisDao {
 		criteria.andCidEqualTo(topicId);
 		int count = contentShareHistoryMapper.countByExample(example);
 		return count;
+	}
+	/**
+	 * 查询查询广告位列表总数
+	 * @param status
+	 * @return
+	 */
+	public int getAdBannerCount(int status){
+		AdBannerExample example = new AdBannerExample();
+		if(status!=-1){
+			example.createCriteria().andStatusEqualTo(status);
+		}
+		example.setOrderByClause(" id desc");
+		int count = adBannerMapper.countByExample(example);
+		return count;
+	}
+	/**
+	 * 查询广告位列表
+	 * @param status
+	 * @return
+	 */
+	public List<AdBanner> getAdBannerList(int status,int start,int pageSize){
+		AdBannerExample example = new AdBannerExample();
+		if(status!=-1){
+			example.createCriteria().andStatusEqualTo(status);
+		}
+		example.setOrderByClause(" id desc limit "+start+","+pageSize);
+		return adBannerMapper.selectByExample(example);
 	}
 }
