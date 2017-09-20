@@ -5,8 +5,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import ch.qos.logback.classic.Logger;
-
 import com.me2me.core.KeysManager;
 import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
@@ -36,7 +34,6 @@ import com.me2me.common.Constant;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.utils.CommonUtils;
-import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;

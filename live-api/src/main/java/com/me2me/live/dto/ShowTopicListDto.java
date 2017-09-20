@@ -136,6 +136,8 @@ public class ShowTopicListDto implements BaseEntity{
         private int price;
         private int level;
         private int lastLevel;
+        
+        private String kcName;
     }
 
     @Data
