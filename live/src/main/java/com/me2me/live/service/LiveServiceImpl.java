@@ -4702,7 +4702,7 @@ public class LiveServiceImpl implements LiveService {
 		if(null == topic){
 			return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
 		}
-		
+		//只有国王和管理员才能操作
 		if(dto.getAction() == Specification.SettingModify.KINGDOM_CATEGORY.index){
 			if(topic.getUid().longValue() == dto.getUid() || userService.isAdmin(dto.getUid())){
 				topic.setCategoryId(Integer.valueOf(dto.getParams()));
@@ -4714,8 +4714,8 @@ public class LiveServiceImpl implements LiveService {
 			}
         }
 		
+		// 只有国王可以操作
 		if (topic.getUid() == dto.getUid()) {
-			// 国王操作
 			if (dto.getAction() == Specification.SettingModify.COVER.index) {
 				topic.setLiveImage(dto.getParams());
 				liveMybatisDao.updateTopic(topic);
