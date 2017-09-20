@@ -72,6 +72,7 @@ import com.me2me.content.dto.HighQualityContentDto;
 import com.me2me.content.dto.KingTopicDto;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.MyPublishDto;
+import com.me2me.content.dto.NewKingdom;
 import com.me2me.content.dto.OnlineBillBoardDto;
 import com.me2me.content.dto.PricedKingdomDto;
 import com.me2me.content.dto.RecommendContentDto;
@@ -7699,6 +7700,7 @@ public class ContentServiceImpl implements ContentService {
 		dto.setSubTagList(subTags);
 		return Response.success(dto);
 	}
+
     @Override
     public Response searchAdBannerListPage(int status,int page, int pageSize){
      	int totalRecord = contentMybatisDao.getAdBannerCount(status);
@@ -7725,4 +7727,15 @@ public class ContentServiceImpl implements ContentService {
         }
         return Response.success(dto);
     }
+
+
+	@Override
+	public List<NewKingdom> buildFullNewKingdom(long uid, List<Map<String, Object>> topicList) {
+		return kingdomBuider.buildFullNewKingdom(uid, topicList);
+	}
+
+	@Override
+	public List<NewKingdom> buildSimpleNewKingdom(long uid, List<Map<String, Object>> topicList) {
+		return kingdomBuider.buildSimpleNewKingdom(uid, topicList);
+	}
 }

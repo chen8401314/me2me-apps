@@ -76,6 +76,7 @@ import com.me2me.web.request.HarvestKingdomListRequest;
 import com.me2me.web.request.ImgDBRequest;
 import com.me2me.web.request.InactiveLiveRequest;
 import com.me2me.web.request.JoinLotteryRequest;
+import com.me2me.web.request.KingdomByCategoryRequest;
 import com.me2me.web.request.KingdomSearchRequest;
 import com.me2me.web.request.ListTopicListedRequest;
 import com.me2me.web.request.ListTopicRequest;
@@ -1307,5 +1308,25 @@ public class Live extends BaseController {
     @RequestMapping(value = "/recommendSubTags",method = RequestMethod.POST)
     public Response recommendSubTags(TopicTagCheckRequest request){
     	return contentService.recommendSubTags(request.getTag());
+    }
+    /**
+     * 获取创建王国信息内容
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/category",method = RequestMethod.POST)
+    public Response category(){
+    	return liveExtService.category();
+    }
+    /**
+     * 获取创建王国信息内容
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/kingdomByCategory",method = RequestMethod.POST)
+    public Response kingdomByCategory(KingdomByCategoryRequest request){
+    	return liveExtService.kingdomByCategory(request.getUid(),request.getKcid(),request.getPage());
     }
 }

@@ -47,7 +47,8 @@ public class NewKingdom {
 	private int topicPrice;
 	private int topicRMB;
 	private int transferPrice;
-	private int uid;
+	private long uid;
+	private int vip;
 	private int kcid;
 	private String kcIcon;
 	private String kcName;

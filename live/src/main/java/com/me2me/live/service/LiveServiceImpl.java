@@ -9479,6 +9479,7 @@ public class LiveServiceImpl implements LiveService {
         createContentSuccessDto.setTopicId(targetTopic.getId());//王国ID
         createContentSuccessDto.setContentType(targetTopic.getType());//王国类型
         createContentSuccessDto.setInternalStatus(this.getInternalStatus(targetTopic, contentDto.getUid()));
+        createContentSuccessDto.setFragmentId(lastFragmentId);
         
     	ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), userService.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
         createContentSuccessDto.setUpgrade(modifyUserCoinDto.getUpgrade());

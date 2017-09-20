@@ -493,4 +493,22 @@ public interface ContentService{
 	 * @return
 	 */
     public Response searchAdBannerListPage(int status,int page, int pageSize);
+	/**
+	 * 构建王国列表，包括所有字段。
+	 * @author zhangjiwei
+	 * @date Sep 19, 2017
+	 * @param uid 用户id.
+	 * @param topicList 王国内容
+	 * @return
+	 */
+	List<NewKingdom> buildFullNewKingdom(long uid,List<Map<String,Object>> topicList);
+	/**
+	 * 构建基础王国列表，只包括 topic表字段。
+	 * @author zhangjiwei
+	 * @date Sep 19, 2017
+	 * @param uid
+	 * @param topicList
+	 * @return
+	 */
+	List<NewKingdom> buildSimpleNewKingdom(long uid,List<Map<String,Object>> topicList);
 }
