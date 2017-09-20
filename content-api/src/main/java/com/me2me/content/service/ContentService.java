@@ -486,6 +486,14 @@ public interface ContentService{
 	 */
 	Response recommendSubTags(String tag);
 	/**
+	 * 广告位分页查询
+	 * @author chenxiang
+	 * @date 2017-09-19
+	 * @param status page pageSize
+	 * @return
+	 */
+    public Response searchAdBannerListPage(int status,int page, int pageSize);
+	/**
 	 * 构建王国列表，包括所有字段。
 	 * @author zhangjiwei
 	 * @date Sep 19, 2017

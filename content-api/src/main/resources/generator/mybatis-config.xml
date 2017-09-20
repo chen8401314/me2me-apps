@@ -61,5 +61,8 @@
         <!-- <table tableName="content_share_history" domainObjectName="ContentShareHistory"/> -->
         <!-- <table tableName="user_visit_log" domainObjectName="UserVisitLog"/> -->
         <!-- <table tableName="user_tag_like" domainObjectName="UserTagLike"/> -->
+        <!-- <table tableName="ad_banner" domainObjectName="AdBanner"/>-->
+        <!-- <table tableName="ad_info" domainObjectName="AdInfo"/> -->
+        <!--  <table tableName="ad_record" domainObjectName="AdRecord"/> -->
     </context>
 </generatorConfiguration>
