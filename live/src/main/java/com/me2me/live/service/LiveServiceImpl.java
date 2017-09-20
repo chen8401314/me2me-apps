@@ -4699,7 +4699,22 @@ public class LiveServiceImpl implements LiveService {
             return Response.success();
         }
 		Topic topic = liveMybatisDao.getTopicById(dto.getTopicId());
-		if (null != topic && topic.getUid() == dto.getUid()) {
+		if(null == topic){
+			return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
+		}
+		
+		if(dto.getAction() == Specification.SettingModify.KINGDOM_CATEGORY.index){
+			if(topic.getUid().longValue() == dto.getUid() || userService.isAdmin(dto.getUid())){
+				topic.setCategoryId(Integer.valueOf(dto.getParams()));
+	        	liveMybatisDao.updateTopic(topic);
+	        	log.info("update kingdom category success");
+	            return Response.success();
+			}else{
+				return Response.failure(500999, "只有国王或管理员可以操作");
+			}
+        }
+		
+		if (topic.getUid() == dto.getUid()) {
 			// 国王操作
 			if (dto.getAction() == Specification.SettingModify.COVER.index) {
 				topic.setLiveImage(dto.getParams());
@@ -4779,11 +4794,6 @@ public class LiveServiceImpl implements LiveService {
                 liveMybatisDao.updateTopic(topic);
                 liveLocalJdbcDao.updateTopicContentTitle(topic.getId(), dto.getParams());
                 log.info("update live success");
-                return Response.success();
-            }else if(dto.getAction() == Specification.SettingModify.KINGDOM_CATEGORY.index){
-            	topic.setCategoryId(Integer.valueOf(dto.getParams()));
-            	liveMybatisDao.updateTopic(topic);
-            	log.info("update kingdom category success");
                 return Response.success();
             }
 		} else {
