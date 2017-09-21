@@ -1614,7 +1614,8 @@ public class LiveLocalJdbcDao {
 	public List<Map<String, Object>> getHarvestKingdomListByUid(long uid, int start, int pageSize){
 		StringBuilder sb = new StringBuilder();
 		sb.append("select t.*,d.harvest_price from topic t,topic_data d");
-		sb.append(" where t.id=d.topic_id and t.uid=? order by d.harvest_price desc,t.id");
+		sb.append(" where t.id=d.topic_id and t.uid=? and t.id not in (select l.topic_id from topic_listed l)");
+		sb.append(" order by d.harvest_price desc,t.id");
 		sb.append(" limit ?,?");
 		
 		return jdbcTemplate.queryForList(sb.toString(), uid,start,pageSize);
