@@ -2917,6 +2917,7 @@ public class UserServiceImpl implements UserService {
         	//如果是微信注册，并且是H5上来注册的，则需要设置推广人，并且为未激活
         	if(thirdPartSignUpDto.getFromUid() > 0){
         		userProfile.setRefereeUid(thirdPartSignUpDto.getFromUid());
+        		userProfile.setSocialClass(thirdPartSignUpDto.getFromTopicId());
         		userProfile.setIsActivate(0);//未激活
         		//这里没有奖励，要等到该用户在APP上用本微信账号登录后，才能算激活，并且才能有奖励
         	}
