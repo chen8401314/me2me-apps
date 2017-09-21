@@ -120,12 +120,12 @@ public class AppTagController {
 		countSql.append(" group by t.id");
 		if(StringUtils.isNotBlank(dto.getTopicCountStart()) 
 				&& StringUtils.isNotBlank(dto.getTopicCountEnd())){
-			countSql.append(" having kcount>=").append(dto.getTopicCountStart());
-			countSql.append(" and kcount<=").append(dto.getTopicCountEnd());
+			countSql.append(" having readCountDummy>=").append(dto.getTopicCountStart());
+			countSql.append(" and readCountDummy<=").append(dto.getTopicCountEnd());
 		}else if(StringUtils.isNotBlank(dto.getTopicCountStart())){
-			countSql.append(" having kcount>=").append(dto.getTopicCountStart());
+			countSql.append(" having readCountDummy>=").append(dto.getTopicCountStart());
 		}else if(StringUtils.isNotBlank(dto.getTopicCountEnd())){
-			countSql.append(" having kcount<=").append(dto.getTopicCountEnd());
+			countSql.append(" having readCountDummy<=").append(dto.getTopicCountEnd());
 		}
 		countSql.append(") m");
 		
@@ -164,12 +164,12 @@ public class AppTagController {
 		querySql.append(" group by t.id");
 		if(StringUtils.isNotBlank(dto.getTopicCountStart()) 
 				&& StringUtils.isNotBlank(dto.getTopicCountEnd())){
-			querySql.append(" having kcount>=").append(dto.getTopicCountStart());
-			querySql.append(" and kcount<=").append(dto.getTopicCountEnd());
+			querySql.append(" having readCountDummy>=").append(dto.getTopicCountStart());
+			querySql.append(" and readCountDummy<=").append(dto.getTopicCountEnd());
 		}else if(StringUtils.isNotBlank(dto.getTopicCountStart())){
-			querySql.append(" having kcount>=").append(dto.getTopicCountStart());
+			querySql.append(" having readCountDummy>=").append(dto.getTopicCountStart());
 		}else if(StringUtils.isNotBlank(dto.getTopicCountEnd())){
-			querySql.append(" having kcount<=").append(dto.getTopicCountEnd());
+			querySql.append(" having readCountDummy<=").append(dto.getTopicCountEnd());
 		}
 		querySql.append(" order by createtime desc,t.id");
 		querySql.append(" limit ").append(start).append(",").append(pageSize);

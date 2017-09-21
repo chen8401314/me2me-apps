@@ -55,9 +55,9 @@
     <result column="price" jdbcType="INTEGER" property="price" />
     <result column="listing_time" jdbcType="TIMESTAMP" property="listingTime" />
     <result column="out_time" jdbcType="TIMESTAMP" property="outTime" />
+    <result column="category_id" jdbcType="INTEGER" property="categoryId" />
     <result column="istop" jdbcType="INTEGER" property="isTop" />
     <result column="longtimes" jdbcType="BIGINT" property="longTimes" />
-    <result column="category_id" jdbcType="INTEGER" property="categoryId" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--

@@ -7,9 +7,15 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -162,4 +168,30 @@ public class CommonUtils {
            }  
            return result;  
     } 
+    
+    /**
+     * 去除字符串中的空格、制表符、回车、换行
+     * @param str
+     * @return
+     */
+	public static String replaceBlank(String str) {
+		String dest = "";
+		if (str != null) {
+			Pattern p = Pattern.compile("\\s*|\t|\r|\n");
+			Matcher m = p.matcher(str);
+			dest = m.replaceAll("");
+		}
+		return dest;
+	}
+	
+	public static List<String> splitM2mNickName(String nickName){
+		List<String> result = new ArrayList<String>();
+		if(StringUtils.isBlank(nickName)){
+			return result;
+		}
+		
+//		for()
+		
+		return result;
+	}
 }

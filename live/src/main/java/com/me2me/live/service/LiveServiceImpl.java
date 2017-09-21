@@ -2256,10 +2256,19 @@ public class LiveServiceImpl implements LiveService {
         if(null == topicMemberCountMap){
             topicMemberCountMap = new HashMap<String, Long>();
         }
+        //一次性查出所有王国分类
+        Map<String, TopicCategory> categoryMap = new HashMap<String, TopicCategory>();
+        List<TopicCategory> cgList = liveMybatisDao.getAllTopicCategory();
+        if(null != cgList && cgList.size() > 0){
+        	for(TopicCategory tc : cgList){
+        		categoryMap.put(tc.getId().toString(), tc);
+        	}
+        }
 
         UserProfile userProfile = null;
         UserProfile lastUserProfile = null;
         Map<String, Object> lastFragment = null;
+        TopicCategory topicCategory = null;
         Content content = null;
         for (Topic2 topic : topicList) {
             ShowTopicListDto.ShowTopicElement showTopicElement = ShowTopicListDto.createShowTopicElement();
@@ -2372,7 +2381,10 @@ public class LiveServiceImpl implements LiveService {
             } else {
                 showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
-
+            topicCategory = categoryMap.get(topic.getCategoryId().toString());
+            if(null != topicCategory){
+            	showTopicElement.setKcName(topicCategory.getName());
+            }
 
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
@@ -3238,6 +3250,7 @@ public class LiveServiceImpl implements LiveService {
         	if(StringUtils.isEmpty(myProfile.getAvatarFrame())){
         		gk.setAvatarFrame(Constant.QINIU_DOMAIN + "/" +myProfile.getAvatarFrame());
         	}
+        	gk.setKcName("记录");
         	showTopicListDto.getGivenKingdoms().add(gk);
         }
         
@@ -4686,8 +4699,23 @@ public class LiveServiceImpl implements LiveService {
             return Response.success();
         }
 		Topic topic = liveMybatisDao.getTopicById(dto.getTopicId());
-		if (null != topic && topic.getUid() == dto.getUid()) {
-			// 国王操作
+		if(null == topic){
+			return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
+		}
+		//只有国王和管理员才能操作
+		if(dto.getAction() == Specification.SettingModify.KINGDOM_CATEGORY.index){
+			if(topic.getUid().longValue() == dto.getUid() || userService.isAdmin(dto.getUid())){
+				topic.setCategoryId(Integer.valueOf(dto.getParams()));
+	        	liveMybatisDao.updateTopic(topic);
+	        	log.info("update kingdom category success");
+	            return Response.success();
+			}else{
+				return Response.failure(500999, "只有国王或管理员可以操作");
+			}
+        }
+		
+		// 只有国王可以操作
+		if (topic.getUid() == dto.getUid()) {
 			if (dto.getAction() == Specification.SettingModify.COVER.index) {
 				topic.setLiveImage(dto.getParams());
 				liveMybatisDao.updateTopic(topic);
@@ -4766,11 +4794,6 @@ public class LiveServiceImpl implements LiveService {
                 liveMybatisDao.updateTopic(topic);
                 liveLocalJdbcDao.updateTopicContentTitle(topic.getId(), dto.getParams());
                 log.info("update live success");
-                return Response.success();
-            }else if(dto.getAction() == Specification.SettingModify.KINGDOM_CATEGORY.index){
-            	topic.setCategoryId(Integer.valueOf(dto.getParams()));
-            	liveMybatisDao.updateTopic(topic);
-            	log.info("update kingdom category success");
                 return Response.success();
             }
 		} else {
@@ -8865,6 +8888,7 @@ public class LiveServiceImpl implements LiveService {
         }
         
         topic.setPrice(price + newStealPrice);
+        topic.setCategoryId(1);//默认的记录类型
         liveMybatisDao.createTopic(topic);
 
         //创建直播之后添加到我的UGC

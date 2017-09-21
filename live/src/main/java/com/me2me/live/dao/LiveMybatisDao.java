@@ -117,6 +117,7 @@ import com.me2me.live.model.TopicAggregationExample;
 import com.me2me.live.model.TopicBarrage;
 import com.me2me.live.model.TopicBarrageExample;
 import com.me2me.live.model.TopicCategory;
+import com.me2me.live.model.TopicCategoryExample;
 import com.me2me.live.model.TopicData;
 import com.me2me.live.model.TopicDataExample;
 import com.me2me.live.model.TopicDroparound;
@@ -2165,5 +2166,10 @@ public class LiveMybatisDao {
 	
 	public TopicCategory getTopicCategoryById(int id){
 		return topicCategoryMapper.selectByPrimaryKey(id);
+	}
+	
+	public List<TopicCategory> getAllTopicCategory(){
+		TopicCategoryExample example = new TopicCategoryExample();
+		return topicCategoryMapper.selectByExample(example);
 	}
 }

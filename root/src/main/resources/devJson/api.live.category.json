@@ -4,10 +4,34 @@
   "data": {
     "categories":[
     	{
-             "kcName": "haha",
+             "kcName": "记录",
              "kcid":1,
-             "kcIcon":"http://cdn.me-to-me.com/default.jpg",
-             "kcImage":"http://cdn.me-to-me.com/default.jpg"
+             "kcIcon":"http://cdn.me-to-me.com/299128ca2a46f4166a08d98cc94ce5d1",
+             "kcImage":"http://cdn.me-to-me.com/9ef341204bc273a74bd8dc7ae702d54d"
+        },
+        {
+             "kcName": "社群",
+             "kcid":2,
+             "kcIcon":"http://cdn.me-to-me.com/7669bdd37bee8884775dc08c288d6859",
+             "kcImage":"http://cdn.me-to-me.com/d76d6daf6aff50dd733432946a40392d"
+        },
+        {
+             "kcName": "活动",
+             "kcid":3,
+             "kcIcon":"http://cdn.me-to-me.com/544ce2c0d5bb7180edeff8b82cc301a2",
+             "kcImage":"http://cdn.me-to-me.com/2a0eac692a9860633c9860ec4134d83b"
+        },
+        {
+             "kcName": "话题",
+             "kcid":4,
+             "kcIcon":"http://cdn.me-to-me.com/37218a6146b348805ec36f82d73eb15b",
+             "kcImage":"http://cdn.me-to-me.com/0945335b65f8060df9b6b48f77fab288"
+        },
+        {
+             "kcName": "分享",
+             "kcid":5,
+             "kcIcon":"http://cdn.me-to-me.com/d8a10aa343837632bdbaed0e1c826612",
+             "kcImage":"http://cdn.me-to-me.com/75d6536fca126f91428f0eb5531be5e8"
         }
     ]
   },

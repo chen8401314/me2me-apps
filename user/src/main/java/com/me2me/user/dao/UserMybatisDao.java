@@ -1524,4 +1524,8 @@ public class UserMybatisDao {
     	record.setReceiveTime(new Date());
     	userInvitationHisMapper.updateByExampleSelective(record, example);
     }
+    
+    public void saveUserInvitationHis(UserInvitationHis uih){
+    	userInvitationHisMapper.insertSelective(uih);
+    }
 }
