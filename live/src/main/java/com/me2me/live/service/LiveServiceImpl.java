@@ -10056,6 +10056,12 @@ public class LiveServiceImpl implements LiveService {
 			return Response.failure(500, "无法再收割更多的米汤币");
 		}
 		
+		//判断是否已上市，已上市的不能收割
+		TopicListed tl = liveMybatisDao.getTopicListedByTopicId(topicId);
+		if(null != tl){
+			return Response.failure(500, "已上市的王国不能收割");
+		}
+		
 		//用Redis进行原子控制
 		long atomicity = cacheService.decrby("TOPIC_HARVEST:"+topicId, 100);
 		if(atomicity <= -100){
