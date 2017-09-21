@@ -222,4 +222,9 @@ public class Home extends BaseController {
     public Response ad(AdRequest request){
         return contentService.ad(request.getCid(), request.getUid());
     }
+    @RequestMapping(value = "/listingKingdomGroup")
+    @ResponseBody
+    public Response listingKingdomGroup(ListingKingdomGroupRequest request){
+        return contentService.listingKingdomGroup(request.getCid(), request.getUid());
+    }
 }

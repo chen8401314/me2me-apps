@@ -72,6 +72,7 @@ import com.me2me.content.dto.EmojiPackDto;
 import com.me2me.content.dto.HighQualityContentDto;
 import com.me2me.content.dto.KingTopicDto;
 import com.me2me.content.dto.LikeDto;
+import com.me2me.content.dto.ListingKingdomGroupDto;
 import com.me2me.content.dto.MyPublishDto;
 import com.me2me.content.dto.NewKingdom;
 import com.me2me.content.dto.OnlineBillBoardDto;
@@ -7913,5 +7914,20 @@ public class ContentServiceImpl implements ContentService {
 		}
         return Response.success(dto);
     }
-    
+    @Override
+    public Response listingKingdomGroup(long cid,long uid){
+    	ListingKingdomGroupDto dto = new ListingKingdomGroupDto();
+    	List<Map<String,Object>>  listingKingdoms = liveForContentJdbcDao.getListingKingdoms(1, 30);
+		// 排序topList
+		if (null != listingKingdoms && listingKingdoms.size() > 0) {
+			List<BasicKingdomInfo> listingKingdomList = kingdomBuider.buildListingKingdoms(listingKingdoms, uid);
+			for (BasicKingdomInfo info : listingKingdomList) {
+				info.setShowPriceBrand(0);// 首页不显示米币吊牌。
+			}
+			dto.setListingKingdoms(listingKingdomList);
+		} else {
+			dto.setListingKingdoms(new ArrayList<>());
+		}
+        return Response.success(dto);
+    }
 }

@@ -583,4 +583,12 @@ public interface ContentService{
      * @return
      */
     public Response ad(long cid,long uid);
+    
+    /**
+     * 上市王国集合查询接口
+     * @param cid
+     * @param uid
+     * @return
+     */
+    public Response listingKingdomGroup(long cid,long uid);
 }
