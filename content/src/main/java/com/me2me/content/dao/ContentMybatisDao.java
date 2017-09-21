@@ -927,6 +927,8 @@ public class ContentMybatisDao {
 	/**
 	 * 查询广告位列表
 	 * @param status
+	 * @param start
+	 * @param pageSize
 	 * @return
 	 */
 	public List<AdBanner> getAdBannerList(int status,int start,int pageSize){
@@ -937,4 +939,109 @@ public class ContentMybatisDao {
 		example.setOrderByClause(" id desc limit "+start+","+pageSize);
 		return adBannerMapper.selectByExample(example);
 	}
+	/**
+	 * 查询所有广告位列表
+	 * @param status
+	 * @param start
+	 * @param pageSize
+	 * @return
+	 */
+	public List<AdBanner> getAllAdBannerList(int status){
+		AdBannerExample example = new AdBannerExample();
+		if(status!=-1){
+			example.createCriteria().andStatusEqualTo(status);
+		}
+		example.setOrderByClause(" id desc ");
+		return adBannerMapper.selectByExample(example);
+	}
+	/**
+	 * 保存广告位
+	 * @param adBanner
+	 * @return
+	 */
+	public int saveAdBanner(AdBanner adBanner){
+		return adBannerMapper.insertSelective(adBanner);
+	}
+	/**
+	 * 更新广告位
+	 * @param adBanner
+	 * @return
+	 */
+	public int updateAdBanner(AdBanner adBanner){
+		return adBannerMapper.updateByPrimaryKeySelective(adBanner);
+	}
+	
+	/**
+	 * 获取广告位
+	 * @param long id
+	 * @return
+	 */
+	public AdBanner getAdBannerById(long id){
+		return adBannerMapper.selectByPrimaryKey(id);
+	}
+	/**
+	 * 查询查询广告信息列表总数
+	 * @param status
+	 * @param bannerList
+	 * @return
+	 */
+	public int getAdInfoCount(int status,List<Long> bannerList){
+		AdInfoExample example = new AdInfoExample();
+		AdInfoExample.Criteria criteria = example.createCriteria();
+		if(status!=-1){
+			criteria.andStatusEqualTo(status);
+		}
+		if(bannerList.size()>0){
+			criteria.andBannerIdIn(bannerList);
+		}
+		example.setOrderByClause(" effective_time desc");
+		int count = adInfoMapper.countByExample(example);
+		return count;
+	}
+	/**
+	 * 查询广告信息列表
+	 * @param status
+	 * @param bannerList
+	 * @param start
+	 * @param pageSize
+	 * @return
+	 */
+	public List<AdInfo> getAdInfoList(int status,List<Long> bannerList,int start,int pageSize){
+		AdInfoExample example = new AdInfoExample();
+		AdInfoExample.Criteria criteria = example.createCriteria();
+		if(status!=-1){
+			criteria.andStatusEqualTo(status);
+		}
+		if(bannerList.size()>0){
+			criteria.andBannerIdIn(bannerList);
+		}
+		example.setOrderByClause(" effective_time desc limit "+start+","+pageSize);
+		return adInfoMapper.selectByExample(example);
+	}
+	/**
+	 * 保存广告信息
+	 * @param adInfo
+	 * @return
+	 */
+	public int saveAdInfo(AdInfo adInfo){
+		return adInfoMapper.insertSelective(adInfo);
+	}
+	/**
+	 * 更新广告信息
+	 * @param adInfo
+	 * @return
+	 */
+	public int updateAdInfo(AdInfo adInfo){
+		return adInfoMapper.updateByPrimaryKeySelective(adInfo);
+	}
+	
+	/**
+	 * 获取广告信息
+	 * @param id
+	 * @return
+	 */
+	public AdInfo getAdInfoById(long id){
+		return adInfoMapper.selectByPrimaryKey(id);
+	}
+	
 }

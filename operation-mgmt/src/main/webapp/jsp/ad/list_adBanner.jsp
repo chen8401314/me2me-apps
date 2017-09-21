@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - 情绪列表</title>
+<title>ZX_IMS 2.0 - 广告位列表</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -51,6 +51,16 @@
 								</span>
 							</header>
 							<div class="panel-body">
+															<div>
+									<form id="form1"  method="POST"  enctype="multipart/form-data" action="./importExcel">
+									<a class="btn btn-primary" href="javascript:addAdBannerShow()">
+										<i  class=" fa fa-plus "></i>
+										添加广告位
+									</a>
+									
+										</form>
+								</div>
+								<br>
 								<div class="adv-table">
 								<table class="display table table-bordered table-striped" id="mytable" width="100%">
 		                           	</table>
@@ -58,6 +68,36 @@
 							</div>
 						</section>
 					</div>
+					
+										<div class="modal inmodal fade" id="modal" tabindex="-1"
+			role="dialog" aria-hidden="true">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content">
+							<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">广告位</h4>
+				</div>
+				<div class="modal-body">
+				<input type="hidden" id="id" name="id" value="0">
+					<div class="form-group">
+						<label for="adBannerName">广告位名称</label>
+                        <input type="text" id="adBannerName" name="adBannerName" class="form-control" />
+					</div>
+					<div class="form-group">
+						<label for="exampleInput">广告位随机位置</label>
+                        <input type="text" id="bannerPosition" name="bannerPosition" class="form-control" />
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" onclick="addAdBanner();">保存</button>
+					<button data-dismiss="modal" class="btn btn-default" type="button">关闭</button>
+				</div>
+			</div>
+					</div>
+				</div>
+			</div>
+					
 				</div>
 				<!-- page end-->
 			</section>
@@ -197,12 +237,7 @@
 	        }},
 	        {title:"操作",orderable:false,width:200,render:function(data, type, row, meta){
 	        	var txt='';
-	        	if(row.status=='0'){
-	        	  	txt='<a class="btn btn-primary btn-xs " href="javascript:handleTopicListed('+row.id+',2)">待成交</a>';
-	        	}else if(row.status=='1'){
-	        		 txt= '<a class="btn btn-warning btn-xs " href="javascript:handleTopicListed('+row.id+',0)">解冻</a>&nbsp;';
-	        	  	txt+='<a class="btn btn-primary btn-xs " href="javascript:handleTopicListed('+row.id+',2)">待成交</a>';
-	        	}
+	        	txt='<a class="btn btn-primary btn-xs " href="javascript:editAdBanner('+row.id+')">编辑</a>&nbsp;<a class="btn btn-danger btn-xs " href="javascript:del('+row.id+')">删除</a>';
 	        	return txt;
 	        }}
 	     ],
@@ -214,12 +249,6 @@
 	    	}); 
 	    	         }  
 	});
-	$("#search_form").on("submit",function(){
-		var data= $(this).serialize();
-		var url = ctx+"/ranking/ajaxLoadKingdoms?"+data;
-		 sourceTable.ajax.url(url).load();
-		return false;
-	})
 	function search(){
 		 sourceTable.draw(true);
 	}
@@ -248,26 +277,17 @@
 		})
 		parent.onAdd(idArr,dataArr);
 	}
-	$("#flushKingdomCache").click(function(){
-		if(confirm("确认刷新吗？")){
-			 var $btn = $(this).button('loading');
-			 $.getJSON("./ajaxUpdateKingdomsCache",{r:Math.random()},function(d){
-				 alert(d.desc);		 
-				 $btn.button('reset')
-			 })
-		}
-	})
 	
 	
-	   function handleTopicListed(id,status){
-		 var msg = "您真的确定要提交吗？"; 
+	   function del(id){
+		 var msg = "您真的确定要删除吗？"; 
 		 if (confirm(msg)){ 
-			 var param = {id:id,status:status};
+			 var param = {id:id};
 			  	$.ajax({
 		            cache: true,
 		            type: "POST",
 		            dataType :"json",
-		            url:"./handleTopicListed",
+		            url:"./delAdBanner",
 		            data:param,
 		            async: true,
 		            error: function(request) {
@@ -285,17 +305,16 @@
 		        });
 		 }
     }
-	   function setRestTime(){
-			 var msg = "您真的确定要设置吗？"; 
-			 if (confirm(msg)){ 
-				 var startTime = $("#startTime").val();
-				 var endTime = $("#endTime").val();
-				 var param = {startTime:startTime,endTime:endTime};
+	function addAdBannerShow(){
+		$('#modal').modal('show');
+	}
+	   function addAdBanner(){
+				 var param = {id:$("#id").val(),adBannerName:$("#adBannerName").val(),bannerPosition:$("#bannerPosition").val()};
 				  	$.ajax({
 			            cache: true,
 			            type: "POST",
 			            dataType :"json",
-			            url:"./setRestTime",
+			            url:"./addAdBanner",
 			            data:param,
 			            async: true,
 			            error: function(request) {
@@ -305,13 +324,44 @@
 			            	  if(data=='1'){
 			            		  //sourceTable.ajax.reload();
 			            		  alert('操作成功');
+			            		  sourceTable.draw(false);
+			            		  $('#modal').modal('hide');
 			            	  }else{
-			                    	alert("提交失败");
+			                    	alert("操作失败");
 			                        }
 			            }
 			        });
-			 }
 	    }
+	   function editAdBanner(id){
+				 var param = {id:id};
+				  	$.ajax({
+			            cache: true,
+			            type: "POST",
+			            dataType :"json",
+			            url:"./getAdBanner",
+			            data:param,
+			            async: true,
+			            error: function(request) {
+			                alert('服务器出错'); 
+			            },
+			            success: function(data) {
+			            	  if(data!=null & data!=''){
+			            		  $("#id").val(data.id);
+			            		  $("#adBannerName").val(data.adBannerName);
+			            		  $("#bannerPosition").val(data.bannerPosition);
+			            		  $('#modal').modal('show');
+			            	  }else{
+			                    	alert("获取失败");
+			                        }
+			            }
+			        });
+	    }	   
+    $('#modal').on('hidden.bs.modal', function () {
+		  $("#id").val(0);
+		  $("#adBannerName").val('');
+		  $("#bannerPosition").val('');
+   });
+	
 	
 	</script>
 </body>

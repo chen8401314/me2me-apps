@@ -2599,6 +2599,9 @@ public class UserServiceImpl implements UserService {
                 	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
                 this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
+                
+                this.activityH5RegisterUser(userProfile);
+                
                 return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
             } else {
                 buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
@@ -2623,6 +2626,7 @@ public class UserServiceImpl implements UserService {
                     	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                     }
                     this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
+                    this.activityH5RegisterUser(userProfile);
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }
                 //h5微信登录
@@ -2682,7 +2686,8 @@ public class UserServiceImpl implements UserService {
                     if(checkUserDisable(loginSuccessDto.getUid())){
                     	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                     }
-                    this.saveUserDeviceInfo(users.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
+                    this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
+                    this.activityH5RegisterUser(userProfile);
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }else{
                     buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
@@ -2712,6 +2717,63 @@ public class UserServiceImpl implements UserService {
 
         }
 
+    }
+    
+    private void activityH5RegisterUser(UserProfile userProfile){
+    	if(userProfile.getIsActivate() != 0){//不需要激活
+    		return;
+    	}
+    	//开始激活逻辑
+    	userProfile.setIsActivate(1);
+    	userMybatisDao.modifyUserProfile(userProfile);
+    	
+    	if(userProfile.getRefereeUid() <= 0){//不存在邀请
+    		return;
+    	}
+    	
+    	//并且把奖励送上,保存邀请历史
+    	int invitingCoins = 0;//邀请的奖励
+        int invitedCoins = 0;//被邀请的奖励
+        try{
+        	String invitingCoinsStr = this.getAppConfigByKey("INVITING_COINS");
+        	if(!StringUtils.isEmpty(invitingCoinsStr)){
+        		invitingCoins = Integer.valueOf(invitingCoinsStr);
+        		if(invitingCoins<0){
+        			invitingCoins = 0;
+        		}
+        	}
+        	String invitedCoinsStr = this.getAppConfigByKey("INVITED_COINS");
+        	if(!StringUtils.isEmpty(invitedCoinsStr)){
+        		invitedCoins = Integer.valueOf(invitedCoinsStr);
+        		if(invitedCoins<0){
+        			invitedCoins = 0;
+        		}
+        	}
+        }catch(Exception e){
+        	log.error("邀请或被邀请的配置错误", e);
+        }
+        //保存邀请奖励
+        Date now = new Date();
+        UserInvitationHis invitingHis = new UserInvitationHis();
+        invitingHis.setCoins(invitingCoins);
+        invitingHis.setCreateTime(now);
+        invitingHis.setFromCid(userProfile.getSocialClass());
+        invitingHis.setFromUid(userProfile.getUid());
+        invitingHis.setStatus(0);
+        invitingHis.setType(Specification.UserInvitationType.INVITING.index);
+        invitingHis.setUid(userProfile.getRefereeUid());
+        userMybatisDao.saveUserInvitationHis(invitingHis);
+        
+        //保存被邀请奖励
+        UserInvitationHis invitedHis = new UserInvitationHis();
+        invitedHis.setCoins(invitedCoins);
+        invitedHis.setCreateTime(now);
+        invitedHis.setFromCid(userProfile.getSocialClass());
+        invitedHis.setFromUid(userProfile.getRefereeUid());
+        invitedHis.setStatus(0);
+        invitedHis.setType(Specification.UserInvitationType.INVITED.index);
+        invitedHis.setUid(userProfile.getUid());
+        userMybatisDao.saveUserInvitationHis(invitedHis);
     }
     
     /**
@@ -2766,6 +2828,8 @@ public class UserServiceImpl implements UserService {
         loginSuccessDto.setGender(userProfile.getGender());
         loginSuccessDto.setNickName(userProfile.getNickName());
         loginSuccessDto.setToken(userToken.getToken());
+        
+        this.activityH5RegisterUser(userProfile);
     }
 
     //第三方登录公共方法
@@ -2848,8 +2912,19 @@ public class UserServiceImpl implements UserService {
         }
         String thirdPartBind = JSON.toJSONString(array);
         userProfile.setThirdPartBind(thirdPartBind);
-        //判断是否有推广员
-        this.processReferee(thirdPartSignUpDto.getOpeninstallData(), user1.getUid(), userProfile);
+        
+        if(thirdPartSignUpDto.getThirdPartType() == Specification.ThirdPartType.WEIXIN.index && thirdPartSignUpDto.getH5type() == 1){
+        	//如果是微信注册，并且是H5上来注册的，则需要设置推广人，并且为未激活
+        	if(thirdPartSignUpDto.getFromUid() > 0){
+        		userProfile.setRefereeUid(thirdPartSignUpDto.getFromUid());
+        		userProfile.setSocialClass(thirdPartSignUpDto.getFromTopicId());
+        		userProfile.setIsActivate(0);//未激活
+        		//这里没有奖励，要等到该用户在APP上用本微信账号登录后，才能算激活，并且才能有奖励
+        	}
+        }else{
+        	//App登录
+            this.processReferee(thirdPartSignUpDto.getOpeninstallData(), user1.getUid(), userProfile);
+        }
         
         userMybatisDao.createUserProfile(userProfile);
         log.info("UserProfile is create");

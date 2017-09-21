@@ -85,4 +85,12 @@ public class ThirdPartRequest extends Request {
     @Getter
     @Setter
     private String deviceData;
+    
+    @Getter
+    @Setter
+    private long fromUid;
+    
+    @Getter
+    @Setter
+    private long fromTopicId;
 }
