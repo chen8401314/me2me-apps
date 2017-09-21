@@ -511,4 +511,68 @@ public interface ContentService{
 	 * @return
 	 */
 	List<NewKingdom> buildSimpleNewKingdom(long uid,List<Map<String,Object>> topicList);
+	
+	/**
+	 * 保存广告位
+	 * @param adBanner
+	 * @return
+	 */
+	public int saveAdBanner(AdBanner adBanner);
+	
+	/**
+	 * 更新广告位
+	 * @param adBanner
+	 * @return
+	 */
+	public int updateAdBanner(AdBanner adBanner);
+	
+	/**
+	 * 获取广告位
+	 * @param adBanner
+	 * @return
+	 */
+	public AdBanner getAdBannerById(long id);
+	
+	
+	/**
+	 * 查询查询广告信息列表总数
+	 * @param status
+	 * @param bannerList
+	 * @return
+	 */
+	public int getAdInfoCount(int status,List<Long> bannerList);
+	/**
+	 * 保存广告信息
+	 * @param adInfo
+	 * @return
+	 */
+	public int saveAdInfo(AdInfo adInfo);
+	/**
+	 * 更新广告信息
+	 * @param adInfo
+	 * @return
+	 */
+	public int updateAdInfo(AdInfo adInfo);
+	
+	/**
+	 * 获取广告信息
+	 * @param id
+	 * @return
+	 */
+	public AdBanner getAdInfoById(long id);
+	/**
+	 * 获取所有广告信息
+	 * @param id
+	 * @return
+	 */
+	public List<AdBanner> getAllAdBannerList(int status);
+	/**
+	 * 查询广告信息列表
+	 * @param status
+	 * @param bannerId
+	 * @param start
+	 * @param pageSize
+	 * @return
+	 */
+    public Response searchAdInfoListPage(int status,long bannerId,int page, int pageSize);
 }

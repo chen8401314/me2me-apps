@@ -81,6 +81,7 @@ import com.me2me.content.dto.ResultKingTopicDto;
 import com.me2me.content.dto.ReviewDelDTO;
 import com.me2me.content.dto.ReviewDto;
 import com.me2me.content.dto.SearchAdBannerListDto;
+import com.me2me.content.dto.SearchAdInfoListDto;
 import com.me2me.content.dto.ShowArticleCommentsDto;
 import com.me2me.content.dto.ShowArticleReviewDto;
 import com.me2me.content.dto.ShowAttentionDto;
@@ -105,6 +106,8 @@ import com.me2me.content.mapper.EmotionPackMapper;
 import com.me2me.content.mapper.TopicTagSearchMapper;
 import com.me2me.content.mapper.UserVisitLogMapper;
 import com.me2me.content.model.AdBanner;
+import com.me2me.content.model.AdInfo;
+import com.me2me.content.model.AdInfoExample;
 import com.me2me.content.model.ArticleLikesDetails;
 import com.me2me.content.model.ArticleReview;
 import com.me2me.content.model.ArticleTagsDetails;
@@ -7727,7 +7730,10 @@ public class ContentServiceImpl implements ContentService {
         }
         return Response.success(dto);
     }
-
+    @Override
+	public List<AdBanner> getAllAdBannerList(int status){
+		return contentMybatisDao.getAllAdBannerList(status);
+	}
 
 	@Override
 	public List<NewKingdom> buildFullNewKingdom(long uid, List<Map<String, Object>> topicList) {
@@ -7738,4 +7744,84 @@ public class ContentServiceImpl implements ContentService {
 	public List<NewKingdom> buildSimpleNewKingdom(long uid, List<Map<String, Object>> topicList) {
 		return kingdomBuider.buildSimpleNewKingdom(uid, topicList);
 	}
+	
+	@Override
+	public int saveAdBanner(AdBanner adBanner){
+		return contentMybatisDao.saveAdBanner(adBanner);
+	}
+	@Override
+	public int updateAdBanner(AdBanner adBanner){
+		return contentMybatisDao.updateAdBanner(adBanner);
+	}
+	@Override
+	public AdBanner getAdBannerById(long id){
+		return contentMybatisDao.getAdBannerById(id);
+	}
+	
+	@Override
+	public int getAdInfoCount(int status,List<Long> bannerList){
+		return contentMybatisDao.getAdInfoCount(status,bannerList);
+	}
+	
+	
+	@Override
+	public int saveAdInfo(AdInfo adInfo){
+		return contentMybatisDao.saveAdInfo(adInfo);
+	}
+	@Override
+	public int updateAdInfo(AdInfo adInfo){
+		return contentMybatisDao.updateAdInfo(adInfo);
+	}
+	
+	@Override
+	public AdBanner getAdInfoById(long id){
+		return contentMybatisDao.getAdInfoById(id);
+	}
+	
+    @Override
+    public Response searchAdInfoListPage(int status,long bannerId,int page, int pageSize){
+		List<Long> bannerIds = new ArrayList<Long>();
+		List<AdBanner> adBannerList= contentMybatisDao.getAllAdBannerList(status);
+		Map<String,Object> adBannerMap = new HashMap<String,Object>();
+		for (AdBanner adBanner:adBannerList) {
+			adBannerMap.put(String.valueOf(adBanner.getId()),adBanner.getAdBannerName());
+		}
+		if(bannerId==0){
+			for (AdBanner adBanner:adBannerList) {
+				bannerIds.add(adBanner.getId());
+			}
+		}else{
+			bannerIds.add(bannerId);
+		}
+     	int totalRecord = contentMybatisDao.getAdInfoCount(status,bannerIds);
+    	int totalPage = (totalRecord + pageSize - 1) / pageSize;
+    	if(page>totalPage){
+    		page=totalPage;
+    	}
+    	if(page<1){
+    		page=1;
+    	}
+    	int start = (page-1)*pageSize;
+    	List<AdInfo> list = contentMybatisDao.getAdInfoList(status,bannerIds,start, pageSize);
+    	SearchAdInfoListDto dto = new SearchAdInfoListDto();
+        dto.setTotalRecord(totalRecord);
+        dto.setTotalPage(totalPage);
+        for(AdInfo adInfo : list){
+        	SearchAdInfoListDto.AdInfoElement e = dto.createAdInfoElement();
+        	e.setId(adInfo.getId());
+        	e.setAdCover(Constant.QINIU_DOMAIN + "/" + adInfo.getAdCover());
+        	e.setAdCoverWidth(adInfo.getAdCoverWidth());
+        	e.setAdCoverHeight(adInfo.getAdCoverHeight());
+        	e.setEffectiveTime(adInfo.getEffectiveTime());
+        	e.setDisplayProbability(adInfo.getDisplayProbability());
+        	e.setType(adInfo.getType());
+        	e.setTopicId(adInfo.getTopicId());
+        	e.setAdUrl(adInfo.getAdUrl());
+        	e.setBannerId(adInfo.getBannerId());
+        	e.setBannerName(adBannerMap.get(String.valueOf(adInfo.getBannerId()))==null?"":adBannerMap.get(String.valueOf(adInfo.getBannerId())).toString());
+        	e.setCreateTime(adInfo.getCreateTime());
+            dto.getResult().add(e);
+        }
+        return Response.success(dto);
+    }
 }

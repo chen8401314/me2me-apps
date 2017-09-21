@@ -195,7 +195,7 @@ String sub = request.getParameter("s");
                 </a>
                 <ul class="sub">
                 	<li <%if("15_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/ad/adBanner">广告位管理</a></li>
-                	<li <%if("15_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/topicListed/topicListedPending">待成交</a></li>
+                	<li <%if("15_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/ad/adInfo">广告信息管理</a></li>
                 </ul>
             </li>
         </ul>
