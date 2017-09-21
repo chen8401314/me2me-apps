@@ -165,6 +165,7 @@ String sub = request.getParameter("s");
                 	<li <%if("12_8".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/quotation/quotationList">语录管理</a></li>
                 	<li <%if("12_9".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appuser/avatarFrame/list">头像框管理</a></li>
                 	<li <%if("12_10".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/gift/list_gift">礼物管理</a></li>
+                	<li <%if("12_11".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/topicCategory/listCategory">王国分类维护</a></li>
                 </ul>
             </li>
             <li class="sub-menu">
@@ -188,7 +189,7 @@ String sub = request.getParameter("s");
                 	<li <%if("14_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/topicListed/topicListedPending">待成交</a></li>
                 </ul>
             </li>
-                        <li class="sub-menu">
+            <li class="sub-menu">
                 <a href="javascript:;" <%if("15".equals(tab)){ %>class="active"<%} %>>
                     <i class="fa fa-bar-chart-o"></i>
                     <span>广告管理</span>

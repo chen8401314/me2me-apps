@@ -1,6 +1,7 @@
 package com.me2me.live.service;
 
 import com.me2me.common.web.Response;
+import com.me2me.live.model.TopicCategory;
 
 /**
  * liveService 太大了，这个是拆分扩展方法。
@@ -25,4 +26,9 @@ public interface LiveExtService {
 	 * @return
 	 */
 	Response kingdomByCategory(long uid,int kcid,int page);
+	
+	void addCategory(TopicCategory category);
+	
+	void updateCategory(TopicCategory category);
+	TopicCategory getCategoryById(int id);
 }

@@ -15,6 +15,7 @@ import com.me2me.live.dao.LiveExtDao;
 import com.me2me.live.dto.CategoryKingdomsDto;
 import com.me2me.live.dto.TopicCategoryDto;
 import com.me2me.live.dto.TopicCategoryDto.Category;
+import com.me2me.live.mapper.TopicCategoryMapper;
 import com.me2me.live.model.TopicCategory;
 import com.me2me.user.service.UserService;
 
@@ -35,6 +36,8 @@ public class LiveExtServiceImpl implements LiveExtService {
 	private ContentService contentService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private TopicCategoryMapper categoryMapper;
 	@Override
 	public Response category() {
 		List<TopicCategory> cats = extDao.getAllCategory();
@@ -80,6 +83,21 @@ public class LiveExtServiceImpl implements LiveExtService {
 		List<NewKingdom> kingdoms = contentService.buildFullNewKingdom(uid, topicList);
 		dto.setKingdoms(kingdoms);
 		return Response.success(dto);
+	}
+
+	@Override
+	public void addCategory(TopicCategory category) {
+		categoryMapper.insertSelective(category);
+	}
+
+	@Override
+	public void updateCategory(TopicCategory category) {
+		categoryMapper.updateByPrimaryKeySelective(category);
+	}
+
+	@Override
+	public TopicCategory getCategoryById(int id) {
+		return categoryMapper.selectByPrimaryKey(id);
 	}
 
 }
