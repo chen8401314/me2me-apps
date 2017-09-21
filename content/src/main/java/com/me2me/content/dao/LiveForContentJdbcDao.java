@@ -1272,4 +1272,38 @@ public class LiveForContentJdbcDao {
 		String sql = "select * from topic_category";
 		return jdbcTemplate.queryForList(sql);
 	}
+	
+	/**
+	 * 根据广告位ID查询所有有效广告信息
+	 * @param bannerId
+	 * @return
+	 */
+	public List<Map<String, Object>> getAllEffectiveAdInfoByBannerId(long bannerId){
+		StringBuilder sb = new StringBuilder();
+    	sb.append("select a.id,a.ad_title,a.ad_cover,a.ad_cover_width,a.ad_cover_height,a.ad_url,");
+    	sb.append("a.topic_id,a.type,a.display_probability,t.type AS topic_type,t.core_circle ");
+    	sb.append("  FROM ad_info a LEFT JOIN topic t ON a.topic_id = t.id WHERE a.effective_time>NOW() AND  a.banner_id = ").append(bannerId);
+    	sb.append(" ORDER BY a.effective_time DESC");
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+	/**
+	 * 获取广告点击信息
+	 * @param uid
+	 * @param adList
+	 * @return
+	 */
+	public List<Map<String, Object>> getAdRecordByUid(long uid, List<Map<String,Object>> adList) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("select adid,COUNT(adid) as recordCount FROM ad_record  WHERE uid =  ").append(uid).append(" and adid in(");
+		for (int i = 0; i < adList.size(); i++) {
+			if (i > 0) {
+				sb.append(",");
+			}
+			Map<String,Object> ad = adList.get(i);
+			sb.append(ad.get("id").toString());
+		}
+		sb.append(")");
+		sb.append(" group by adid");
+		return jdbcTemplate.queryForList(sb.toString());
+	}
 }

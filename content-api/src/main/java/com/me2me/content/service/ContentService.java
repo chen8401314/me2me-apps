@@ -575,4 +575,12 @@ public interface ContentService{
 	 * @return
 	 */
     public Response searchAdInfoListPage(int status,long bannerId,int page, int pageSize);
+    
+    /**
+     * 获取广告信息列表
+     * @param cid
+     * @param uid
+     * @return
+     */
+    public Response ad(long cid,long uid);
 }

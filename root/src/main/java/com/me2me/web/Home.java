@@ -217,4 +217,9 @@ public class Home extends BaseController {
     public Response badTag(BadTagRequest request){
         return liveService.badTag(request.getUid(), request.getTopicId(), request.getTag());
     }
+    @RequestMapping(value = "/ad")
+    @ResponseBody
+    public Response ad(AdRequest request){
+        return contentService.ad(request.getCid(), request.getUid());
+    }
 }

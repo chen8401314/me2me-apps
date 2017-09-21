@@ -54,6 +54,7 @@ import com.me2me.content.builders.KingdomBuilder;
 import com.me2me.content.dao.BillBoardJdbcDao;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dao.LiveForContentJdbcDao;
+import com.me2me.content.dto.AdInfoListDto;
 import com.me2me.content.dto.BangDanDto;
 import com.me2me.content.dto.BasicKingdomInfo;
 import com.me2me.content.dto.BillBoardDetailsDto;
@@ -3757,7 +3758,27 @@ public class ContentServiceImpl implements ContentService {
 
         return internalStatus;
     }
-
+    /**
+     * 是否在核心圈里面
+     * @author zhangjiwei
+     * @date May 10, 2017
+     * @param uid
+     * @param coreCircle
+     * @return
+     */
+    private boolean isInCore(long uid, String coreCircle){
+        boolean result = false;
+        if(null != coreCircle && !"".equals(coreCircle)){
+            JSONArray array = JSON.parseArray(coreCircle);
+            for (int i = 0; i < array.size(); i++) {
+                if (array.getLong(i).longValue() == uid) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+        return result;
+    }
     @Override
     public Response createReview(ReviewDto reviewDto) {
         log.info("createReview start ...");
@@ -7825,4 +7846,72 @@ public class ContentServiceImpl implements ContentService {
         }
         return Response.success(dto);
     }
+    
+    
+    @Override
+    public Response ad(long cid,long uid){
+        AdInfoListDto dto = new AdInfoListDto();
+		List<Map<String,Object>> adInfoList= liveForContentJdbcDao.getAllEffectiveAdInfoByBannerId(cid);
+		if(adInfoList.size()>0){
+        List<Long> topicIdList = new ArrayList<Long>();
+        //广告里所有王国信息
+        for(Map<String,Object> map : adInfoList){
+        	if(Integer.parseInt(map.get("type").toString())==1){
+                if(!topicIdList.contains((Long)map.get("topic_id"))){
+                    topicIdList.add((Long)map.get("topic_id"));
+                }
+        	}
+        }
+        //一次性查询王国订阅信息
+        Map<String, String> liveFavouriteMap = new HashMap<String, String>();
+        List<Map<String,Object>> liveFavouriteList = liveForContentJdbcDao.getLiveFavoritesByUidAndTopicIds(uid, topicIdList);
+        if(null != liveFavouriteList && liveFavouriteList.size() > 0){
+            for(Map<String,Object> lf : liveFavouriteList){
+                liveFavouriteMap.put(((Long)lf.get("topic_id")).toString(), "1");
+            }
+        }
+        //一次性查询所有广告点击信息
+        Map<String, String> adRecordMap = new HashMap<String, String>();
+        List<Map<String,Object>> adRecordList = liveForContentJdbcDao.getAdRecordByUid(uid, adInfoList);
+        if(null != adRecordList && adRecordList.size() > 0){
+            for(Map<String,Object> adl : adRecordList){
+            	adRecordMap.put(adl.get("adid").toString(), adl.get("recordCount").toString());
+            }
+        }
+   	    Random random = new Random();
+        for(Map<String,Object> map : adInfoList){
+        	AdInfoListDto.AdInfoData e = new AdInfoListDto.AdInfoData();
+        	if(adRecordMap.get(map.get("id").toString())!=null){
+        		int displayProbability = Integer.parseInt(map.get("display_probability").toString());
+    		    int randomNum = random.nextInt(100);
+    		    if(randomNum>=displayProbability){
+    		    	 continue;
+    		    }
+        	}
+        	e.setAdid((Long)map.get("id"));
+            e.setAdTitle(map.get("ad_title").toString());
+        	e.setAdCover(Constant.QINIU_DOMAIN + "/" + map.get("ad_cover").toString());
+        	e.setAdCoverWidth((Integer)map.get("ad_cover_width"));
+        	e.setAdCoverHeight((Integer)map.get("ad_cover_height"));
+        	e.setType((Integer)map.get("type"));
+        	e.setTopicId((Long)map.get("topic_id"));
+        	e.setAdUrl(map.get("ad_url").toString());
+        	if(Integer.parseInt(map.get("type").toString())==1){
+        		e.setTopicType((Integer)map.get("topic_type"));
+        		int topicInternalStatus = 0;
+        		if(isInCore(uid,map.get("core_circle").toString())){
+        			topicInternalStatus = 2;
+        		}else{
+        			if(liveFavouriteMap.get(map.get("topic_id").toString())!=null){
+        				topicInternalStatus = 1;
+        			}
+        		}
+        		e.setTopicInternalStatus(topicInternalStatus);
+        	}
+            dto.getListData().add(e);
+        }
+		}
+        return Response.success(dto);
+    }
+    
 }
