@@ -591,4 +591,12 @@ public interface ContentService{
      * @return
      */
     public Response listingKingdomGroup(long cid,long uid);
+    
+	/**
+	 * 用户组
+	 * @param cid
+	 * @param uid
+	 * @return
+	 */
+	public Response userGroup(long cid, long uid);
 }

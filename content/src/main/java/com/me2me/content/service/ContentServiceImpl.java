@@ -102,6 +102,7 @@ import com.me2me.content.dto.ShowUserContentsDTO;
 import com.me2me.content.dto.SquareDataDto;
 import com.me2me.content.dto.TagKingdomDto;
 import com.me2me.content.dto.UserContentSearchDTO;
+import com.me2me.content.dto.UserGroupDto;
 import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.mapper.EmotionPackDetailMapper;
 import com.me2me.content.mapper.EmotionPackMapper;
@@ -7930,4 +7931,45 @@ public class ContentServiceImpl implements ContentService {
 		}
         return Response.success(dto);
     }
+
+	@Override
+	public Response userGroup(long cid, long uid) {
+		UserGroupDto dto = new UserGroupDto();
+		List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
+		List<UserFamous> userFamousList = userService.getUserFamousPage(1, 30, blacklistUids);
+		if (null != userFamousList && userFamousList.size() > 0) {
+			List<Long> uidList = new ArrayList<Long>();
+			for (UserFamous c : userFamousList) {
+				if (!uidList.contains(c.getUid())) {
+					uidList.add(c.getUid());
+				}
+			}
+			// 一次性查出所有的用户信息
+			Map<String, UserProfile> userProfileMap = new HashMap<String, UserProfile>();
+			List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+			if (null != profileList && profileList.size() > 0) {
+				for (UserProfile up : profileList) {
+					userProfileMap.put(up.getUid().toString(), up);
+				}
+			}
+			for (UserFamous uf : userFamousList) {
+				UserGroupDto.UserElement userElement = new UserGroupDto.UserElement();
+				userElement.setUid(uf.getUid());
+				UserProfile userProfile = userProfileMap.get(uf.getUid().toString());
+				if (null != userProfile) {
+					userElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+					userElement.setNickName(userProfile.getNickName());
+					userElement.setIntroduce(userProfile.getIntroduced());
+					userElement.setLevel(userProfile.getLevel());
+					userElement.setVip(userProfile.getvLv());
+					if (!StringUtils.isEmpty(userProfile.getAvatarFrame())) {
+						userElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+					}
+
+				}
+				dto.getUserGroup().add(userElement);
+			}
+		}
+		return Response.success(dto);
+	}
 }

@@ -227,4 +227,9 @@ public class Home extends BaseController {
     public Response listingKingdomGroup(ListingKingdomGroupRequest request){
         return contentService.listingKingdomGroup(request.getCid(), request.getUid());
     }
+    @RequestMapping(value = "/userGroup")
+    @ResponseBody
+    public Response userGroup(UserGroupRequest request){
+        return contentService.userGroup(request.getCid(), request.getUid());
+    }
 }
