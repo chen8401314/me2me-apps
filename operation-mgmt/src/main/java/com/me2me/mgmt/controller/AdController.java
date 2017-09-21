@@ -1,6 +1,6 @@
 package com.me2me.mgmt.controller;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import com.me2me.cache.service.CacheService;
+
 import com.me2me.common.page.PageBean;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
@@ -24,16 +24,7 @@ import com.me2me.content.model.AdBanner;
 import com.me2me.content.model.AdInfo;
 import com.me2me.content.service.ContentService;
 import com.me2me.io.service.FileTransferService;
-import com.me2me.live.dto.SearchTopicListedListDto;
-import com.me2me.live.model.GiftInfo;
-import com.me2me.live.model.QuotationInfo;
-import com.me2me.live.model.TopicListed;
-import com.me2me.live.service.LiveService;
-import com.me2me.mgmt.dal.utils.HttpUtils;
-import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.mgmt.vo.DatatablePage;
-import com.me2me.user.model.EmotionInfo;
-import com.plusnet.sso.api.vo.JsonResult;
 
 @Controller
 @RequestMapping("/ad")
@@ -83,6 +74,7 @@ public class AdController {
 		    }
 			return "1";
 		} catch (Exception e) {
+			logger.error("保存广告位失败", e);
 			return "0";
 		}
 	}
@@ -96,6 +88,7 @@ public class AdController {
 			contentService.updateAdBanner(adBanner);
 			return "1";
 		} catch (Exception e) {
+			logger.error("删除广告位失败", e);
 			return "0";
 		}
 	}
@@ -137,12 +130,13 @@ public class AdController {
 			contentService.updateAdInfo(adInfo);
 			return "1";
 		} catch (Exception e) {
+			logger.error("删除失败", e);
 			return "0";
 		}
 	}
 	@RequestMapping(value = "/getAdInfo")
 	@ResponseBody
-	public AdBanner getAdInfo(long id,HttpServletRequest mrequest) throws Exception {
+	public AdInfo getAdInfo(long id,HttpServletRequest mrequest) throws Exception {
 		try {
 			return contentService.getAdInfoById(id);
 		} catch (Exception e) {
@@ -150,23 +144,44 @@ public class AdController {
 		}
 	}
 	@RequestMapping(value = "/addAdInfo")
-	@SystemControllerLog(description = "保存广告信息")
-	public String addAdInfo(AdInfo adInfo,HttpServletRequest mrequest,@RequestParam("file")MultipartFile file) throws Exception {
+	@ResponseBody
+	public String addAdInfo(HttpServletRequest mrequest,@RequestParam("file")MultipartFile file) throws Exception {
 		try{
+			AdInfo adInfo = new AdInfo();
+			adInfo.setId(StringUtils.isEmpty(mrequest.getParameter("id"))?0:Long.parseLong(mrequest.getParameter("id")));
+			adInfo.setAdTitle(StringUtils.isEmpty(mrequest.getParameter("adTitle"))?null:mrequest.getParameter("adTitle"));
+			adInfo.setAdCoverWidth(StringUtils.isEmpty(mrequest.getParameter("adCoverWidth"))?null:Integer.parseInt(mrequest.getParameter("adCoverWidth")));
+			adInfo.setAdCoverHeight(StringUtils.isEmpty(mrequest.getParameter("adCoverHeight"))?null:Integer.parseInt(mrequest.getParameter("adCoverHeight")));
+			adInfo.setEffectiveTime(StringUtils.isEmpty(mrequest.getParameter("effectiveTime"))?null:new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(mrequest.getParameter("effectiveTime")));
+			adInfo.setDisplayProbability(StringUtils.isEmpty(mrequest.getParameter("displayProbability"))?null:Integer.parseInt(mrequest.getParameter("displayProbability")));
+			adInfo.setType(StringUtils.isEmpty(mrequest.getParameter("type"))?null:Integer.parseInt(mrequest.getParameter("type")));
+			adInfo.setTopicId(StringUtils.isEmpty(mrequest.getParameter("topicId"))?0:Long.parseLong(mrequest.getParameter("topicId")));
+			adInfo.setAdUrl(StringUtils.isEmpty(mrequest.getParameter("adUrl"))?null:mrequest.getParameter("adUrl"));
+			adInfo.setBannerId(StringUtils.isEmpty(mrequest.getParameter("bannerId"))?0:Long.parseLong(mrequest.getParameter("bannerId")));
 			if(file!=null && !StringUtils.isEmpty(file.getOriginalFilename()) && file.getSize()>0){
 				String imgName = SecurityUtils.md5(mrequest.getSession().getId()+System.currentTimeMillis(), "1");
 	    		fileTransferService.upload(file.getBytes(), imgName);
 	    		adInfo.setAdCover(imgName);
 			}
-			if(adInfo.getId()!=null || adInfo.getId()!=0){
+			if(adInfo.getId()!=0){
 				contentService.updateAdInfo(adInfo);
 			}else{
 				contentService.saveAdInfo(adInfo);
 			}
 			return "1";
 		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("保存广告失败", e);
 			return "0";
 		}
 	}
-	
+	@RequestMapping(value = "/addAdInfo1")
+	@ResponseBody
+	public String addAdInfo(HttpServletRequest mrequest) throws Exception {
+		try{
+			return "1";
+		}catch(Exception e){
+			return "0";
+		}
+	}
 }

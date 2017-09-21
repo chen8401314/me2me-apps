@@ -7774,7 +7774,7 @@ public class ContentServiceImpl implements ContentService {
 	}
 	
 	@Override
-	public AdBanner getAdInfoById(long id){
+	public AdInfo getAdInfoById(long id){
 		return contentMybatisDao.getAdInfoById(id);
 	}
 	
@@ -7809,6 +7809,7 @@ public class ContentServiceImpl implements ContentService {
         for(AdInfo adInfo : list){
         	SearchAdInfoListDto.AdInfoElement e = dto.createAdInfoElement();
         	e.setId(adInfo.getId());
+            e.setAdTitle(adInfo.getAdTitle());
         	e.setAdCover(Constant.QINIU_DOMAIN + "/" + adInfo.getAdCover());
         	e.setAdCoverWidth(adInfo.getAdCoverWidth());
         	e.setAdCoverHeight(adInfo.getAdCoverHeight());

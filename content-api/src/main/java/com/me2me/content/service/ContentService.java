@@ -559,7 +559,7 @@ public interface ContentService{
 	 * @param id
 	 * @return
 	 */
-	public AdBanner getAdInfoById(long id);
+	public AdInfo getAdInfoById(long id);
 	/**
 	 * 获取所有广告信息
 	 * @param id

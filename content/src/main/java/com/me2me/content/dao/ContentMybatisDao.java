@@ -987,11 +987,12 @@ public class ContentMybatisDao {
 	 */
 	public int getAdInfoCount(int status,List<Long> bannerList){
 		AdInfoExample example = new AdInfoExample();
+		AdInfoExample.Criteria criteria = example.createCriteria();
 		if(status!=-1){
-			example.createCriteria().andStatusEqualTo(status);
+			criteria.andStatusEqualTo(status);
 		}
 		if(bannerList.size()>0){
-		example.createCriteria().andBannerIdIn(bannerList);
+			criteria.andBannerIdIn(bannerList);
 		}
 		example.setOrderByClause(" effective_time desc");
 		int count = adInfoMapper.countByExample(example);
@@ -1007,11 +1008,12 @@ public class ContentMybatisDao {
 	 */
 	public List<AdInfo> getAdInfoList(int status,List<Long> bannerList,int start,int pageSize){
 		AdInfoExample example = new AdInfoExample();
+		AdInfoExample.Criteria criteria = example.createCriteria();
 		if(status!=-1){
-			example.createCriteria().andStatusEqualTo(status);
+			criteria.andStatusEqualTo(status);
 		}
 		if(bannerList.size()>0){
-		example.createCriteria().andBannerIdIn(bannerList);
+			criteria.andBannerIdIn(bannerList);
 		}
 		example.setOrderByClause(" effective_time desc limit "+start+","+pageSize);
 		return adInfoMapper.selectByExample(example);
@@ -1038,8 +1040,8 @@ public class ContentMybatisDao {
 	 * @param id
 	 * @return
 	 */
-	public AdBanner getAdInfoById(long id){
-		return adBannerMapper.selectByPrimaryKey(id);
+	public AdInfo getAdInfoById(long id){
+		return adInfoMapper.selectByPrimaryKey(id);
 	}
 	
 }

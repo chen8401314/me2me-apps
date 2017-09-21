@@ -358,8 +358,8 @@
 	    }	   
     $('#modal').on('hidden.bs.modal', function () {
 		  $("#id").val(0);
-		  $("#quotation").val('');
-		  $("#type").val(0);
+		  $("#adBannerName").val('');
+		  $("#bannerPosition").val('');
    });
 	
 	

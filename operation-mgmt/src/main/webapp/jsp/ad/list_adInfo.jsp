@@ -27,7 +27,7 @@
 <link rel="stylesheet" type="text/css" href="${ctx}/assets/bootstrap-daterangepicker/daterangepicker-bs3.css" />
 <link rel="stylesheet" type="text/css" href="${ctx}/assets/bootstrap-datetimepicker/css/datetimepicker.css" />
 
-<script src="${ctx}/js/jquery.js"></script>
+<script src="${ctx}/js/jquery-2.1.4.min.js"></script>
 <script src="${ctx}/js/jquery-ui-1.9.2.custom.min.js"></script>
 <script src="${ctx}/js/jquery-migrate-1.2.1.min.js"></script>
 <script src="${ctx}/js/bootstrap.min.js"></script>
@@ -41,7 +41,7 @@
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
 			<jsp:param name="t" value="15" />
-			<jsp:param name="s" value="15_1" />
+			<jsp:param name="s" value="15_2" />
 		</jsp:include>
 		<!--sidebar end-->
 
@@ -107,7 +107,7 @@
 				</div>
 				<div class="modal-body">
 				
-				<form id="adInfoForm" enctype='multipart/form-data'>
+				<form id="adInfoForm" name="adInfoForm"  enctype="multipart/form-data" method="post">
 				<input type="hidden" id="id" name="id" value="0">
 				   <div class="row">
                         <div class="col-lg-12">
@@ -126,7 +126,7 @@
 						<label for="exampleInputFile">礼物图片</label>
 							<div class="fileupload fileupload-new" data-provides="fileupload">
 								<div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
-													<span id="adCover"></span>
+													<span id="adCoverSpan"></span>
 												</div>
 									<div class="fileupload-preview fileupload-exists thumbnail"
 													style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
@@ -170,7 +170,7 @@
 					</div>	
 					<div class="form-group">
 						<label for="topicId">王国ID</label>
-                        <input type="text" id="displayProbability" name="displayProbability" class="form-control" />
+                        <input type="text" id="topicId" name="topicId" class="form-control" />
 					</div>
 					<div class="form-group">
 						<label for="adUrl">链接</label>
@@ -325,6 +325,11 @@
 	                    }
 	        }
 	    });
+	  	$('#searchBannerList').change(function(){ 
+	  		sourceTable.draw(true);
+	  	}) 
+	  	
+	  	
 		});
 
 	
@@ -344,9 +349,19 @@
 	        		return data;
 	        	}
 	        }},
-	        {data: "bannerPosition",width:100,orderable:false,title: "广告封面",render:function(data,type,row,meta){
+	        {data: "adCover",width:100,orderable:false,title: "广告封面",render:function(data,type,row,meta){
 	        	if(data!=null){
-	        		return '<img src="http://cdn.me-to-me.com/'+data+'" height="50"/>';
+	        		return '<img src="'+data+'" height="50"/>';
+	        	}
+	        }},
+	        {data: "bannerName",width:100,orderable:false,title: "所属广告位",render:function(data,type,row,meta){
+	        	if(data!=null){
+	        		return data;
+	        	}
+	        }},
+	        {data: "displayProbability",width:100,orderable:false,title: "显示概率",render:function(data,type,row,meta){
+	        	if(data!=null){
+	        		return data;
 	        	}
 	        }},
 	        {data: "adCoverWidth",width:100,orderable:false,title: "广告封面宽度",render:function(data,type,row,meta){
@@ -462,24 +477,17 @@
 		$('#modal').modal('show');
 	}
 	   function addAdInfo(){
-				 //formData.append("file",$("#file")[0].files[0]);
-				 //formData.append("adTitle",$("#adTitle").val());
-				 //formData.append("adCoverWidth",$("#adCoverWidth").val());
-				 //formData.append("adCoverHeight",$("#adCoverHeight").val());
-				 //formData.append("effectiveTime",$("#effectiveTime").val());
-				 //formData.append("displayProbability",$("#displayProbability").val());
-				 //formData.append("type",$("#type").val());
-				 //formData.append("topicId",$("#topicId").val());
-				 //formData.append("adUrl",$("#adUrl").val());
-				 //formData.append("bannerId",$("#bannerId").val());
-				  	$.ajax({
+		 var formData = new FormData($( "#adInfoForm" )[0]); 
+			  	$.ajax({
 			            type: "POST",
 			            url:"./addAdInfo",
-			            data:new FormData($('#adInfoForm')[0]), 
-			            processData : false, 
-			            contentType : false,
+			            async: false,  
+			            cache: false,  
+			            contentType: false,  
+			            processData: false,  
+			            data:formData,
 			            error: function(request) {
-			                alert('服务器出错'); 
+			                alert(request.status); 
 			            },
 			            success: function(data) {
 			            	  if(data=='1'){
@@ -490,7 +498,8 @@
 			                    	alert("操作失败");
 			                        }
 			            }
-			        });
+			        });  
+				  	
 	    }
 	   function editAdInfo(id){
 				 var param = {id:id};
@@ -510,13 +519,13 @@
 			            		  $("#adTitle").val(data.adTitle);
 			            		  $("#adCoverWidth").val(data.adCoverWidth);
 			            		  $("#adCoverHeight").val(data.adCoverHeight);
-			            		  $("#effectiveTime").val(data.effectiveTime);
+			            		  $("#effectiveTime").val(new Date(data.effectiveTime).Format("yyyy-MM-dd hh:mm:ss"));
 			            		  $("#displayProbability").val(data.displayProbability);
 			            		  $("#type").val(data.type);
 			            		  $("#topicId").val(data.topicId);
 			            		  $("#adUrl").val(data.adUrl);
 			            		  $("#bannerId").val(data.bannerId);
-			            		  $("#addCover").val('<img src="http://cdn.me-to-me.com/'+data.adCover+'" alt="" />');
+			            		  $("#adCoverSpan").html('<img src="http://cdn.me-to-me.com/'+data.adCover+'" style="width: 200px; height: 150px;" />');
 			            		  $('#modal').modal('show');
 			            	  }else{
 			                    	alert("获取失败");
@@ -526,8 +535,14 @@
 	    }	   
     $('#modal').on('hidden.bs.modal', function () {
 		  $("#id").val(0);
-		  $("#quotation").val('');
-		  $("#type").val(0);
+		  $("#adTitle").val('');
+		  $("#adCoverWidth").val('');
+		  $("#adCoverHeight").val('');
+		  $("#effectiveTime").val('');
+		  $("#displayProbability").val('');
+		  $("#topicId").val('');
+		  $("#adUrl").val('');
+		  $("#adCoverSpan").html('');
    });
 	
 	
