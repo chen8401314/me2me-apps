@@ -827,6 +827,7 @@ public class Users extends BaseController {
         dto.setOpeninstallData(request.getOpeninstallData());
         dto.setDeviceData(request.getDeviceData());
         dto.setFromUid(request.getFromUid());
+        dto.setFromTopicId(request.getFromTopicId());
 
         //获取ipaddress信息
         String ip = rq.getHeader("X-Forwarded-For");
