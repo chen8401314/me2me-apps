@@ -100,6 +100,7 @@ import com.me2me.content.dto.ShowNewestDto;
 import com.me2me.content.dto.ShowUGCDetailsDto;
 import com.me2me.content.dto.ShowUserContentsDTO;
 import com.me2me.content.dto.SquareDataDto;
+import com.me2me.content.dto.TagGroupDto;
 import com.me2me.content.dto.TagKingdomDto;
 import com.me2me.content.dto.UserContentSearchDTO;
 import com.me2me.content.dto.UserGroupDto;
@@ -4628,7 +4629,140 @@ public class ContentServiceImpl implements ContentService {
         }
         return dataList;
     }
-
+    private List<TagGroupDto.KingdomHotTag> buildHotTagKingdomsNew(long uid, List<Long> blacklistUids,List<String> blackTags){
+        List<TagGroupDto.KingdomHotTag> dataList = new ArrayList<TagGroupDto.KingdomHotTag>();
+        
+        //除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
+        int tagCount =  userService.getIntegerAppConfigByKey("HOME_HOT_LABELS");
+        
+        String[] finalTags = new String[tagCount];
+        
+        
+        int curPos =0;
+        //用户在首页的标签上点击了喜欢,注意在喜欢了之后,在推荐和查询的时候,连同下方的子标签也会一起加入展示,除非用户手动对子标签选择了不喜欢
+        List<TagInfo> userLikeTagInfo= topicTagMapper.getUserLikeTag(uid);	// 我明确喜欢的标签
+        Set<String> userLikeTagSet= new HashSet<>();
+        for(TagInfo info:userLikeTagInfo){
+        	userLikeTagSet.add(info.getTagName());
+        	finalTags[curPos]=info.getTagName();
+        	curPos++;
+        	if(curPos>=tagCount){
+        		break;
+        	}
+        }
+        if(ProbabilityUtils.isInProb(40)){		//40%概率出现行为补贴。
+	      //除以上两种标签外,通过用户行为产生的排名最高的前5个"体系标签",且评分必须超过20
+	        List<String> favoTags = this.topicTagMapper.getUserFavoTags(uid,10);
+	        
+	        int rndSize= RandomUtils.nextInt(1, 3);
+	        if(curPos+rndSize>=tagCount){
+	        	curPos=tagCount-rndSize;
+	        }
+	                
+	        for(int i=0;i<rndSize && i<favoTags.size();i++){		// 填充1~2个行为标签。
+	        	String tag = favoTags.get(i);
+	        	if(!blackTags.contains(tag) && !CollectionUtils.contains(finalTags, tag)){
+	        		finalTags[curPos]=tag;
+	        		curPos++;
+	        	}
+	        }
+        }
+        // 取系统标签，老邓说后台指定的标签仅仅是起个数量的作用。
+        List<String> sysTagList = topicTagMapper.getSysTags();
+        int n=0;
+        while(curPos<tagCount && n<sysTagList.size()){		// 	填充剩余空位。
+        	String sysTag = sysTagList.get(n);
+        	if(!StringUtils.isEmpty(sysTag) &&!blackTags.contains(sysTag) && !CollectionUtils.contains(finalTags, sysTag)){
+        		finalTags[curPos]=sysTag;
+        		curPos++;
+        	}
+        	n++;
+        }
+        
+        List<String> allTags= Arrays.asList(finalTags);
+       
+        for(String label:allTags){
+        	if(label==null) continue;
+        	TagInfo info=topicTagMapper.getTagInfo(label);
+        	long tagId= info.getTagId();
+        	TagGroupDto.KingdomHotTag element = new TagGroupDto.KingdomHotTag();
+           	element.setIsShowLikeButton(userLikeTagSet.contains(label)?0:1);
+           	if(!org.apache.commons.lang3.StringUtils.isEmpty(info.getCoverImg())){
+           		element.setCoverImage(Constant.QINIU_DOMAIN+"/"+info.getCoverImg());
+           	}
+           	List<Long> topicIds = topicTagMapper.getTopicIdsByTagAndSubTag(tagId);
+           	List<Map<String,Object>> topicList = null;
+           	if(null != topicIds && topicIds.size() > 0){
+           		topicList = this.topicTagMapper.getKingdomsByTag(uid,topicIds,"new",1,4, blacklistUids);
+           	}
+            
+            //List<Integer> topicIds = this.topicTagMapper.getTopicIdsByTag(label);
+            Map<String,Object> totalPrice = null;
+        	String cacheKey = "OBJ:TAGPRICEANDKINGDOMCOUNT:"+label;
+        	Object tagRes = cacheService.getJavaObject(cacheKey);
+        	if(null != tagRes){
+        		log.info("从缓存里取到22");
+        		totalPrice = (Map<String,Object>)tagRes;
+        	}else{
+        		log.info("查的数据库呀22");
+        		if(null != topicIds && topicIds.size() > 0){
+        			totalPrice = topicTagMapper.getTagPriceAndKingdomCount(topicIds);
+        		}
+        		Map<String, Object> cacheObj = new HashMap<String, Object>();
+        		if(null != totalPrice && totalPrice.size() > 0){
+        			cacheObj.putAll(totalPrice);
+        		}
+        		cacheService.cacheJavaObject(cacheKey, cacheObj, 2*60*60);//缓存两小时
+        	}
+        	if(null == totalPrice){
+        		totalPrice = new HashMap<String, Object>();
+        	}
+            if(topicList!=null && topicList.size()>0){
+               
+                if(topicList==null || topicList.isEmpty()){
+        			return new ArrayList<>();
+        		}
+        		List<Long> topicIdList = new ArrayList<Long>();
+        		Long tid = null;
+        		for(Map<String,Object> m : topicList){
+        			tid = (Long)m.get("id");
+        			if(!topicIdList.contains(tid)){
+        				topicIdList.add(tid);
+        			}
+        		}
+        		Map<String, String> liveFavouriteMap = new HashMap<String, String>();
+        		List<Map<String, Object>> liveFavouriteList = liveForContentJdbcDao.getLiveFavoritesByUidAndTopicIds(uid, topicIdList);
+        		if (null != liveFavouriteList && liveFavouriteList.size() > 0) {
+        			for (Map<String, Object> lf : liveFavouriteList) {
+        				liveFavouriteMap.put(((Long) lf.get("topic_id")).toString(), "1");
+        			}
+        		}
+        		List<TagGroupDto.ImageData> result = new ArrayList<TagGroupDto.ImageData>();
+        		for (Map<String, Object> topic : topicList) {
+        			TagGroupDto.ImageData data = new TagGroupDto.ImageData();
+        			data.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String) topic.get("live_image"));
+        			element.getImageData().add(data);
+        		}
+                element.setImageData(result);
+            }
+            int tagPersons=0;
+            int kingdomCount = 0;
+            if(totalPrice.containsKey("tagPersons")){
+                tagPersons=((Number)totalPrice.get("tagPersons")).intValue();
+            }
+            if(totalPrice.containsKey("kingdomCount")){
+                kingdomCount=((Number)totalPrice.get("kingdomCount")).intValue();
+            }
+            element.setKingdomCount(kingdomCount);
+            element.setPersonCount(tagPersons);
+            element.setTagName(label);
+            element.setTagId(tagId);
+            dataList.add(element);
+        }
+        return dataList;
+    }
+    
+    
     private void buildHotListDTO(
             long uid,
             ShowHotListDTO result,
@@ -7970,6 +8104,19 @@ public class ContentServiceImpl implements ContentService {
 				dto.getUserGroup().add(userElement);
 			}
 		}
+		return Response.success(dto);
+	}
+	
+	@Override
+	public Response tagGroup(long cid, long uid) {
+		TagGroupDto dto = new TagGroupDto();
+		List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
+        List<String> blackTagNameList = new ArrayList<>();
+        List<TagInfo> blackTags = topicTagMapper.getUserLikeTagAndSubTag(uid,0);	
+        for(TagInfo info:blackTags){
+        	blackTagNameList.add(info.getTagName());
+        }
+        dto.setKingdomHotTagList(buildHotTagKingdomsNew(uid, blacklistUids,blackTagNameList));
 		return Response.success(dto);
 	}
 }

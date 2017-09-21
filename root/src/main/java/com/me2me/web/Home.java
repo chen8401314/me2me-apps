@@ -232,4 +232,9 @@ public class Home extends BaseController {
     public Response userGroup(UserGroupRequest request){
         return contentService.userGroup(request.getCid(), request.getUid());
     }
+    @RequestMapping(value = "/tagGroup")
+    @ResponseBody
+    public Response tagGroup(TagGroupRequest request){
+        return contentService.tagGroup(request.getCid(), request.getUid());
+    }
 }
