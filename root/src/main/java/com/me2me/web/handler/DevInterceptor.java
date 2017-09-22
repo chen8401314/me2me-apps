@@ -72,7 +72,7 @@ public class DevInterceptor implements HandlerInterceptor{
 			String requestUri = request.getRequestURI();
 			if(!StringUtils.isEmpty(requestUri)){
 				String isTest= request.getParameter("_isTest");
-				boolean isTestMode = StringUtils.isNotEmpty(isTest) && isTest.equals("1");
+				boolean isTestMode = "1".equals(isTest);
 				String targetFile = requestUri.substring(1).replaceAll("/$", "").replace("/", ".");
 				boolean isValid =props.getProperty(targetFile, "").equals("true");
 				if(isValid || isTestMode){
