@@ -45,4 +45,13 @@ public interface FileTransferService {
     int DaodaoActivate(String callbackUrl);
 
     ShowRecContentDTO getRecContents(String uid, String token, String version, String emotion);
+    /**
+     * 获取用户jsapi_ticket
+     * @author zhangjiwei
+     * @date Sep 22, 2017
+     * @param appId
+     * @param appSecret
+     * @return
+     */
+    String getWxJsApiTicket(String appId,String appSecret);
 }

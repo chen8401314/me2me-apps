@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -40,7 +41,10 @@ public class KingdomBuilder {
 
 	@Autowired
 	private LiveForContentJdbcDao liveForContentJdbcDao;
-
+	
+	@Autowired
+	private JdbcTemplate jdbc;
+	
 	@Autowired
 	private UserService userService;
 
@@ -410,6 +414,13 @@ public class KingdomBuilder {
 		List<NewKingdom> result = new ArrayList<>();
 		Content topicContent = null;
 		UserProfile userProfile = null;
+		// 查询所有的分类信息
+		List<Map<String,Object>> typeList = jdbc.queryForList("select * from topic_category");
+		Map<Integer,Map<String,Object>> typeMap = new HashMap<>();
+		for(Map<String,Object> type:typeList){
+			int id = Integer.parseInt(type.get("id").toString());
+			typeMap.put(id, type);
+		}
 		for (Map<String, Object> topic : topicList) {
 			NewKingdom data = new NewKingdom();
 			long topicId = (Long) topic.get("id");
@@ -419,6 +430,14 @@ public class KingdomBuilder {
 			if (null == userProfile) {
 				log.info("用户[uid=" + uid + "]不存在");
 				continue;
+			}
+			// 分类信息
+			int categoryId = topic.get("category_id")==null?0:Integer.parseInt(topic.get("category_id")+"");
+			Map<String,Object> typeinfo= typeMap.get(categoryId);
+			if(typeinfo!=null){
+				data.setKcName(typeinfo.get("name").toString());
+				data.setKcIcon(Constant.QINIU_DOMAIN+"/"+typeinfo.get("icon"));
+				data.setKcid(Integer.parseInt(typeinfo.get("id")+""));
 			}
 			data.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 			data.setNickName(userProfile.getNickName());

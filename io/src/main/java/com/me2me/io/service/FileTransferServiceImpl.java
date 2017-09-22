@@ -1,5 +1,6 @@
 package com.me2me.io.service;
 
+import com.alibaba.fastjson.JSON;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.HttpUtil;
 import com.me2me.common.web.Response;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.fluent.Request;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -246,6 +248,28 @@ public class FileTransferServiceImpl implements FileTransferService{
 			bucketManager.delete(BUCKET, key);
 		} catch (QiniuException e) {
 			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public String getWxJsApiTicket(String appId,String appSecret){
+		try{
+			// 拿token
+			String api = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appId
+					+ "&secret=" + appSecret;
+			String ret = Request.Get(api).execute().returnContent().asString();
+			log.info("wx token api:{}", ret);
+			String ACCESS_TOKEN = JSON.parseObject(ret).getString("access_token");
+			// 拿ticket
+			String api2 = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + ACCESS_TOKEN
+					+ "&type=jsapi";
+			String ret2 = Request.Get(api2).execute().returnContent().asString();
+			log.info("wx ticket api:{}", ret2);
+			String ticket = JSON.parseObject(ret2).getString("ticket");
+			return ticket;
+		}catch(Exception e){
+			log.error("获取H5 jsapi_ticket失败:",e);
+			return "";
 		}
 	}
 }
