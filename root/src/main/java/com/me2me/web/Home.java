@@ -237,4 +237,9 @@ public class Home extends BaseController {
     public Response tagGroup(TagGroupRequest request){
         return contentService.tagGroup(request.getCid(), request.getUid());
     }
+    @RequestMapping(value = "/hot")
+    @ResponseBody
+    public Response hot(HotRequest request){
+        return contentService.hot(request.getPage(), request.getUid());
+    }
 }

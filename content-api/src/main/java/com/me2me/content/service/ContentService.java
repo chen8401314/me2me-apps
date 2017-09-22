@@ -602,10 +602,17 @@ public interface ContentService{
 	
 	
 	/**
-	 * 首页最热标签
+	 * 首页热点主数据接口
 	 * @param cid
 	 * @param uid
 	 * @return
 	 */
 	public Response tagGroup(long cid, long uid);
+	
+	/**
+	 * @param page
+	 * @param uid
+	 * @return
+	 */
+	public Response hot(int page, long uid);
 }

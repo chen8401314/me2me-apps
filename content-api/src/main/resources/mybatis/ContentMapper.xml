@@ -1174,6 +1174,48 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
      and UNIX_TIMESTAMP(m.update_time)*1000 &lt; #{hq.sinceId}
 	 order by m.update_time desc limit #{hq.pageSize}
   	</select>
+  	
+  	   <select id="getHotContentListByType" parameterType="com.me2me.content.dto.HotQueryDto" resultMap="ResultMapWithBLOBs2">
+	 select m.*,h.id as hid FROM
+	 (select c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image,
+	 c.forward_title, c.forward_url, c.content_type, c.thumbnail, c.hot_value,
+	 c.like_count, c.review_count,c.person_count,c.favorite_count, c.read_count,
+	 c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights,c.update_time
+	 from content c LEFT JOIN topic t on c.forward_cid=t.id
+	 where c.status != 1 and c.rights=1
+	 <if test="hq.type == 0">
+     and c.type=3
+     </if>
+     <if test="hq.type == 1">
+     and c.type=3 and t.type=1000
+     </if>
+	 ) m,high_quality_content h
+	 where m.id = h.cid
+	 and m.forward_cid not in (
+      	select data from user_dislike where uid=#{hq.uid} and is_like=0 and type=1
+      	<if test="hq.blackTagIds!=''">
+      	union all
+      	select topic_id as data from topic_tag_detail where status=0 and tag_id in (${hq.blackTagIds})
+      	</if>
+      )
+     <if test="hq.ids!=null and hq.ids.size() &gt; 0">
+       and h.id not in
+       <foreach close=")" collection="hq.ids" item="id" open="(" separator=",">
+         #{id}
+       </foreach>
+     </if>
+     <if test="hq.blacklistUids!=null and hq.blacklistUids.size() &gt; 0">
+       and m.uid not in
+       <foreach close=")" collection="hq.blacklistUids" item="bid" open="(" separator=",">
+         #{bid}
+       </foreach>
+     </if>
+     and UNIX_TIMESTAMP(m.update_time)*1000 
+	 order by m.update_time desc limit #{hq.pageSize}
+  	</select>
+  	
+  	
+  	
 
   <select id="getHotContentByRedis" parameterType="java.util.List" resultMap="ResultMapWithBLOBs2">
       select m.*,h.id as hid FROM

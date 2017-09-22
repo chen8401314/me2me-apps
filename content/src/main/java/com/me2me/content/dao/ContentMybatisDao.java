@@ -638,7 +638,23 @@ public class ContentMybatisDao {
         hotQueryDto.setBlackTagIds(blackTagIds);
     	return contentMapper.getHotContentByType(hotQueryDto);
     }
-
+    /**
+     * 
+     * @param sinceId
+     * @param type  0 所有内容    1 聚合王国
+     * @param pageSize
+     * @return
+     */
+    public List<Content2Dto> getHotContentListByType(long uid, int type, int pageSize,List<String> ids,List<Long> blacklistUids,String blackTagIds){
+        HotQueryDto hotQueryDto = new HotQueryDto();
+        hotQueryDto.setType(type);
+        hotQueryDto.setPageSize(pageSize);
+        hotQueryDto.setIds(ids);
+        hotQueryDto.setBlacklistUids(blacklistUids);
+        hotQueryDto.setUid(uid);
+        hotQueryDto.setBlackTagIds(blackTagIds);
+    	return contentMapper.getHotContentListByType(hotQueryDto);
+    }
     public List<Content2Dto> getHotContentByRedis(long uid, List<String> ids, List<Long> blacklistUids,String blackTagIds){
         return contentMapper.getHotContentByRedis(uid,ids, blacklistUids,blackTagIds);
     }

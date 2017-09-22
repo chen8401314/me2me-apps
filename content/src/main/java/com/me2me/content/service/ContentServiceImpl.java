@@ -70,6 +70,7 @@ import com.me2me.content.dto.EditorContentDto;
 import com.me2me.content.dto.EmojiPackDetailDto;
 import com.me2me.content.dto.EmojiPackDto;
 import com.me2me.content.dto.HighQualityContentDto;
+import com.me2me.content.dto.HotDto;
 import com.me2me.content.dto.KingTopicDto;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.ListingKingdomGroupDto;
@@ -8117,6 +8118,577 @@ public class ContentServiceImpl implements ContentService {
         	blackTagNameList.add(info.getTagName());
         }
         dto.setKingdomHotTagList(buildHotTagKingdomsNew(uid, blacklistUids,blackTagNameList));
+		return Response.success(dto);
+	}
+	
+	@Override
+	public Response hot(int page, long uid) {
+		HotDto dto = new HotDto();
+		// 其他栏目位置信息
+		Map<String, String> hotPositionMap = new HashMap<String, String>();
+		// 广告位位置信息
+		Map<String, String> adPositionMap = new HashMap<String, String>();
+		if (page == 1) {
+			String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX + uid;
+			if (!StringUtils.isEmpty(cacheService.get(key))) {
+				String bubblePositions = userService.getAppConfigByKey(Constant.HOTLIST_BUBBLE_POSITION_KEY);
+				dto.setBubblePositions(bubblePositions); // 提示消息
+			}
+			int openPushPositions = 0;
+			String openPushPositionsStr = userService.getAppConfigByKey(Constant.OPEN_PUSH_POSITION);
+			if (!StringUtils.isEmpty(openPushPositionsStr)) {
+				openPushPositions = Integer.parseInt(openPushPositionsStr);
+			}
+			dto.setOpenPushPositions(openPushPositions); // 提示消息
+
+			String hotPosition = userService.getAppConfigByKey("HOT_POSITION");
+			JSONArray jsonArr = JSONArray.parseArray(hotPosition);
+			for (int i = 0; i < jsonArr.size(); i++) {
+				JSONObject json = jsonArr.getJSONObject(i);
+				int type = json.getIntValue("type");
+				int positionMin = json.getIntValue("positionMin");
+				int positionMax = json.getIntValue("positionMax");
+				Random random = new Random();
+				int s = random.nextInt(positionMax) % (positionMax - positionMin + 1) + positionMin;
+				if (hotPositionMap.get(String.valueOf(s)) == null) {
+					hotPositionMap.put(String.valueOf(s), String.valueOf(type));
+				} else {
+					StringBuffer value = new StringBuffer(hotPositionMap.get(String.valueOf(s)).toString());
+					value.append(",").append(String.valueOf(type));
+					hotPositionMap.put(String.valueOf(s), value.toString());
+				}
+			}
+			List<AdBanner> listAdBanner = contentMybatisDao.getAllAdBannerList(-1);
+			for (int i = 0; i < listAdBanner.size(); i++) {
+				AdBanner adBanner = listAdBanner.get(i);
+				String[] adPosition = adBanner.getBannerPosition().split("-");
+				int positionMin = Integer.parseInt(adPosition[0]);
+				int positionMax = Integer.parseInt(adPosition[1]);
+				Random random = new Random();
+				int s = random.nextInt(positionMax) % (positionMax - positionMin + 1) + positionMin;
+				if (adPositionMap.get(String.valueOf(s)) == null) {
+					adPositionMap.put(String.valueOf(s), String.valueOf(adBanner.getId()));
+				} else {
+					StringBuffer value = new StringBuffer(adPositionMap.get(String.valueOf(s)).toString());
+					value.append(",").append(String.valueOf(adBanner.getId()));
+					adPositionMap.put(String.valueOf(s), value.toString());
+				}
+			}
+
+		}
+		List<String> redisIds = cacheService.lrange("HOT_TOP_KEY", 0, -1);
+		List<String> ids = Lists.newArrayList();
+		long expireTime = Long.valueOf(userService.getAppConfigByKey("TOP_EXPIRED")) * 1000;
+		Map<String, Long> map = Maps.newConcurrentMap();
+		for (String id : redisIds) {
+			Long startTime = Long.valueOf(id.split("@")[1]);
+			String splitId = id.split("@")[0];
+			map.put(splitId, startTime);
+			if (System.currentTimeMillis() - startTime <= expireTime) {
+				ids.add(splitId);
+			} else {
+				cacheService.lrem("HOT_TOP_KEY", 0, id);
+			}
+		}
+		List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
+		List<Long> blackTagIdList = new ArrayList<>();
+		List<TagInfo> blackTags = topicTagMapper.getUserLikeTagAndSubTag(uid, 0); // 不喜欢的标签和子标签。
+		for (TagInfo info : blackTags) {
+			blackTagIdList.add(info.getTagId());
+		}
+		String blackTagIds = org.apache.commons.lang3.StringUtils.join(blackTagIdList, ",");
+		int pageSize = 20;
+		List<Content2Dto> contentList = contentMybatisDao.getHotContentListByType(uid, (page - 1) * pageSize,
+				page * pageSize, ids, blacklistUids, blackTagIds);// 只要UGC+PGC+个人王国
+
+		List<Long> topicIdList = new ArrayList<Long>();
+		List<Long> ceTopicIdList = new ArrayList<Long>();
+		List<Long> uidList = new ArrayList<Long>();
+		// double minPrice =Double.parseDouble((String)
+		// userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
+		double minRmb = Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
+
+		if (null != contentList && contentList.size() > 0) {
+			for (Content2Dto c : contentList) {
+				if (!uidList.contains(c.getUid())) {
+					uidList.add(c.getUid());
+				}
+				if (c.getType() == 3 && !topicIdList.contains(c.getForwardCid())) {
+					topicIdList.add(c.getForwardCid());
+				}
+			}
+		}
+
+		Map<String, List<Map<String, Object>>> acTopMap = new HashMap<String, List<Map<String, Object>>>();
+		Map<String, List<Map<String, Object>>> membersMap = new HashMap<String, List<Map<String, Object>>>();
+		if (ceTopicIdList.size() > 0) {
+			List<Map<String, Object>> acTopList = null;
+			List<Map<String, Object>> membersLsit = null;
+			for (Long ceId : ceTopicIdList) {
+				acTopList = liveForContentJdbcDao.getAcTopicListByCeTopicId(ceId, 0, 3);
+				if (null != acTopList && acTopList.size() > 0) {
+					acTopMap.put(ceId.toString(), acTopList);
+					for (Map<String, Object> acTopic : acTopList) {
+						if (!topicIdList.contains((Long) acTopic.get("id"))) {
+							topicIdList.add((Long) acTopic.get("id"));
+						}
+					}
+				}
+				membersLsit = liveForContentJdbcDao.getTopicMembersByTopicId(ceId, 0, 20);
+				if (null != membersLsit && membersLsit.size() > 0) {
+					membersMap.put(ceId.toString(), membersLsit);
+				}
+			}
+		}
+
+		// 一次性查出所有王国详情
+		Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
+		List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
+		if (null != topicList && topicList.size() > 0) {
+			Long topicId = null;
+			for (Map<String, Object> mapt : topicList) {
+				topicId = (Long) mapt.get("id");
+				topicMap.put(topicId.toString(), mapt);
+			}
+		}
+		// 一次性查出所有王国对应的内容表
+		Map<String, Content> topicContentMap = new HashMap<String, Content>();
+		if (topicIdList.size() > 0) {
+			List<Content> topicContentList = contentMybatisDao.getContentByTopicIds(topicIdList);
+			if (null != topicContentList && topicContentList.size() > 0) {
+				for (Content c : topicContentList) {
+					topicContentMap.put(c.getForwardCid().toString(), c);
+				}
+			}
+		}
+		
+        //一次性获取王国的外露内容
+    Map<String, List<Map<String, Object>>> topicOutDataMap = new HashMap<String, List<Map<String, Object>>>();
+    String v = userService.getAppConfigByKey("KINGDOM_OUT_MINUTE");
+    int limitMinute = 3;
+    if(!StringUtils.isEmpty(v)){
+    	limitMinute = Integer.valueOf(v).intValue();
+    }
+    List<Long> privateTopicIds = new ArrayList<Long>();
+    String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
+    if(!StringUtils.isEmpty(specialTopicIds)){
+    	String[] tmp = specialTopicIds.split(",");
+    	for(String a : tmp){
+    		if(!StringUtils.isEmpty(a)){
+    			privateTopicIds.add(Long.valueOf(a));
+    		}
+    	}
+    }
+    List<Map<String,Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute, privateTopicIds);
+    if(null != topicOutList && topicOutList.size() > 0){
+    	Long topicId = null;
+    	List<Map<String, Object>> toList = null;
+    	Long atUid = null;
+    	Long fragmentUid = null;
+    	for(Map<String,Object> m : topicOutList){
+    		topicId = (Long)m.get("topic_id");
+    		toList = topicOutDataMap.get(topicId.toString());
+    		if(null == toList){
+    			toList = new ArrayList<Map<String, Object>>();
+    			topicOutDataMap.put(topicId.toString(), toList);
+    		}
+    		toList.add(m);
+    		atUid = (Long)m.get("at_uid");
+    		if(null != atUid && atUid.longValue() > 0){
+    			if(!uidList.contains(atUid)){
+                    uidList.add(atUid);
+                }
+    		}
+    		fragmentUid = (Long)m.get("uid");
+    		if(null != fragmentUid && fragmentUid.longValue() > 0){
+    			if(!uidList.contains(fragmentUid)){
+                    uidList.add(fragmentUid);
+                }
+    		}
+    	}
+    }
+       
+		
+		
+		// 一次性查出所有的用户信息
+		Map<String, UserProfile> userProfileMap = new HashMap<String, UserProfile>();
+		List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+		if (null != profileList && profileList.size() > 0) {
+			for (UserProfile up : profileList) {
+				userProfileMap.put(up.getUid().toString(), up);
+			}
+		}
+		// 一次性查询关注信息
+		Map<String, String> followMap = new HashMap<String, String>();
+		List<UserFollow> userFollowList = userService.getAllFollows(uid, uidList);
+		if (null != userFollowList && userFollowList.size() > 0) {
+			for (UserFollow uf : userFollowList) {
+				followMap.put(uf.getSourceUid() + "_" + uf.getTargetUid(), "1");
+			}
+		}
+		// 一次性查询王国订阅信息
+		Map<String, String> liveFavouriteMap = new HashMap<String, String>();
+		List<Map<String, Object>> liveFavouriteList = liveForContentJdbcDao.getLiveFavoritesByUidAndTopicIds(uid,
+				topicIdList);
+		if (null != liveFavouriteList && liveFavouriteList.size() > 0) {
+			for (Map<String, Object> lf : liveFavouriteList) {
+				liveFavouriteMap.put(((Long) lf.get("topic_id")).toString(), "1");
+			}
+		}
+		// 一次性查询聚合王国的子王国数
+		Map<String, Long> acCountMap = new HashMap<String, Long>();
+		if (ceTopicIdList.size() > 0) {
+			List<Map<String, Object>> acCountList = liveForContentJdbcDao
+					.getTopicAggregationAcCountByTopicIds(ceTopicIdList);
+			if (null != acCountList && acCountList.size() > 0) {
+				for (Map<String, Object> a : acCountList) {
+					acCountMap.put(String.valueOf(a.get("topic_id")), (Long) a.get("cc"));
+				}
+			}
+		}
+
+		// 一次性查询王国的最后一条更新记录
+		Map<String, Map<String, Object>> lastFragmentMap = new HashMap<String, Map<String, Object>>();
+		List<Map<String, Object>> lastFragmentList = liveForContentJdbcDao.getLastFragmentByTopicIds(topicIdList);
+		if (null != lastFragmentList && lastFragmentList.size() > 0) {
+			for (Map<String, Object> lf : lastFragmentList) {
+				lastFragmentMap.put(((Long) lf.get("topic_id")).toString(), lf);
+			}
+		}
+		// 一次性查询所有王国的国王更新数，以及评论数
+		Map<String, Long> topicCountMap = new HashMap<String, Long>();
+		Map<String, Long> reviewCountMap = new HashMap<String, Long>();
+		List<Map<String, Object>> tcList = liveForContentJdbcDao.getTopicUpdateCount(topicIdList);
+		if (null != tcList && tcList.size() > 0) {
+			for (Map<String, Object> m : tcList) {
+				topicCountMap.put(String.valueOf(m.get("topic_id")), (Long) m.get("topicCount"));
+				reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long) m.get("reviewCount"));
+			}
+		}
+		// 一次性查询所有王国的成员数
+		Map<String, Long> topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
+		if (null == topicMemberCountMap) {
+			topicMemberCountMap = new HashMap<String, Long>();
+		}
+		// 一次性查询王国的标签信息
+		Map<String, String> topicTagMap = new HashMap<String, String>();
+		List<Map<String, Object>> topicTagList = liveForContentJdbcDao.getTopicTagDetailListByTopicIds(topicIdList);
+		if (null != topicTagList && topicTagList.size() > 0) {
+			long tid = 0;
+			String tags = null;
+			Long topicId = null;
+			for (Map<String, Object> ttd : topicTagList) {
+				topicId = (Long) ttd.get("topic_id");
+				if (topicId.longValue() != tid) {
+					// 先插入上一次
+					if (tid > 0 && !StringUtils.isEmpty(tags)) {
+						topicTagMap.put(String.valueOf(tid), tags);
+					}
+					// 再初始化新的
+					tid = topicId.longValue();
+					tags = null;
+				}
+				if (tags != null) {
+					tags = tags + ";" + (String) ttd.get("tag");
+				} else {
+					tags = (String) ttd.get("tag");
+				}
+			}
+			if (tid > 0 && !StringUtils.isEmpty(tags)) {
+				topicTagMap.put(String.valueOf(tid), tags);
+			}
+		}
+        //一次性查出所有分类信息
+        Map<String, Map<String, Object>> kingdomCategoryMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String, Object>> kcList = liveForContentJdbcDao.getAllKingdomCategory();
+        if(null != kcList && kcList.size() > 0){
+        	for(Map<String, Object> m : kcList){
+        		kingdomCategoryMap.put(String.valueOf(m.get("id")), m);
+        	}
+        }
+		Map<String, Object> topic = null;
+		UserProfile userProfile = null;
+		Map<String, Object> lastFragment = null;
+		List<Map<String, Object>> topicOutDataList = null;
+		Map<String, Object> topicOutData = null;
+		UserProfile lastUserProfile = null;
+		UserProfile atUserProfile = null;
+		if (null != contentList && contentList.size() > 0) {
+			HotDto.HotContentElement contentElement = null;
+			String lastFragmentImage = null;
+			for (int i = 0; i < contentList.size(); i++) {
+				Content2Dto c = contentList.get(i);
+				contentElement = new HotDto.HotContentElement();
+				contentElement.setSinceId(c.getUpdateTime().getTime());
+				contentElement.setUid(c.getUid());
+				userProfile = userProfileMap.get(c.getUid().toString());
+				if (null != userProfile) {
+					contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+					contentElement.setNickName(userProfile.getNickName());
+					contentElement.setVip(userProfile.getvLv());
+					contentElement.setLevel(userProfile.getLevel());
+					if (!StringUtils.isEmpty(userProfile.getAvatarFrame())) {
+						contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+					}
+				}
+				if (null != followMap.get(uid + "_" + c.getUid())) {
+					contentElement.setIsFollowed(1);
+				} else {
+					contentElement.setIsFollowed(0);
+				}
+				if (null != followMap.get(c.getUid() + "_" + uid)) {
+					contentElement.setIsFollowMe(1);
+				} else {
+					contentElement.setIsFollowMe(0);
+				}
+				contentElement.setType(c.getType());
+				contentElement.setCreateTime(c.getCreateTime().getTime());
+				contentElement.setUpdateTime(c.getUpdateTime().getTime());
+				contentElement.setCid(c.getId());
+				contentElement.setId(c.getId());
+				contentElement.setTitle(c.getTitle());
+				if (c.getConverImage() != null && c.getConverImage().length() > 0) {
+					contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + c.getConverImage());
+				}
+				contentElement.setContent(c.getContent());
+				contentElement.setReadCount(c.getReadCountDummy());
+				contentElement.setLikeCount(c.getLikeCount());
+				contentElement.setReviewCount(c.getReviewCount());
+				contentElement.setFavoriteCount(c.getFavoriteCount());
+
+				if (c.getType() == Specification.ArticleType.LIVE.index) {
+					contentElement.setContent(c.getTitle());
+					contentElement.setTopicId(c.getForwardCid());
+					contentElement.setForwardCid(c.getForwardCid());
+					topic = topicMap.get(c.getForwardCid().toString());
+					if (null != topic) {
+						contentElement.setContentType((Integer) topic.get("type"));
+						int internalStatust = this.getInternalStatus(topic, uid);
+						if (internalStatust == Specification.SnsCircle.OUT.index) {
+							if (liveFavouriteMap.get(String.valueOf(topic.get("id"))) != null) {
+								internalStatust = Specification.SnsCircle.IN.index;
+							}
+						}
+						contentElement.setInternalStatus(internalStatust);
+						contentElement.setPrice((Integer) topic.get("price"));
+						contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
+						contentElement.setShowPriceBrand(0); // 首页只显示RMB吊牌
+						contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
+						
+	                	int kcid = (Integer)topic.get("category_id");
+	                	if(kcid > 0){
+	                	 Map<String,Object>	kingdomCategory = kingdomCategoryMap.get(String.valueOf(kcid));
+	                    	if(null != kingdomCategory){
+	                    		contentElement.setKcid((Integer)kingdomCategory.get("id"));
+	                    		contentElement.setKcName((String)kingdomCategory.get("name"));
+	                    		String kcImage = (String)kingdomCategory.get("cover_img");
+	                        	if(!StringUtils.isEmpty(kcImage)){
+	                        		contentElement.setKcImage(Constant.QINIU_DOMAIN+"/"+kcImage);
+	                        	}
+	                        	String kcIcon = (String)kingdomCategory.get("icon");
+	                        	if(StringUtils.isEmpty(kcIcon)){
+	                        		contentElement.setKcIcon(Constant.QINIU_DOMAIN+"/"+kcIcon);
+	                        	}
+	                    	}
+	                    }
+	                	//增加王国外露内容
+	                	topicOutDataList = topicOutDataMap.get(c.getForwardCid().toString());
+	                	HotDto.OutDataElement outElement = null;
+	                	if(null != topicOutDataList && topicOutDataList.size() > 0){
+	                		//先判断是否UGC
+	                		//第一个如果是UGC则其他的不要了，如果不是，则后面如果有UGC则不要了
+	                		topicOutData = topicOutDataList.get(0);
+	                		lastUserProfile = userProfileMap.get(String.valueOf(topicOutData.get("uid")));
+	                		if(null != lastUserProfile){//这里放上最近发言的那个人的头像
+	                			contentElement.setUid(lastUserProfile.getUid());
+	                			contentElement.setNickName(lastUserProfile.getNickName());
+	                			contentElement.setVip(lastUserProfile.getvLv());
+	                			contentElement.setLevel(lastUserProfile.getLevel());
+	                			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+	                			if(!StringUtils.isEmpty(lastUserProfile.getAvatarFrame())){
+	                				contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatarFrame());
+	                			}else{
+	                				contentElement.setAvatarFrame(null);
+	                			}
+	                			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+c.getUid())){
+	                                contentElement.setIsFollowed(1);
+	                            }else{
+	                                contentElement.setIsFollowed(0);
+	                            }
+	                            if(null != followMap.get(c.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
+	                                contentElement.setIsFollowMe(1);
+	                            }else{
+	                                contentElement.setIsFollowMe(0);
+	                            }
+	                		}
+	                		int t = ((Integer)topicOutData.get("type")).intValue();
+	                		int contentType = ((Integer)topicOutData.get("content_type")).intValue();
+	                		if((t == 0 || t == 52) && contentType == 23){//第一个是UGC
+	                			outElement = new HotDto.OutDataElement();
+	                			outElement.setId((Long)topicOutData.get("id"));
+	                			outElement.setType((Integer)topicOutData.get("type"));
+	                			outElement.setContentType((Integer)topicOutData.get("content_type"));
+	                			outElement.setFragment((String)topicOutData.get("fragment"));
+	                			String fragmentImage = (String)topicOutData.get("fragment_image");
+	                            if (!StringUtils.isEmpty(fragmentImage)) {
+	                            	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+	                            }
+	                			outElement.setAtUid((Long)topicOutData.get("at_uid"));
+	                			if(outElement.getAtUid() > 0){
+	                				atUserProfile = userProfileMap.get(String.valueOf(outElement.getAtUid()));
+	                				if(null != atUserProfile){
+	                					outElement.setAtNickName(atUserProfile.getNickName());
+	                				}
+	                			}
+	                			outElement.setExtra((String)topicOutData.get("extra"));
+	                			contentElement.getUgcData().add(outElement);
+	                		}else{//第一个不是UGC
+	                			for(int j=0;i<topicOutDataList.size();j++){
+	                				topicOutData = topicOutDataList.get(j);
+	                				t = ((Integer)topicOutData.get("type")).intValue();
+	                				contentType = ((Integer)topicOutData.get("content_type")).intValue();
+	                				if((t == 0 || t == 52) && contentType == 23){//UGC不要了
+	                					continue;
+	                				}else if((t == 0 || t == 55) && contentType == 0){//文本
+	                					if(contentElement.getTextData().size() == 0){
+	                						outElement = new HotDto.OutDataElement();
+	                            			outElement.setId((Long)topicOutData.get("id"));
+	                            			outElement.setType((Integer)topicOutData.get("type"));
+	                            			outElement.setContentType((Integer)topicOutData.get("content_type"));
+	                            			outElement.setFragment((String)topicOutData.get("fragment"));
+	                            			String fragmentImage = (String)topicOutData.get("fragment_image");
+	                                        if (!StringUtils.isEmpty(fragmentImage)) {
+	                                        	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+	                                        }
+	                            			outElement.setAtUid((Long)topicOutData.get("at_uid"));
+	                            			outElement.setExtra((String)topicOutData.get("extra"));
+	                            			contentElement.getTextData().add(outElement);
+	                					}
+	                				}else if(t==13 || (t == 55 && contentType == 63)){//音频
+	                					if(contentElement.getAudioData().size() == 0){
+	                						outElement = new HotDto.OutDataElement();
+	                            			outElement.setId((Long)topicOutData.get("id"));
+	                            			outElement.setType((Integer)topicOutData.get("type"));
+	                            			outElement.setContentType((Integer)topicOutData.get("content_type"));
+	                            			outElement.setFragment((String)topicOutData.get("fragment"));
+	                            			String fragmentImage = (String)topicOutData.get("fragment_image");
+	                                        if (!StringUtils.isEmpty(fragmentImage)) {
+	                                        	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+	                                        }
+	                            			outElement.setAtUid((Long)topicOutData.get("at_uid"));
+	                            			outElement.setExtra((String)topicOutData.get("extra"));
+	                            			contentElement.getAudioData().add(outElement);
+	                					}
+	                				}else{//图片区展示部分
+	                					if(contentElement.getAudioData().size() < 4){
+	                						outElement = new HotDto.OutDataElement();
+	                            			outElement.setId((Long)topicOutData.get("id"));
+	                            			outElement.setType((Integer)topicOutData.get("type"));
+	                            			outElement.setContentType((Integer)topicOutData.get("content_type"));
+	                            			outElement.setFragment((String)topicOutData.get("fragment"));
+	                            			String fragmentImage = (String)topicOutData.get("fragment_image");
+	                                        if (!StringUtils.isEmpty(fragmentImage)) {
+	                                        	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+	                                        }
+	                            			outElement.setAtUid((Long)topicOutData.get("at_uid"));
+	                            			outElement.setExtra((String)topicOutData.get("extra"));
+	                            			contentElement.getImageData().add(outElement);
+	                					}
+	                				}
+	                			}
+	                		}
+	                	}
+	                	
+					}
+					lastFragment = lastFragmentMap.get(c.getForwardCid().toString());
+					if (null != lastFragment) {
+						contentElement.setLastUpdateTime(((Date) lastFragment.get("create_time")).getTime());
+						contentElement.setLastType((Integer) lastFragment.get("type"));
+						contentElement.setLastContentType((Integer) lastFragment.get("content_type"));
+						contentElement.setLastFragment((String) lastFragment.get("fragment"));
+						lastFragmentImage = (String) lastFragment.get("fragment_image");
+						if (!StringUtils.isEmpty(lastFragmentImage)) {
+							contentElement.setLastFragmentImage(Constant.QINIU_DOMAIN + "/" + lastFragmentImage);
+						}
+						contentElement.setLastStatus((Integer) lastFragment.get("status"));
+						contentElement.setLastExtra((String) lastFragment.get("extra"));
+					}
+					if (null == topicMemberCountMap.get(c.getForwardCid().toString())) {
+						contentElement.setFavoriteCount(1);// 默认只有国王一个成员
+					} else {
+						contentElement
+								.setFavoriteCount(topicMemberCountMap.get(c.getForwardCid().toString()).intValue() + 1);
+					}
+					if (null != reviewCountMap.get(c.getForwardCid().toString())) {
+						contentElement.setReviewCount(reviewCountMap.get(c.getForwardCid().toString()).intValue());
+					} else {
+						contentElement.setReviewCount(0);
+					}
+					if (null != liveFavouriteMap.get(c.getForwardCid().toString())) {
+						contentElement.setFavorite(1);
+					} else {
+						contentElement.setFavorite(0);
+					}
+					if (null != topicTagMap.get(c.getForwardCid().toString())) {
+						contentElement.setTags(topicTagMap.get(c.getForwardCid().toString()));
+					} else {
+						contentElement.setTags("");
+					}
+				}
+				dto.getData().add(contentElement);
+				if (page == 1) {
+					if (adPositionMap.get(String.valueOf(i)) != null) {
+						String[] adids = adPositionMap.get(String.valueOf(i)).toString().split(",");
+						for (String adidStr : adids) {
+							HotDto.BaseContentElement baseElement = new HotDto.BaseContentElement();
+							// 广告条type默认12
+							baseElement.setType(12);
+							baseElement.setCid(Long.parseLong(adidStr));
+							dto.getData().add(baseElement);
+						}
+					}
+					if (hotPositionMap.get(String.valueOf(i)) != null) {
+						String[] types = hotPositionMap.get(String.valueOf(i)).toString().split(",");
+						for (String typeStr : types) {
+							int type = Integer.parseInt(typeStr);
+							HotDto.BaseContentElement baseElement = new HotDto.BaseContentElement();
+							switch (type) {
+							case 11:// 语录
+								baseElement.setType(11);
+								dto.getData().add(baseElement);
+								break;
+							case 13:// 分类入口
+								baseElement.setType(13);
+								dto.getData().add(baseElement);
+								break;
+							case 14:// 邀请
+								HotDto.InvitationElement invitationElement = new HotDto.InvitationElement();
+								invitationElement.setType(14);
+								dto.getData().add(invitationElement);
+								break;
+							case 51:// 上市王国集合
+								baseElement.setType(51);
+								baseElement.setTitle("最新上市王国");
+								dto.getData().add(baseElement);
+								break;
+							case 52:// 用户集合
+								baseElement.setType(52);
+								baseElement.setTitle("最有料的国王");
+								dto.getData().add(baseElement);
+								break;
+							case 53:// 标签集合
+								baseElement.setType(53);
+								baseElement.setTitle("最热标签在这里");
+								dto.getData().add(baseElement);
+								break;
+							default:
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
 		return Response.success(dto);
 	}
 }
