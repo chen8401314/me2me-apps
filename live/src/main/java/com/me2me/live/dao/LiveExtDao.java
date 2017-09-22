@@ -46,7 +46,7 @@ public class LiveExtDao {
 	 * @return
 	 */
 	public Map<String,Object> getCategoryCoverKingdom(int categoryId,int limitMinute){
-		String sql ="select t.title,t.live_img,t.id,t.uid,p.nick_name,p.avatar"+
+		String sql ="select t.title,t.live_image,t.id,t.uid,p.nick_name,p.avatar"+
 		" from topic t,user_profile p,("+
 		" select max(t1.out_time) as maxtime"+
 		" from topic t1"+
@@ -56,6 +56,10 @@ public class LiveExtDao {
 		" and p.uid=t.uid"+
 		" and t.out_time>=date_add(m.maxtime,interval -? minute)" +
 		" order by t.price desc limit 1;";
-		return jdbcTemplate.queryForMap(sql,categoryId,categoryId,limitMinute);
+		try{
+			return jdbcTemplate.queryForMap(sql,categoryId,categoryId,limitMinute);
+		}catch(Exception e){
+			return null;
+		}
 	}
 }

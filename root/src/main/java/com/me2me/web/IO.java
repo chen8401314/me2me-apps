@@ -6,6 +6,8 @@ import com.me2me.io.service.FileTransferService;
 import com.me2me.user.dto.WapxIosDto;
 import com.me2me.web.request.WapxIosRequest;
 import com.me2me.web.request.WeChatRequest;
+import com.me2me.web.request.WxJsApiTicketRequest;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -45,5 +47,13 @@ public class IO extends BaseController {
     public String getUserInfo(WeChatRequest request) throws Exception {
         return fileTransferService.getUserInfo(request.getCode());
     }
-
+    /**
+     * h5 jsapi
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getWxJsApiTicket",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getWxJsApiTicket(WxJsApiTicketRequest request) throws Exception {
+        return fileTransferService.getWxJsApiTicket(request.getAppId(),request.getAppSecert());
+    }
 }

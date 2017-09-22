@@ -70,17 +70,23 @@ public class LiveExtServiceImpl implements LiveExtService {
 	        	limitMinute = Integer.valueOf(v).intValue();
 	        }
 	        Map<String,Object> data= extDao.getCategoryCoverKingdom(kcid,limitMinute);
-	        NewKingdom coverKingdom= new NewKingdom();
-	        coverKingdom.setUid((Long)data.get("uid"));
-	        coverKingdom.setAvatar(Constant.QINIU_DOMAIN+"/"+data.get("live_img"));
-	        coverKingdom.setNickName(data.get("nick_name").toString());
-	        coverKingdom.setTitle(data.get("title").toString());
-	        coverKingdom.setTopicId((Long)data.get("id"));
-			dto.setCoverKingdom(coverKingdom);
+	        if(data!=null){
+		        NewKingdom coverKingdom= new NewKingdom();
+		        coverKingdom.setUid((Long)data.get("uid"));
+		        coverKingdom.setAvatar(Constant.QINIU_DOMAIN+"/"+data.get("avatar"));
+		        coverKingdom.setCoverImage(Constant.QINIU_DOMAIN+"/"+data.get("live_image"));
+		        coverKingdom.setNickName(data.get("nick_name").toString());
+		        coverKingdom.setTitle(data.get("title").toString());
+		        coverKingdom.setTopicId((Long)data.get("id"));
+				dto.setCoverKingdom(coverKingdom);
+	        }
 		}
    
 		List<Map<String,Object>> topicList =extDao.getCategoryKingdom(kcid,page,PAGE_SIZE);
 		List<NewKingdom> kingdoms = contentService.buildFullNewKingdom(uid, topicList);
+		if(page==1 && dto.getCoverKingdom()==null && kingdoms.size()>0){
+			dto.setCoverKingdom(kingdoms.get(0));
+		}
 		dto.setKingdoms(kingdoms);
 		return Response.success(dto);
 	}
