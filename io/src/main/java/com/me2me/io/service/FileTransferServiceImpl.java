@@ -251,6 +251,7 @@ public class FileTransferServiceImpl implements FileTransferService{
 		}
 	}
 
+	@Override
 	public String getWxJsApiTicket(String appId,String appSecret){
 		try{
 			// 拿token

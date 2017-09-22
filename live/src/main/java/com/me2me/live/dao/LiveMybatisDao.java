@@ -37,6 +37,7 @@ import com.me2me.live.mapper.LiveDisplayReviewMapper;
 import com.me2me.live.mapper.LiveFavoriteDeleteMapper;
 import com.me2me.live.mapper.LiveFavoriteMapper;
 import com.me2me.live.mapper.LiveReadHistoryMapper;
+import com.me2me.live.mapper.LotteryAppointMapper;
 import com.me2me.live.mapper.LotteryContentMapper;
 import com.me2me.live.mapper.LotteryInfoMapper;
 import com.me2me.live.mapper.LotteryProhibitMapper;
@@ -91,6 +92,8 @@ import com.me2me.live.model.LiveFavoriteDeleteExample;
 import com.me2me.live.model.LiveFavoriteExample;
 import com.me2me.live.model.LiveReadHistory;
 import com.me2me.live.model.LiveReadHistoryExample;
+import com.me2me.live.model.LotteryAppoint;
+import com.me2me.live.model.LotteryAppointExample;
 import com.me2me.live.model.LotteryContent;
 import com.me2me.live.model.LotteryContentExample;
 import com.me2me.live.model.LotteryInfo;
@@ -309,6 +312,9 @@ public class LiveMybatisDao {
     
     @Autowired
     private TopicCategoryMapper topicCategoryMapper;
+    
+    @Autowired
+    private LotteryAppointMapper lotteryAppointMapper;
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -2171,5 +2177,13 @@ public class LiveMybatisDao {
 	public List<TopicCategory> getAllTopicCategory(){
 		TopicCategoryExample example = new TopicCategoryExample();
 		return topicCategoryMapper.selectByExample(example);
+	}
+	
+	public List<LotteryAppoint> getAppointUser(long lotteryId){
+		LotteryAppointExample example = new LotteryAppointExample();
+		LotteryAppointExample.Criteria criteria = example.createCriteria();
+		criteria.andLotteryIdEqualTo(lotteryId);
+		example.setOrderByClause(" id asc ");
+		return lotteryAppointMapper.selectByExample(example);
 	}
 }
