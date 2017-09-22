@@ -242,4 +242,9 @@ public class Home extends BaseController {
     public Response hot(HotRequest request){
         return contentService.hot(request.getPage(), request.getUid());
     }
+    @RequestMapping(value = "/adRead")
+    @ResponseBody
+    public Response adRead(AdReadRequest request){
+        return contentService.adRead(request.getAdid(), request.getUid());
+    }
 }

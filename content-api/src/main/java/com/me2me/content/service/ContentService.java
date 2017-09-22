@@ -602,7 +602,7 @@ public interface ContentService{
 	
 	
 	/**
-	 * 首页热点主数据接口
+	 * 标签集合
 	 * @param cid
 	 * @param uid
 	 * @return
@@ -610,9 +610,17 @@ public interface ContentService{
 	public Response tagGroup(long cid, long uid);
 	
 	/**
+	 * 首页热点接口
 	 * @param page
 	 * @param uid
 	 * @return
 	 */
 	public Response hot(int page, long uid);
+	
+    /**
+     * 保存广告点击记录接口
+     * @param adRecord
+     * @return
+     */
+    public Response adRead(long adid,long uid);
 }

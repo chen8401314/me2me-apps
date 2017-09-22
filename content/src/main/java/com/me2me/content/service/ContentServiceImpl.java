@@ -113,6 +113,7 @@ import com.me2me.content.mapper.UserVisitLogMapper;
 import com.me2me.content.model.AdBanner;
 import com.me2me.content.model.AdInfo;
 import com.me2me.content.model.AdInfoExample;
+import com.me2me.content.model.AdRecord;
 import com.me2me.content.model.ArticleLikesDetails;
 import com.me2me.content.model.ArticleReview;
 import com.me2me.content.model.ArticleTagsDetails;
@@ -8716,4 +8717,17 @@ public class ContentServiceImpl implements ContentService {
 		}
 		return Response.success(dto);
 	}
+    @Override
+    public Response adRead(long adid,long uid) {
+    	try {
+    		AdRecord adRecord = new AdRecord();
+    		adRecord.setAdid(adid);
+    		adRecord.setUid(uid);
+    		contentMybatisDao.saveAdRecrod(adRecord);
+		} catch (Exception e) {
+			log.error("保存广告点击记录失败", e);
+			return 	Response.failure(500,"保存广告点击记录失败");
+		}
+        return  Response.success();
+    }
 }
