@@ -71,9 +71,11 @@ public class DevInterceptor implements HandlerInterceptor{
 		if(isDevMode){
 			String requestUri = request.getRequestURI();
 			if(!StringUtils.isEmpty(requestUri)){
+				String isTest= request.getParameter("_isTest");
+				boolean isTestMode = StringUtils.isNotEmpty(isTest) && isTest.equals("1");
 				String targetFile = requestUri.substring(1).replaceAll("/$", "").replace("/", ".");
 				boolean isValid =props.getProperty(targetFile, "").equals("true");
-				if(isValid){
+				if(isValid || isTestMode){
 					targetFile+=".json";
 					InputStream inputStream=null;
 					response.setContentType("application/json; charset=utf-8");
