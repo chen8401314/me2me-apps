@@ -184,14 +184,38 @@ public class CommonUtils {
 		return dest;
 	}
 	
-	public static List<String> splitM2mNickName(String nickName){
-		List<String> result = new ArrayList<String>();
-		if(StringUtils.isBlank(nickName)){
-			return result;
+	/**
+	 * 返回指定长度的缩略字符串，如果有缩率，则最后加...<br>
+	 * 字母和数字算一个长度，其他算两个长度
+	 * @param name		待缩率字符串
+	 * @param length	所需长度
+	 * @return
+	 */
+	public static String getShortName(String name, int needRealLength){
+		if(StringUtils.isBlank(name)){
+			return "";
+		}
+		List<String> strList = new ArrayList<String>();
+		int[] strLengthArr = new int[name.length()];
+		int realLength = 0;
+		for(int i=0;i<name.length();i++){
+			char ch = name.charAt(i);
+			strList.add(String.valueOf(ch));
+			if(('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ('0' <= ch && ch <= '9')){
+				realLength = realLength + 1;
+				strLengthArr[i] = 1;
+			}else{
+				realLength = realLength + 2;
+				strLengthArr[i] = 2;
+			}
 		}
 		
-//		for()
+		if(realLength <= needRealLength){//如果字符串比所需的少，直接返回，不需要缩略
+			return name;
+		}
 		
-		return result;
+		
+		
+		return "";
 	}
 }

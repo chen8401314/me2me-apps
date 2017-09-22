@@ -16,12 +16,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.me2me.common.security.SecurityUtils;
-import com.me2me.content.service.ContentService;
 import com.me2me.io.service.FileTransferService;
 import com.me2me.live.model.TopicCategory;
 import com.me2me.live.service.LiveExtService;
 import com.me2me.mgmt.vo.DatatablePage;
-import com.plusnet.common.util.StringUtil;
 import com.plusnet.sso.api.vo.JsonResult;
 
 import lombok.extern.slf4j.Slf4j;
@@ -143,7 +141,7 @@ public class TopicCategoryController {
 	public JsonResult addTopic2Category(HttpServletRequest request) throws Exception {
 		String ids = request.getParameter("ids");
 		String toCategory= request.getParameter("toCategory");
-		if(!StringUtil.isEmpty(ids) && toCategory!=null){
+		if(!StringUtils.isEmpty(ids) && toCategory!=null){
 			if(toCategory.equals("")){
 				jdbc.update("update topic set category_id=0 where id in("+ids+")");
 			}else{
