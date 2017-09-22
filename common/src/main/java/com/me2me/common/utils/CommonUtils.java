@@ -195,13 +195,24 @@ public class CommonUtils {
 		if(StringUtils.isBlank(name)){
 			return "";
 		}
-		List<String> strList = new ArrayList<String>();
+		if(needRealLength < 4){
+			needRealLength = 4;
+		}
+		List<String> strList = new ArrayList<String>(name.length());
 		int[] strLengthArr = new int[name.length()];
 		int realLength = 0;
 		for(int i=0;i<name.length();i++){
 			char ch = name.charAt(i);
 			strList.add(String.valueOf(ch));
-			if(('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ('0' <= ch && ch <= '9')){
+			if(('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') 
+					|| ('0' <= ch && ch <= '9') || ch == ','
+					|| ch == '.' || ch == '?' || ch == '!'
+					|| ch == '@' || ch == '$' || ch == '%'
+					|| ch == '^' || ch == '&' || ch == '*'
+					|| ch == '(' || ch == ')' || ch == '-'
+					|| ch == '=' || ch == '{' || ch == '}'
+					|| ch == '[' || ch == ']' || ch == '|'
+					|| ch == ':' || ch == ';' || ch == '~'){
 				realLength = realLength + 1;
 				strLengthArr[i] = 1;
 			}else{
@@ -214,8 +225,17 @@ public class CommonUtils {
 			return name;
 		}
 		
+		StringBuilder result = new StringBuilder();
+		int l = 0;
+		for(int i=0;i<strLengthArr.length;i++){
+			l = l + strLengthArr[i];
+			if(l > (needRealLength-2)){
+				break;
+			}
+			result.append(strList.get(i));
+		}
+		result.append("...");
 		
-		
-		return "";
+		return result.toString();
 	}
 }
