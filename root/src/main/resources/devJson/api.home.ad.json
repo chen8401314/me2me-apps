@@ -14,6 +14,18 @@
                 "adUrl":"https://xxxx",
                 "topicType":0,
                 "topicInternalStatus":0
+            },
+             {
+                "adid":1234568,
+                "adTitle":"标题",
+                "adCover":"https://cdn.me-to-me.com/dds2342dffg",
+                "type":0,
+                "adCoverWidth":100,
+                "adCoverHeight":100,
+                "topicId":1515,
+                "adUrl":"https://xxxx",
+                "topicType":0,
+                "topicInternalStatus":0
             }
         ]
     },
