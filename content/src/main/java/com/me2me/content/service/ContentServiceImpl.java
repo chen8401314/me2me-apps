@@ -1509,7 +1509,7 @@ public class ContentServiceImpl implements ContentService {
                         		contentElement.setKcImage(Constant.QINIU_DOMAIN+"/"+kcImage);
                         	}
                         	String kcIcon = (String)kingdomCategory.get("icon");
-                        	if(StringUtils.isEmpty(kcIcon)){
+                        	if(!StringUtils.isEmpty(kcIcon)){
                         		contentElement.setKcIcon(Constant.QINIU_DOMAIN+"/"+kcIcon);
                         	}
                     	}
@@ -3076,7 +3076,15 @@ public class ContentServiceImpl implements ContentService {
                 reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
             }
         }
-
+		// 一次性查出所有分类信息
+		Map<String, Map<String, Object>> kingdomCategoryMap = new HashMap<String, Map<String, Object>>();
+		List<Map<String, Object>> kcList = liveForContentJdbcDao.getAllKingdomCategory();
+		if (null != kcList && kcList.size() > 0) {
+			for (Map<String, Object> m : kcList) {
+				kingdomCategoryMap.put(String.valueOf(m.get("id")), m);
+			}
+		}
+		
         UserProfile userProfile = null;
         Map<String, Object> topicUserProfile = null;
         List<Map<String, Object>> topicOutDataList = null;
@@ -3136,6 +3144,25 @@ public class ContentServiceImpl implements ContentService {
                 }else{
                     contentElement.setFavorite(0);
                 }
+
+                //王国增加身份信息
+                Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
+				int kcid = (Integer) topic.get("category_id");
+				if (kcid > 0) {
+					Map<String, Object> kingdomCategory = kingdomCategoryMap.get(String.valueOf(kcid));
+					if (null != kingdomCategory) {
+						contentElement.setKcid((Integer) kingdomCategory.get("id"));
+						contentElement.setKcName((String) kingdomCategory.get("name"));
+						String kcImage = (String) kingdomCategory.get("cover_img");
+						if (!StringUtils.isEmpty(kcImage)) {
+							contentElement.setKcImage(Constant.QINIU_DOMAIN + "/" + kcImage);
+						}
+						String kcIcon = (String) kingdomCategory.get("icon");
+						if (!StringUtils.isEmpty(kcIcon)) {
+							contentElement.setKcIcon(Constant.QINIU_DOMAIN + "/" + kcIcon);
+						}
+					}
+				}
                 if(content.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国转发UGC的，那么需要返回原作者UID和昵称
                     topicUserProfile = forwardTopicUserProfileMap.get(content.getForwardCid().toString());
                     if(null != topicUserProfile){
@@ -3150,8 +3177,6 @@ public class ContentServiceImpl implements ContentService {
                     }
                 }
 
-                //王国增加身份信息
-                Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
                 if(null != topic){
                     int internalStatust = this.getInternalStatus(topic, uid);
                     if(internalStatust==Specification.SnsCircle.OUT.index){
@@ -8486,7 +8511,7 @@ public class ContentServiceImpl implements ContentService {
 	                        		contentElement.setKcImage(Constant.QINIU_DOMAIN+"/"+kcImage);
 	                        	}
 	                        	String kcIcon = (String)kingdomCategory.get("icon");
-	                        	if(StringUtils.isEmpty(kcIcon)){
+	                        	if(!StringUtils.isEmpty(kcIcon)){
 	                        		contentElement.setKcIcon(Constant.QINIU_DOMAIN+"/"+kcIcon);
 	                        	}
 	                    	}
