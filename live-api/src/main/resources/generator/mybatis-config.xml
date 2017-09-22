@@ -71,5 +71,6 @@
         <!-- <table tableName="gift_info" domainObjectName="GiftInfo" /> -->
         <!-- <table tableName="gift_history" domainObjectName="GiftHistory" /> -->
         <!-- <table tableName="topic_category" domainObjectName="TopicCategory" /> -->
+        <!-- <table tableName="lottery_appoint" domainObjectName="LotteryAppoint" /> -->
     </context>
 </generatorConfiguration>
