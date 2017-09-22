@@ -599,4 +599,13 @@ public interface ContentService{
 	 * @return
 	 */
 	public Response userGroup(long cid, long uid);
+	
+	
+	/**
+	 * 首页最热标签
+	 * @param cid
+	 * @param uid
+	 * @return
+	 */
+	public Response tagGroup(long cid, long uid);
 }
