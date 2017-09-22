@@ -645,10 +645,11 @@ public class ContentMybatisDao {
      * @param pageSize
      * @return
      */
-    public List<Content2Dto> getHotContentListByType(long uid, int type, int pageSize,List<String> ids,List<Long> blacklistUids,String blackTagIds){
+    public List<Content2Dto> getHotContentListByType(long uid, int type, int start,int pageSize,List<String> ids,List<Long> blacklistUids,String blackTagIds){
         HotQueryDto hotQueryDto = new HotQueryDto();
         hotQueryDto.setType(type);
         hotQueryDto.setPageSize(pageSize);
+        hotQueryDto.setStart(start);
         hotQueryDto.setIds(ids);
         hotQueryDto.setBlacklistUids(blacklistUids);
         hotQueryDto.setUid(uid);

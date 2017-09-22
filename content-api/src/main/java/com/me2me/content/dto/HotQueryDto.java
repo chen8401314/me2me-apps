@@ -17,6 +17,8 @@ public class HotQueryDto implements BaseEntity {
     private long sinceId;
 
     private int type;
+    
+    private int start;
 
     private int pageSize;
 

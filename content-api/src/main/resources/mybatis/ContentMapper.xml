@@ -1211,7 +1211,7 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
        </foreach>
      </if>
      and UNIX_TIMESTAMP(m.update_time)*1000 
-	 order by m.update_time desc limit #{hq.pageSize}
+	 order by m.update_time desc limit #{hq.start},#{hq.pageSize}
   	</select>
   	
   	

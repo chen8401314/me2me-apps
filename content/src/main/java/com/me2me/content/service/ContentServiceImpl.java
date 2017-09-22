@@ -8198,8 +8198,8 @@ public class ContentServiceImpl implements ContentService {
 		}
 		String blackTagIds = org.apache.commons.lang3.StringUtils.join(blackTagIdList, ",");
 		int pageSize = 20;
-		List<Content2Dto> contentList = contentMybatisDao.getHotContentListByType(uid, (page - 1) * pageSize,
-				page * pageSize, ids, blacklistUids, blackTagIds);// 只要UGC+PGC+个人王国
+		List<Content2Dto> contentList = contentMybatisDao.getHotContentListByType(uid, 0,(page - 1) * pageSize,
+				 pageSize, ids, blacklistUids, blackTagIds);// 只要UGC+PGC+个人王国
 
 		List<Long> topicIdList = new ArrayList<Long>();
 		List<Long> ceTopicIdList = new ArrayList<Long>();
