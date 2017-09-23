@@ -89,6 +89,7 @@ public class KingdomPriceTask {
 		weightKeyList.add("HARVEST_PERCENT");
 		weightKeyList.add("ALGORITHM_Y_X_DOWN");
 		weightKeyList.add("ALGORITHM_Y_X_UP");
+		weightKeyList.add("ALGORITHM_PRICE_INCR_LIMIT");
 	}
 	
 	@Scheduled(cron="0 2 0 * * ?")
@@ -159,6 +160,8 @@ public class KingdomPriceTask {
 		double yxUp = this.getDoubleConfig("ALGORITHM_Y_X_UP", weightConfigMap, 50);//y/x上限
 		double yxDown = this.getDoubleConfig("ALGORITHM_Y_X_DOWN", weightConfigMap, 0.02);//y/x下限
 		
+		int priceIncrLimit = this.getIntegerConfig("ALGORITHM_PRICE_INCR_LIMIT", weightConfigMap, 500);//王国价值增长上限
+		
 		//获取补助配置
 		StringBuilder subsidyConfigSql = new StringBuilder();
 		subsidyConfigSql.append("select * from topic_price_subsidy_config t order by t.m1 asc");
@@ -219,6 +222,8 @@ public class KingdomPriceTask {
 		List<Map<String, Object>> readDayCountList = null;
 		StringBuilder giftPriceSql = null;
 		List<Map<String, Object>> giftPriceList = null;
+		StringBuilder hotContentSql = null;
+		List<Map<String, Object>> hotContentList = null;
 		while(true){
 			topicList = localJdbcDao.queryEvery(topicSql+start+","+pageSize);
 			if(null == topicList || topicList.size() == 0){
@@ -239,6 +244,28 @@ public class KingdomPriceTask {
 				kc.setUid(uid);
 				if(!uidList.contains(uid)){
 					uidList.add(uid);
+				}
+			}
+			
+			//一次性查出热点王国
+			hotContentSql = new StringBuilder();
+			hotContentSql.append("select t.id from topic t,content c,high_quality_content h");
+			hotContentSql.append(" where t.id=c.forward_cid and c.type=3 and c.id=h.cid");
+			hotContentSql.append(" and t.id in (");
+			for(int i=0;i<topicList.size();i++){
+				if(i>0){
+					hotContentSql.append(",");
+				}
+				hotContentSql.append(String.valueOf(topicList.get(i).get("id")));
+			}
+			hotContentSql.append(")");
+			hotContentList = localJdbcDao.queryEvery(hotContentSql.toString());
+			if(null != hotContentList && hotContentList.size() > 0){
+				for(Map<String, Object> h : hotContentList){
+					kc = kingCountMap.get(String.valueOf(h.get("id")));
+					if(null != kc){
+						kc.setIsHot(1);
+					}
 				}
 			}
 			
@@ -628,6 +655,14 @@ public class KingdomPriceTask {
 						kv = 0;
 						kc.setStealPrice(oldStealPrice);
 					}
+					
+					if(kc.getIsHot() != 1 && !kc.isVlv()){
+						if((int)kv > priceIncrLimit){
+							kc.setOverLimitPrice(priceIncrLimit-(int)kv);
+							kv = priceIncrLimit;
+						}
+					}
+					
 					kc.setPrice((int)kv + oldPrice);
 					kc.setKv0(kv0+(int)kv);
 					
@@ -692,6 +727,13 @@ public class KingdomPriceTask {
 						d = (int)((kv0/decayBaseDayCountWeight)*Math.pow(decayBaseWeight, kc.getNoUpdateDayCount()));
 						if(d < 2){
 							d = 2;
+						}
+					}
+					
+					if(kc.getIsHot() != 1 && !kc.isVlv()){//增长上限，当然热点王国和大V是不会限制的
+						if(_kv > priceIncrLimit){
+							kc.setOverLimitPrice(priceIncrLimit-_kv);
+							_kv = priceIncrLimit;
 						}
 					}
 					
@@ -958,6 +1000,10 @@ public class KingdomPriceTask {
 		private int kv0;
 		
 		private int giftPrice = 0;//礼物价值
+		
+		private int isHot = 0;//是否热点王国，0否，1是
+		
+		private int overLimitPrice = 0;//超过限制被去除的王国价值
 	}
 	
 	public void executeFull(String dateStr) throws Exception{
@@ -1368,10 +1414,10 @@ public class KingdomPriceTask {
 		localJdbcDao.executeSql(saveSql.toString());
 		
 		StringBuilder saveHisSql = new StringBuilder();
-		saveHisSql.append("insert into topic_price_his(topic_id,price,create_time)");
+		saveHisSql.append("insert into topic_price_his(topic_id,price,create_time,over_limit_price)");
 		saveHisSql.append(" values (").append(kc.getTopicId()).append(",").append(kc.getPrice());
 		saveHisSql.append(",'").append(DateUtil.date2string(recordTime, "yyyy-MM-dd HH:mm:ss"));
-		saveHisSql.append("')");
+		saveHisSql.append("',").append(kc.getOverLimitPrice()).append(")");
 		localJdbcDao.executeSql(saveHisSql.toString());
 		
 		StringBuilder updatePriceSql = new StringBuilder();
