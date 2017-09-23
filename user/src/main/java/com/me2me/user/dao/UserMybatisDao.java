@@ -1528,4 +1528,17 @@ public class UserMybatisDao {
     public void saveUserInvitationHis(UserInvitationHis uih){
     	userInvitationHisMapper.insertSelective(uih);
     }
+    
+    public UserInvitationHis getUserLastestInvitation(long uid, int status){
+    	UserInvitationHisExample example = new UserInvitationHisExample();
+    	UserInvitationHisExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andStatusEqualTo(status);
+    	example.setOrderByClause(" id asc limit 1 ");
+    	List<UserInvitationHis> list = userInvitationHisMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
 }

@@ -45,6 +45,7 @@ import com.me2me.common.Constant;
 import com.me2me.common.enums.USER_OPRATE_TYPE;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.utils.CollectionUtils;
+import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.utils.ProbabilityUtils;
 import com.me2me.common.web.Response;
@@ -149,6 +150,7 @@ import com.me2me.user.model.JpushToken;
 import com.me2me.user.model.SystemConfig;
 import com.me2me.user.model.UserFamous;
 import com.me2me.user.model.UserFollow;
+import com.me2me.user.model.UserInvitationHis;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
@@ -8443,6 +8445,56 @@ public class ContentServiceImpl implements ContentService {
 			HotDto.HotContentElement contentElement = null;
 			String lastFragmentImage = null;
 			for (int i = 0; i < contentList.size(); i++) {
+				if (page == 1) {
+					if (adPositionMap.get(String.valueOf(i)) != null) {
+						String[] adids = adPositionMap.get(String.valueOf(i)).toString().split(",");
+						for (String adidStr : adids) {
+							HotDto.BaseContentElement baseElement = new HotDto.BaseContentElement();
+							// 广告条type默认12
+							baseElement.setType(12);
+							baseElement.setCid(Long.parseLong(adidStr));
+							dto.getData().add(baseElement);
+						}
+					}
+					if (hotPositionMap.get(String.valueOf(i)) != null) {
+						String[] types = hotPositionMap.get(String.valueOf(i)).toString().split(",");
+						for (String typeStr : types) {
+							int type = Integer.parseInt(typeStr);
+							HotDto.BaseContentElement baseElement = new HotDto.BaseContentElement();
+							switch (type) {
+							case 11:// 语录
+								baseElement.setType(11);
+								dto.getData().add(baseElement);
+								break;
+							case 13:// 分类入口
+								baseElement.setType(13);
+								dto.getData().add(baseElement);
+								break;
+							case 14:// 邀请
+								this.builderInvitationElement(dto, uid);
+								break;
+							case 51:// 上市王国集合
+								baseElement.setType(51);
+								baseElement.setTitle("最新上市王国");
+								dto.getData().add(baseElement);
+								break;
+							case 52:// 用户集合
+								baseElement.setType(52);
+								baseElement.setTitle("最有料的国王");
+								dto.getData().add(baseElement);
+								break;
+							case 53:// 标签集合
+								baseElement.setType(53);
+								baseElement.setTitle("最热标签在这里");
+								dto.getData().add(baseElement);
+								break;
+							default:
+								break;
+							}
+						}
+					}
+				}
+				
 				Content2Dto c = contentList.get(i);
 				contentElement = new HotDto.HotContentElement();
 				contentElement.setSinceId(c.getUpdateTime().getTime());
@@ -8662,61 +8714,58 @@ public class ContentServiceImpl implements ContentService {
 					}
 				}
 				dto.getData().add(contentElement);
-				if (page == 1) {
-					if (adPositionMap.get(String.valueOf(i)) != null) {
-						String[] adids = adPositionMap.get(String.valueOf(i)).toString().split(",");
-						for (String adidStr : adids) {
-							HotDto.BaseContentElement baseElement = new HotDto.BaseContentElement();
-							// 广告条type默认12
-							baseElement.setType(12);
-							baseElement.setCid(Long.parseLong(adidStr));
-							dto.getData().add(baseElement);
-						}
-					}
-					if (hotPositionMap.get(String.valueOf(i)) != null) {
-						String[] types = hotPositionMap.get(String.valueOf(i)).toString().split(",");
-						for (String typeStr : types) {
-							int type = Integer.parseInt(typeStr);
-							HotDto.BaseContentElement baseElement = new HotDto.BaseContentElement();
-							switch (type) {
-							case 11:// 语录
-								baseElement.setType(11);
-								dto.getData().add(baseElement);
-								break;
-							case 13:// 分类入口
-								baseElement.setType(13);
-								dto.getData().add(baseElement);
-								break;
-							case 14:// 邀请
-								HotDto.InvitationElement invitationElement = new HotDto.InvitationElement();
-								invitationElement.setType(14);
-								dto.getData().add(invitationElement);
-								break;
-							case 51:// 上市王国集合
-								baseElement.setType(51);
-								baseElement.setTitle("最新上市王国");
-								dto.getData().add(baseElement);
-								break;
-							case 52:// 用户集合
-								baseElement.setType(52);
-								baseElement.setTitle("最有料的国王");
-								dto.getData().add(baseElement);
-								break;
-							case 53:// 标签集合
-								baseElement.setType(53);
-								baseElement.setTitle("最热标签在这里");
-								dto.getData().add(baseElement);
-								break;
-							default:
-								break;
-							}
-						}
-					}
-				}
 			}
 		}
 		return Response.success(dto);
 	}
+	
+	private void builderInvitationElement(HotDto dto, long currentUid){
+		//查询是否有待领取的邀请
+		UserInvitationHis his = userService.userLastestInvitation(currentUid);
+		if(null == his){//没有待领取的东东，所以不需要返回
+			return;
+		}
+		UserProfile fromUserProfile = userService.getUserProfileByUid(his.getFromUid());
+		if(null == fromUserProfile){//用户不存在就无所谓了
+			liveForContentJdbcDao.updateUserInvitationHisReceive(his.getId());//赶紧更新掉，免得影响后面
+			return;
+		}
+		
+		HotDto.InvitationElement invitationElement = new HotDto.InvitationElement();
+		invitationElement.setType(14);
+		invitationElement.setAvatar(Constant.QINIU_DOMAIN + "/" + fromUserProfile.getAvatar());
+		if(!StringUtils.isEmpty(fromUserProfile.getAvatarFrame())){
+			invitationElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + fromUserProfile.getAvatarFrame());
+		}
+		if(his.getCoins().intValue() > 0){
+			invitationElement.setCoins(his.getCoins().intValue());
+			invitationElement.setBtnAction(1);
+		}else{
+			invitationElement.setCoins(0);
+			invitationElement.setBtnAction(0);
+			//对于不显示按钮的，只会暂时一次
+			liveForContentJdbcDao.updateUserInvitationHisReceive(his.getId());
+		}
+		String name = CommonUtils.getShortName(fromUserProfile.getNickName(), 12);
+		StringBuilder ctext = new StringBuilder();
+		if(his.getType().intValue() == 1){//邀请的奖励
+			ctext.append("邀请").append(name).append("加入米汤");
+		}else{
+			ctext.append("通过").append(name).append("邀请加入米汤");
+		}
+		if(his.getCoins().intValue() > 0){
+			ctext.append("\n可获取").append(his.getCoins().intValue()).append("米汤币奖励");
+		}
+		invitationElement.setCText(ctext.toString());
+		invitationElement.setHtEnd(2+name.length());
+		invitationElement.setHtStart(2);
+		invitationElement.setInvitationType(his.getType());
+		invitationElement.setUid(his.getFromUid());
+		invitationElement.setV_lv(fromUserProfile.getvLv());
+		dto.getData().add(invitationElement);
+	}
+	
+	
     @Override
     public Response adRead(long adid,long uid) {
     	try {

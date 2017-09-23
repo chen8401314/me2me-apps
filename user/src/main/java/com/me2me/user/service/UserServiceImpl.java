@@ -5229,4 +5229,9 @@ public class UserServiceImpl implements UserService {
 		
 		return Response.success(200, "领取成功", dto);
 	}
+	
+	@Override
+	public UserInvitationHis userLastestInvitation(long uid){
+		return userMybatisDao.getUserLastestInvitation(uid, 0);
+	}
 }

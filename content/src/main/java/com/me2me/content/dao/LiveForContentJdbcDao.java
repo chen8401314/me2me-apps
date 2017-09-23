@@ -1306,4 +1306,13 @@ public class LiveForContentJdbcDao {
 		sb.append(" group by adid");
 		return jdbcTemplate.queryForList(sb.toString());
 	}
+	
+	/**
+	 * 更新邀请表已领取
+	 * @param hisId
+	 */
+	public void updateUserInvitationHisReceive(long hisId){
+		String sql = "update user_invitation_his set status=1,receive_time=now() where id=?";
+		jdbcTemplate.update(sql, hisId);
+	}
 }

@@ -615,4 +615,12 @@ public interface UserService {
 	 * @return
 	 */
 	Response awardByInvitation(long uid, long fromUid, int type);
+	
+	/**
+	 * 获取用户最近一条待领取记录
+	 * @param uid
+	 * @param status
+	 * @return
+	 */
+	UserInvitationHis userLastestInvitation(long uid);
 }
