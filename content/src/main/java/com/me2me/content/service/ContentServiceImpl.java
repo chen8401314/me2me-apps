@@ -3088,6 +3088,36 @@ public class ContentServiceImpl implements ContentService {
 			}
 		}
 		
+		// 一次性查询王国的标签信息
+		Map<String, String> topicTagMap = new HashMap<String, String>();
+		List<Map<String, Object>> topicTagList = liveForContentJdbcDao.getTopicTagDetailListByTopicIds(topicIdList);
+		if (null != topicTagList && topicTagList.size() > 0) {
+			long tid = 0;
+			String tags = null;
+			Long topicId = null;
+			for (Map<String, Object> ttd : topicTagList) {
+				topicId = (Long) ttd.get("topic_id");
+				if (topicId.longValue() != tid) {
+					// 先插入上一次
+					if (tid > 0 && !StringUtils.isEmpty(tags)) {
+						topicTagMap.put(String.valueOf(tid), tags);
+					}
+					// 再初始化新的
+					tid = topicId.longValue();
+					tags = null;
+				}
+				if (tags != null) {
+					tags = tags + ";" + (String) ttd.get("tag");
+				} else {
+					tags = (String) ttd.get("tag");
+				}
+			}
+			if (tid > 0 && !StringUtils.isEmpty(tags)) {
+				topicTagMap.put(String.valueOf(tid), tags);
+			}
+		}
+		
+		double minRmb = Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
         UserProfile userProfile = null;
         Map<String, Object> topicUserProfile = null;
         List<Map<String, Object>> topicOutDataList = null;
@@ -3194,6 +3224,10 @@ public class ContentServiceImpl implements ContentService {
                         int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic.get("id"));
                         contentElement.setAcCount(acCount);
                     }
+					contentElement.setPrice((Integer) topic.get("price"));
+					contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
+					contentElement.setShowPriceBrand(0); // 首页只显示RMB吊牌
+					contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
                 }
                 contentElement.setLiveStatus(0);
                 if(null != reviewCountMap.get(content.getForwardCid().toString())){
@@ -3230,7 +3264,11 @@ public class ContentServiceImpl implements ContentService {
             if(vFlag>0){//3.0.0版本以上
             	contentElement.setLastUpdateTime(content.getUpdateId());
             }
-            
+			if (null != topicTagMap.get(content.getForwardCid().toString())) {
+				contentElement.setTags(topicTagMap.get(content.getForwardCid().toString()));
+			} else {
+				contentElement.setTags("");
+			}
             //增加王国外露内容
             if(content.getType().intValue() == Specification.ArticleType.LIVE.index){//王国才有外露
             	topicOutDataList = topicOutDataMap.get(content.getForwardCid().toString());
@@ -8550,7 +8588,7 @@ public class ContentServiceImpl implements ContentService {
 						contentElement.setInternalStatus(internalStatust);
 						contentElement.setPrice((Integer) topic.get("price"));
 						contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
-						contentElement.setShowPriceBrand(0); // 首页只显示RMB吊牌
+						contentElement.setShowPriceBrand(0); // 
 						contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
 						
 	                	int kcid = (Integer)topic.get("category_id");
