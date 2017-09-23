@@ -148,6 +148,7 @@ import com.me2me.live.model.LiveDisplayProtocol;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.LiveFavoriteDelete;
 import com.me2me.live.model.LiveReadHistory;
+import com.me2me.live.model.LotteryAppoint;
 import com.me2me.live.model.LotteryContent;
 import com.me2me.live.model.LotteryInfo;
 import com.me2me.live.model.LotteryProhibit;
@@ -9686,79 +9687,105 @@ public class LiveServiceImpl implements LiveService {
 			String loseMessage = topic.getTitle()+":["+lotteryInfo.getTitle()+"]已开奖,很遗憾你没有中奖,再接再厉吧";
 			
 			if(mainList.size() > 0){
-				List<Long> over2WinList = liveLocalJdbcDao.getOver2WinUidByUids(mainList);
-				if(over2WinList.size() > 0){
-					for(Long id : over2WinList){
-						mainList.remove(id);
+				//查询指定中奖用户
+				List<LotteryAppoint> laList = liveMybatisDao.getAppointUser(lotteryId);
+				List<Long> appointUidList = new ArrayList<Long>();
+				if(null != laList && laList.size() > 0){
+					for(LotteryAppoint la : laList){
+						if(mainList.contains(la.getUid())){//正常的指定人才能中奖
+							appointUidList.add(la.getUid());
+						}
 					}
 				}
 				
-				Random  r = new Random();
+				List<Long> winnerList = new ArrayList<Long>();//中奖人列表
 				
-				List<Long> winnerList = new ArrayList<Long>();
-				if(mainList.size()<=lotteryInfo.getWinNumber()){//没什么好说的，全部中奖
-					winnerList.addAll(mainList);
-					mainList.clear();
-				}else{
-					//先判断是否运营邀请的，有特殊处理
-					List<Long> newUserList = new ArrayList<Long>();
-					boolean isSpecail = false;
-					UserProfile userProfile = userService.getUserProfileByUid(uid);
-					if(lotteryInfo.getWinNumber().intValue() > 1 && null != userProfile 
-							&& userProfile.getExcellent().intValue() == 1 
-							&& !StringUtils.isEmpty(lotteryInfo.getSummary())
-							&& lotteryInfo.getSummary().contains("新人")){
-						List<Map<String, Object>> newUsers = liveLocalJdbcDao.get24HourNewUserIdByUids(mainList);
-						if(null != newUsers && newUsers.size() > 0){
-							for(Map<String, Object> m : newUsers){
-								Long newUserId = (Long)m.get("uid");
-								if(!newUserList.contains(newUserId)){
-									newUserList.add(newUserId);
-								}
-							}
-							if(newUserList.size() >= 10){
-								isSpecail = true;
-							}
+				int leftWinnerCount = lotteryInfo.getWinNumber().intValue();
+				//有指定的则优先指定中奖，并且如果超出中奖人数，则按指定先后顺序中奖，先到先得
+				if(appointUidList.size() > 0){
+					for(Long u : appointUidList){
+						if(winnerList.size() >= lotteryInfo.getWinNumber().intValue()){
+							break;
+						}
+						winnerList.add(u);
+						leftWinnerCount--;
+						mainList.remove(u);//把中奖的剔除掉
+					}
+				}
+				
+				if(leftWinnerCount > 0){//除了指定的中奖人外，还有需要其他的人补充上来
+					//中奖超过两次以上的用户查出来，多把机会让给其他人...呵呵哒~
+					List<Long> over2WinList = liveLocalJdbcDao.getOver2WinUidByUids(mainList);
+					if(over2WinList.size() > 0){
+						for(Long id : over2WinList){
+							mainList.remove(id);
 						}
 					}
 					
-					if(isSpecail){//特殊逻辑，中奖人数的一半必须是新人
+					Random  r = new Random();
+					if(mainList.size() <= leftWinnerCount){//没什么好说的，剩下的全部中奖
+						winnerList.addAll(mainList);
+						mainList.clear();
+					}else{
+						//先判断是否运营邀请的，有特殊处理
+						List<Long> newUserList = new ArrayList<Long>();
+						boolean isSpecail = false;
+						UserProfile userProfile = userService.getUserProfileByUid(uid);
+						if(leftWinnerCount > 1 && null != userProfile 
+								&& userProfile.getExcellent().intValue() == 1 
+								&& !StringUtils.isEmpty(lotteryInfo.getSummary())
+								&& lotteryInfo.getSummary().contains("新人")){
+							List<Map<String, Object>> newUsers = liveLocalJdbcDao.get24HourNewUserIdByUids(mainList);
+							if(null != newUsers && newUsers.size() > 0){
+								for(Map<String, Object> m : newUsers){
+									Long newUserId = (Long)m.get("uid");
+									if(!newUserList.contains(newUserId)){
+										newUserList.add(newUserId);
+									}
+								}
+								if(newUserList.size() >= 10){
+									isSpecail = true;
+								}
+							}
+						}
 						
-						//先加新人
-						int newCount = lotteryInfo.getWinNumber().intValue()/2;
-						while(winnerList.size() < newCount){
-							int i=r.nextInt(newUserList.size());
-							winnerList.add(newUserList.get(i));
-							mainList.remove(newUserList.get(i));
-							newUserList.remove(i);
-						}
-						//再加剩下的人
-						while(winnerList.size() < lotteryInfo.getWinNumber().intValue()){
-							int i = r.nextInt(mainList.size());
-							winnerList.add(mainList.get(i));
-							mainList.remove(i);
-						}
-					}else{//还是老的完全随机的规则
-						while(winnerList.size() < lotteryInfo.getWinNumber().intValue()){
-							int i = r.nextInt(mainList.size());
-							winnerList.add(mainList.get(i));
-							mainList.remove(i);
+						if(isSpecail){//特殊逻辑，中奖人数的一半必须是新人
+							//先加新人
+							int newCount = leftWinnerCount/2;
+							int c = 0;
+							while(c < newCount){
+								int i=r.nextInt(newUserList.size());
+								winnerList.add(newUserList.get(i));
+								mainList.remove(newUserList.get(i));
+								newUserList.remove(i);
+								c++;
+							}
+							//再加剩下的人
+							while(winnerList.size() < lotteryInfo.getWinNumber().intValue()){
+								int i = r.nextInt(mainList.size());
+								winnerList.add(mainList.get(i));
+								mainList.remove(i);
+							}
+						}else{//还是老的完全随机的规则，公平、公正
+							while(winnerList.size() < lotteryInfo.getWinNumber().intValue()){
+								int i = r.nextInt(mainList.size());
+								winnerList.add(mainList.get(i));
+								mainList.remove(i);
+							}
 						}
 					}
-				}
-				
-				if(winnerList.size() < lotteryInfo.getWinNumber().intValue() && over2WinList.size() > 0){
-					//哎~实在没人了，那么那些已经中国2次以上的人再次中奖吧
-					while(winnerList.size() < lotteryInfo.getWinNumber().intValue() && over2WinList.size() > 0){
-						int i=r.nextInt(over2WinList.size());
-						winnerList.add(over2WinList.get(i));
-						over2WinList.remove(i);
+					if(winnerList.size() < lotteryInfo.getWinNumber().intValue() && over2WinList.size() > 0){
+						//哎~实在没人了，那么那些已经中过2次以上的人再次中奖吧
+						while(winnerList.size() < lotteryInfo.getWinNumber().intValue() && over2WinList.size() > 0){
+							int i=r.nextInt(over2WinList.size());
+							winnerList.add(over2WinList.get(i));
+							over2WinList.remove(i);
+						}
 					}
-				}
-				
-				if(over2WinList.size() > 0){
-					//把这些都归为未中奖
-					mainList.addAll(over2WinList);
+					if(over2WinList.size() > 0){
+						//把这些都归为未中奖
+						mainList.addAll(over2WinList);
+					}
 				}
 				
 				//这样其实弄下来，winnerList里都是中奖的用户，mainList里都是未中奖的用户
