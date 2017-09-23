@@ -1061,4 +1061,13 @@ public class ContentMybatisDao {
 		return adInfoMapper.selectByPrimaryKey(id);
 	}
 	
+	/**
+	 * 广告点击信息添加
+	 * @param id
+	 * @return
+	 */
+	public int saveAdRecrod(AdRecord adRecord){
+		return adRecordMapper.insertSelective(adRecord);
+	}
+	
 }
