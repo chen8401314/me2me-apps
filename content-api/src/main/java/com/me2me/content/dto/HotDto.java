@@ -32,6 +32,12 @@ public class HotDto implements BaseEntity {
 		private String title;
 
 	}
+	@Data
+	public static class TagContentElement extends BaseContentElement {
+		
+		private static final long serialVersionUID = 102597088990701416L;
+		private int size;
+	}
 
 	@Data
 	public static class InvitationElement implements BaseEntity {

@@ -1272,7 +1272,6 @@ public class ContentServiceImpl implements ContentService {
         } else{
         	contents = new ArrayList<Content>();
         }
-        
         List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
         List<Long> forwardTopicIdList = new ArrayList<Long>();
@@ -1571,12 +1570,12 @@ public class ContentServiceImpl implements ContentService {
             			}else{
             				contentElement.setAvatarFrame(null);
             			}
-            			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+content.getUid())){
+            			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+lastUserProfile.getUid())){
                             contentElement.setIsFollowed(1);
                         }else{
                             contentElement.setIsFollowed(0);
                         }
-                        if(null != followMap.get(content.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
+                        if(null != followMap.get(lastUserProfile.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
                             contentElement.setIsFollowMe(1);
                         }else{
                             contentElement.setIsFollowMe(0);
@@ -1641,7 +1640,7 @@ public class ContentServiceImpl implements ContentService {
                         			contentElement.getAudioData().add(outElement);
             					}
             				}else{//图片区展示部分
-            					if(contentElement.getAudioData().size() < 4){
+            					if(contentElement.getImageData().size() < 3){
             						outElement = new ShowMyPublishDto.OutDataElement();
                         			outElement.setId((Long)topicOutData.get("id"));
                         			outElement.setType((Integer)topicOutData.get("type"));
@@ -2953,7 +2952,11 @@ public class ContentServiceImpl implements ContentService {
         }
         
         log.info("getNewest data success ");
-
+    	String isShowTagsStr = userService.getAppConfigByKey("IS_SHOW_TAGS");
+    	int isShowTags = 0;
+    	if(!StringUtils.isEmpty(isShowTagsStr)){
+    		isShowTags = Integer.parseInt(isShowTagsStr);
+    	}
         List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
         List<Long> forwardTopicIdList = new ArrayList<Long>();
@@ -3264,7 +3267,7 @@ public class ContentServiceImpl implements ContentService {
             if(vFlag>0){//3.0.0版本以上
             	contentElement.setLastUpdateTime(content.getUpdateId());
             }
-			if (null != topicTagMap.get(content.getForwardCid().toString())) {
+			if (null != topicTagMap.get(content.getForwardCid().toString()) && isShowTags ==1) {
 				contentElement.setTags(topicTagMap.get(content.getForwardCid().toString()));
 			} else {
 				contentElement.setTags("");
@@ -3289,12 +3292,12 @@ public class ContentServiceImpl implements ContentService {
                         }else{
                         	contentElement.setAvatarFrame(null);
                         }
-            			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+content.getUid())){
+            			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+lastUserProfile.getUid())){
                             contentElement.setIsFollowed(1);
                         }else{
                             contentElement.setIsFollowed(0);
                         }
-                        if(null != followMap.get(content.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
+                        if(null != followMap.get(lastUserProfile.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
                             contentElement.setIsFollowMe(1);
                         }else{
                             contentElement.setIsFollowMe(0);
@@ -3372,7 +3375,7 @@ public class ContentServiceImpl implements ContentService {
                         			contentElement.getAudioData().add(outElement);
             					}
             				}else{//图片区展示部分
-            					if(contentElement.getImageData().size() < 4){
+            					if(contentElement.getImageData().size() < 3){
             						outElement = new ShowNewestDto.OutDataElement();
                         			outElement.setId((Long)topicOutData.get("id"));
                         			outElement.setType((Integer)topicOutData.get("type"));
@@ -3674,12 +3677,12 @@ public class ContentServiceImpl implements ContentService {
                         }else{
                         	contentElement.setAvatarFrame(null);
                         }
-            			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+content.getUid())){
+            			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+lastUserProfile.getUid())){
                             contentElement.setIsFollowed(1);
                         }else{
                             contentElement.setIsFollowed(0);
                         }
-                        if(null != followMap.get(content.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
+                        if(null != followMap.get(lastUserProfile.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
                             contentElement.setIsFollowMe(1);
                         }else{
                             contentElement.setIsFollowMe(0);
@@ -3757,7 +3760,7 @@ public class ContentServiceImpl implements ContentService {
                         			contentElement.getAudioData().add(outElement);
             					}
             				}else{//图片区展示部分
-            					if(contentElement.getAudioData().size() < 4){
+            					if(contentElement.getImageData().size() < 3){
             						outElement = new ShowAttentionDto.OutDataElement();
                         			outElement.setId((Long)topicOutData.get("id"));
                         			outElement.setType((Integer)topicOutData.get("type"));
@@ -4706,6 +4709,7 @@ public class ContentServiceImpl implements ContentService {
         
         
         int curPos =0;
+        
         //用户在首页的标签上点击了喜欢,注意在喜欢了之后,在推荐和查询的时候,连同下方的子标签也会一起加入展示,除非用户手动对子标签选择了不喜欢
         List<TagInfo> userLikeTagInfo= topicTagMapper.getUserLikeTag(uid);	// 我明确喜欢的标签
         Set<String> userLikeTagSet= new HashSet<>();
@@ -8194,19 +8198,26 @@ public class ContentServiceImpl implements ContentService {
 		Map<String, String> hotPositionMap = new HashMap<String, String>();
 		// 广告位位置信息
 		Map<String, String> adPositionMap = new HashMap<String, String>();
+		//是否显示标签信息
+    	String isShowTagsStr = userService.getAppConfigByKey("IS_SHOW_TAGS");
+    	int isShowTags = 0;
+    	if(!StringUtils.isEmpty(isShowTagsStr)){
+    		isShowTags = Integer.parseInt(isShowTagsStr);
+    	}
 		if (page == 1) {
 			String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX + uid;
 			if (!StringUtils.isEmpty(cacheService.get(key))) {
 				String bubblePositions = userService.getAppConfigByKey(Constant.HOTLIST_BUBBLE_POSITION_KEY);
-				dto.setBubblePositions(bubblePositions); // 提示消息
+				dto.setBubblePositions(bubblePositions);
 			}
 			int openPushPositions = 0;
 			String openPushPositionsStr = userService.getAppConfigByKey(Constant.OPEN_PUSH_POSITION);
 			if (!StringUtils.isEmpty(openPushPositionsStr)) {
 				openPushPositions = Integer.parseInt(openPushPositionsStr);
 			}
-			dto.setOpenPushPositions(openPushPositions); // 提示消息
+			dto.setOpenPushPositions(openPushPositions); 
 
+			//其他栏目位置信息
 			String hotPosition = userService.getAppConfigByKey("HOT_POSITION");
 			JSONArray jsonArr = JSONArray.parseArray(hotPosition);
 			for (int i = 0; i < jsonArr.size(); i++) {
@@ -8224,6 +8235,7 @@ public class ContentServiceImpl implements ContentService {
 					hotPositionMap.put(String.valueOf(s), value.toString());
 				}
 			}
+			//广告位位置信息
 			List<AdBanner> listAdBanner = contentMybatisDao.getAllAdBannerList(-1);
 			for (int i = 0; i < listAdBanner.size(); i++) {
 				AdBanner adBanner = listAdBanner.get(i);
@@ -8626,12 +8638,12 @@ public class ContentServiceImpl implements ContentService {
 	                			}else{
 	                				contentElement.setAvatarFrame(null);
 	                			}
-	                			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+c.getUid())){
+	                			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+lastUserProfile.getUid())){
 	                                contentElement.setIsFollowed(1);
 	                            }else{
 	                                contentElement.setIsFollowed(0);
 	                            }
-	                            if(null != followMap.get(c.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
+	                            if(null != followMap.get(lastUserProfile.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
 	                                contentElement.setIsFollowMe(1);
 	                            }else{
 	                                contentElement.setIsFollowMe(0);
@@ -8696,7 +8708,7 @@ public class ContentServiceImpl implements ContentService {
 	                            			contentElement.getAudioData().add(outElement);
 	                					}
 	                				}else{//图片区展示部分
-	                					if(contentElement.getAudioData().size() < 4){
+	                					if(contentElement.getImageData().size() < 3){
 	                						outElement = new HotDto.OutDataElement();
 	                            			outElement.setId((Long)topicOutData.get("id"));
 	                            			outElement.setType((Integer)topicOutData.get("type"));
@@ -8745,7 +8757,7 @@ public class ContentServiceImpl implements ContentService {
 					} else {
 						contentElement.setFavorite(0);
 					}
-					if (null != topicTagMap.get(c.getForwardCid().toString())) {
+					if (null != topicTagMap.get(c.getForwardCid().toString())  && isShowTags ==1) {
 						contentElement.setTags(topicTagMap.get(c.getForwardCid().toString()));
 					} else {
 						contentElement.setTags("");
