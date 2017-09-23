@@ -8621,7 +8621,7 @@ public class ContentServiceImpl implements ContentService {
 	                			outElement.setExtra((String)topicOutData.get("extra"));
 	                			contentElement.getUgcData().add(outElement);
 	                		}else{//第一个不是UGC
-	                			for(int j=0;i<topicOutDataList.size();j++){
+	                			for(int j=0;j<topicOutDataList.size();j++){
 	                				topicOutData = topicOutDataList.get(j);
 	                				t = ((Integer)topicOutData.get("type")).intValue();
 	                				contentType = ((Integer)topicOutData.get("content_type")).intValue();
