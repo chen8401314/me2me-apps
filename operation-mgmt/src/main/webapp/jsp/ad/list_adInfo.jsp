@@ -183,7 +183,7 @@
 					</form>
 					</div>
 				<div class="modal-footer">
-					<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" onclick="addAdInfo();">保存</button>
+					<button class="btn btn-primary"  aria-hidden="true" onclick="addAdInfo();">保存</button>
 					<button data-dismiss="modal" class="btn btn-default" type="button">关闭</button>
 				</div>
 			</div>
@@ -488,10 +488,11 @@
     }
 	function addAdInfoShow(){
 		reset();
-		$('#modal').modal('show');
+		$('#modal').modal({backdrop: 'static', keyboard: false});
+		alert(1);
 	}
 	   function addAdInfo(){
-		 var formData = new FormData($( "#adInfoForm" )[0]); 
+		  var formData = new FormData($( "#adInfoForm" )[0]); 
 			  	$.ajax({
 			            type: "POST",
 			            url:"./addAdInfo",
@@ -504,16 +505,15 @@
 			                alert(request.status); 
 			            },
 			            success: function(data) {
-			            	  if(data=='1'){
+			            	  if(data.result=='1'){
 			            		  alert('操作成功');
 			            		  sourceTable.draw(false);
 			            		  $('#modal').modal('hide');
 			            	  }else{
-			                    	alert("操作失败");
+			                    	alert(data.msg);
 			                        }
 			            }
 			        });  
-				  	
 	    }
 	   function editAdInfo(id){
 		   reset();
@@ -541,7 +541,7 @@
 			            		  $("#adUrl").val(data.adUrl);
 			            		  $("#bannerId").val(data.bannerId);
 			            		  $("#adCoverSpan").html('<img src="http://cdn.me-to-me.com/'+data.adCover+'" style="width: 200px; height: 150px;" />');
-			            		  $('#modal').modal('show');
+			            		  $('#modal').modal({backdrop: 'static', keyboard: false});
 			            	  }else{
 			                    	alert("获取失败");
 			                        }

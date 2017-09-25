@@ -1264,6 +1264,12 @@ public class ContentServiceImpl implements ContentService {
         dto.setUpdateTime(updateTime);
         dto.setFlag(vFlag);
         ShowMyPublishDto showMyPublishDto = new ShowMyPublishDto();
+		//是否显示标签信息
+    	String isShowTagsStr = userService.getAppConfigByKey("IS_SHOW_TAGS");
+    	int isShowTags = 0;
+    	if(!StringUtils.isEmpty(isShowTagsStr)){
+    		isShowTags = Integer.parseInt(isShowTagsStr);
+    	}
         List<Content> contents = null;
         if(type == 3){//我的王国（自己是国王的）
         	contents = contentMybatisDao.getMyOwnKingdom(dto);
@@ -1408,6 +1414,35 @@ public class ContentServiceImpl implements ContentService {
         	}
         }
 
+		// 一次性查询王国的标签信息
+		Map<String, String> topicTagMap = new HashMap<String, String>();
+		List<Map<String, Object>> topicTagList = liveForContentJdbcDao.getTopicTagDetailListByTopicIds(topicIdList);
+		if (null != topicTagList && topicTagList.size() > 0) {
+			long tid = 0;
+			String tags = null;
+			Long topicId = null;
+			for (Map<String, Object> ttd : topicTagList) {
+				topicId = (Long) ttd.get("topic_id");
+				if (topicId.longValue() != tid) {
+					// 先插入上一次
+					if (tid > 0 && !StringUtils.isEmpty(tags)) {
+						topicTagMap.put(String.valueOf(tid), tags);
+					}
+					// 再初始化新的
+					tid = topicId.longValue();
+					tags = null;
+				}
+				if (tags != null) {
+					tags = tags + ";" + (String) ttd.get("tag");
+				} else {
+					tags = (String) ttd.get("tag");
+				}
+			}
+			if (tid > 0 && !StringUtils.isEmpty(tags)) {
+				topicTagMap.put(String.valueOf(tid), tags);
+			}
+		}
+        
         UserProfile userProfile = null;
         Map<String, Object> topicUserProfile = null;
         List<Map<String, Object>> topicOutDataList = null;
@@ -1535,6 +1570,11 @@ public class ContentServiceImpl implements ContentService {
                 if(null != liveFavouriteMap.get(content.getForwardCid().toString())){
                 	contentElement.setFavorite(1);
                 }
+    			if (null != topicTagMap.get(content.getForwardCid().toString())  && isShowTags ==1) {
+					contentElement.setTags(topicTagMap.get(content.getForwardCid().toString()));
+				} else {
+					contentElement.setTags("");
+				}
             }else{
                 ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
                 if(contentImage != null) {
@@ -8242,7 +8282,7 @@ public class ContentServiceImpl implements ContentService {
 				}
 			}
 			//广告位位置信息
-			List<AdBanner> listAdBanner = contentMybatisDao.getAllAdBannerList(-1);
+			List<AdBanner> listAdBanner = contentMybatisDao.getAllAdBannerList(0);
 			for (int i = 0; i < listAdBanner.size(); i++) {
 				AdBanner adBanner = listAdBanner.get(i);
 				String[] adPosition = adBanner.getBannerPosition().split("-");
