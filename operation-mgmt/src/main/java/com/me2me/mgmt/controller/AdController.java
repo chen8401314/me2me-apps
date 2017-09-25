@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -29,6 +28,8 @@ import com.me2me.content.model.AdBanner;
 import com.me2me.content.model.AdInfo;
 import com.me2me.content.service.ContentService;
 import com.me2me.io.service.FileTransferService;
+import com.me2me.live.model.Topic;
+import com.me2me.live.service.LiveService;
 import com.me2me.mgmt.vo.DatatablePage;
 
 @Controller
@@ -39,6 +40,9 @@ public class AdController {
 	
 	@Autowired
     private ContentService contentService;
+	
+	@Autowired
+    private LiveService liverService;
 	
 	@Autowired
 	private FileTransferService fileTransferService;
@@ -150,7 +154,9 @@ public class AdController {
 	}
 	@RequestMapping(value = "/addAdInfo")
 	@ResponseBody
-	public String addAdInfo(MultipartHttpServletRequest mrequest) throws Exception {
+	public Map<String,String> addAdInfo(MultipartHttpServletRequest mrequest) throws Exception {
+		Map<String,String> map  = new HashMap<String,String>();
+		map.put("result","0");
 		try{
 			AdInfo adInfo = new AdInfo();
 			adInfo.setId(StringUtils.isEmpty(mrequest.getParameter("id"))?0:Long.parseLong(mrequest.getParameter("id")));
@@ -163,6 +169,14 @@ public class AdController {
 			adInfo.setTopicId(StringUtils.isEmpty(mrequest.getParameter("topicId"))?0:Long.parseLong(mrequest.getParameter("topicId")));
 			adInfo.setAdUrl(StringUtils.isEmpty(mrequest.getParameter("adUrl"))?null:mrequest.getParameter("adUrl"));
 			adInfo.setBannerId(StringUtils.isEmpty(mrequest.getParameter("bannerId"))?0:Long.parseLong(mrequest.getParameter("bannerId")));
+			if(adInfo.getType()==1){
+			Topic topic = 	liverService.getTopicById(adInfo.getTopicId());
+				if(topic == null){
+					map.put("result","0");
+					map.put("msg", "找不到该王国");
+					return map;
+				}
+			}
 			MultipartFile file = mrequest.getFile("file");
 			if(file!=null && !StringUtils.isEmpty(file.getOriginalFilename()) && file.getSize()>0){
 				String imgName = SecurityUtils.md5(mrequest.getSession().getId()+System.currentTimeMillis(), "1");
@@ -174,11 +188,14 @@ public class AdController {
 			}else{
 				contentService.saveAdInfo(adInfo);
 			}
-			return "1";
+			map.put("result","1");
+			return map;
 		}catch(Exception e){
 			e.printStackTrace();
 			logger.error("保存广告失败", e);
-			return "0";
+			map.put("result","0");
+			map.put("msg",e.getMessage());
+			return map;
 		}
 	}
 	@RequestMapping(value = "/getTimeInterval")
