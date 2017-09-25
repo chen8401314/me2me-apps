@@ -8226,7 +8226,7 @@ public class ContentServiceImpl implements ContentService {
 				int positionMin = json.getIntValue("positionMin");
 				int positionMax = json.getIntValue("positionMax");
 				Random random = new Random();
-				int s = random.nextInt(positionMax) % (positionMax - positionMin + 1) + positionMin;
+				int s = random.nextInt(positionMax - positionMin + 1) + positionMin;
 				if (hotPositionMap.get(String.valueOf(s)) == null) {
 					hotPositionMap.put(String.valueOf(s), String.valueOf(type));
 				} else {
