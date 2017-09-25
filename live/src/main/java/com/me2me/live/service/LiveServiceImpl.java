@@ -719,6 +719,20 @@ public class LiveServiceImpl implements LiveService {
              cacheService.setex("GIFT_STATUS_"+uid+"_"+giftHistory.getFragmentId(),"1",60*60*48);
          }
 		}
+     
+     if(topic.getCategoryId().intValue() > 0){
+     	TopicCategory tc = liveMybatisDao.getTopicCategoryById(topic.getCategoryId().intValue());
+     	if(null != tc){
+     		liveCoverDto.setKcid(tc.getId());
+     		liveCoverDto.setKcName(tc.getName());
+         	if(!StringUtils.isEmpty(tc.getCoverImg())){
+         		liveCoverDto.setKcImage(Constant.QINIU_DOMAIN+"/"+tc.getCoverImg());
+         	}
+         	if(!StringUtils.isEmpty(tc.getIcon())){
+         		liveCoverDto.setKcIcon(Constant.QINIU_DOMAIN+"/"+tc.getIcon());
+         	}
+     	}
+     }
         
         return Response.success(ResponseStatus.GET_LIVE_COVER_SUCCESS.status, ResponseStatus.GET_LIVE_COVER_SUCCESS.message, liveCoverDto);
     }

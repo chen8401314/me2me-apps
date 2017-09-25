@@ -166,6 +166,7 @@ String sub = request.getParameter("s");
                 	<li <%if("12_9".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appuser/avatarFrame/list">头像框管理</a></li>
                 	<li <%if("12_10".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/gift/list_gift">礼物管理</a></li>
                 	<li <%if("12_11".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/topicCategory/listCategory">王国分类维护</a></li>
+                	<li <%if("12_12".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appLottery/list">王国抽奖列表</a></li>
                 </ul>
             </li>
             <li class="sub-menu">
