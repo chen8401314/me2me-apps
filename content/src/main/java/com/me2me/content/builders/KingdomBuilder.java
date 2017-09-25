@@ -3,6 +3,7 @@ package com.me2me.content.builders;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -474,6 +475,9 @@ public class KingdomBuilder {
 			data.setCid(topicContent.getId());
 			data.setTopicId(topicId);
 			data.setTitle((String) topic.get("title"));
+			data.setUpdateTime(((Date)topic.get("update_time")).getTime());
+			data.setCreateTime(((Date)topic.get("create_time")).getTime());
+			
 			data.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String) topic.get("live_image"));
 			if (null != topicMemberCountMap.get(String.valueOf(topicId))) {
 				data.setFavoriteCount(topicMemberCountMap.get(String.valueOf(topicId)).intValue() + 1);
@@ -518,6 +522,8 @@ public class KingdomBuilder {
 			data.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String) topic.get("live_image"));
 			data.setShowPriceBrand(data.getPrice()>=minPrice?1:0);
 			data.setShowRMBBrand(data.getPriceRMB()>=minRmb?1:0);// 显示吊牌
+			data.setUpdateTime(((Date)topic.get("update_time")).getTime());
+			data.setCreateTime(((Date)topic.get("create_time")).getTime());
 			result.add(data);
 		}
 		return result;
