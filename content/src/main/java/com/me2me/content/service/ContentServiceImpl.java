@@ -7925,10 +7925,16 @@ public class ContentServiceImpl implements ContentService {
 
 	@Override
 	public Response recommendSubTags(String tag) {
-		TagInfo taginfo = topicTagMapper.getTagInfo(tag);
-		List<String> subTags = topicTagMapper.getSubTags(taginfo.getTagId());
 		RecommentSubTagDto dto = new RecommentSubTagDto();
-		dto.setSubTagList(subTags);
+		
+		TagInfo taginfo = topicTagMapper.getTagInfo(tag);
+		if(null != taginfo){
+			List<String> subTags = topicTagMapper.getSubTags(taginfo.getTagId());
+			if(null != subTags && subTags.size() > 0){
+				dto.setSubTagList(subTags);
+			}
+		}
+		
 		return Response.success(dto);
 	}
 
