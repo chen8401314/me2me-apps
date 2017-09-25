@@ -85,7 +85,7 @@
                         <input type="text" id="adBannerName" name="adBannerName" class="form-control" />
 					</div>
 					<div class="form-group">
-						<label for="exampleInput">广告位随机位置</label>
+						<label for="exampleInput">广告位随机位置("-"隔开     例：3-5)</label>
                         <input type="text" id="bannerPosition" name="bannerPosition" class="form-control" />
 					</div>
 				</div>

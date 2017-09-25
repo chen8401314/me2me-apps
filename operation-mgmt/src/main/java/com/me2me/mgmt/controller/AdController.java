@@ -1,7 +1,10 @@
 package com.me2me.mgmt.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.me2me.common.page.PageBean;
 import com.me2me.common.security.SecurityUtils;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.SearchAdBannerListDto;
 import com.me2me.content.dto.SearchAdInfoListDto;
@@ -145,7 +150,7 @@ public class AdController {
 	}
 	@RequestMapping(value = "/addAdInfo")
 	@ResponseBody
-	public String addAdInfo(HttpServletRequest mrequest,@RequestParam("file")MultipartFile file) throws Exception {
+	public String addAdInfo(MultipartHttpServletRequest mrequest) throws Exception {
 		try{
 			AdInfo adInfo = new AdInfo();
 			adInfo.setId(StringUtils.isEmpty(mrequest.getParameter("id"))?0:Long.parseLong(mrequest.getParameter("id")));
@@ -158,6 +163,7 @@ public class AdController {
 			adInfo.setTopicId(StringUtils.isEmpty(mrequest.getParameter("topicId"))?0:Long.parseLong(mrequest.getParameter("topicId")));
 			adInfo.setAdUrl(StringUtils.isEmpty(mrequest.getParameter("adUrl"))?null:mrequest.getParameter("adUrl"));
 			adInfo.setBannerId(StringUtils.isEmpty(mrequest.getParameter("bannerId"))?0:Long.parseLong(mrequest.getParameter("bannerId")));
+			MultipartFile file = mrequest.getFile("file");
 			if(file!=null && !StringUtils.isEmpty(file.getOriginalFilename()) && file.getSize()>0){
 				String imgName = SecurityUtils.md5(mrequest.getSession().getId()+System.currentTimeMillis(), "1");
 	    		fileTransferService.upload(file.getBytes(), imgName);
@@ -175,13 +181,21 @@ public class AdController {
 			return "0";
 		}
 	}
-	@RequestMapping(value = "/addAdInfo1")
+	@RequestMapping(value = "/getTimeInterval")
 	@ResponseBody
-	public String addAdInfo(HttpServletRequest mrequest) throws Exception {
+	public Map<String,String> getTimeInterval(HttpServletRequest mrequest) throws Exception {
+		Map<String,String> dateMap  =new HashMap<String,String>();
 		try{
-			return "1";
+			Date today = new Date();
+			Date effectiveTime = DateUtil.addDay(today,1);
+			dateMap.put("data", "1");
+			dateMap.put("today",DateUtil.date2string(today, "yyyy-MM-dd HH:mm:ss"));
+			dateMap.put("effectiveTime",DateUtil.date2string(effectiveTime, "yyyy-MM-dd HH:mm:ss"));
+			return dateMap;
 		}catch(Exception e){
-			return "0";
+			dateMap.put("data","0");
+			return dateMap;
 		}
 	}
+	
 }

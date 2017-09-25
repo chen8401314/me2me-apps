@@ -128,7 +128,7 @@
 								<div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
 													<span id="adCoverSpan"></span>
 												</div>
-									<div class="fileupload-preview fileupload-exists thumbnail"
+									<div class="fileupload-preview fileupload-exists thumbnail" id="adCoverSpan1"
 													style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
 										     <div>
 										<span class="btn btn-white btn-file"> <span
@@ -137,7 +137,7 @@
 											<i class="fa fa-undo"></i>修改</span> 
 											<input type="file" id="file" name="file" class="default">
 									</span> 
-									<a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload">
+									<a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload" id="delImg">
 									<i class="fa fa-trash">
 									</i>删除</a>
 								</div>
@@ -155,10 +155,10 @@
 					 <div class="col-lg-6">
 					<div class="form-group">
 						<label for="effectiveTime">有效时间</label>
-                        <input type="text" id="effectiveTime" name="effectiveTime" class="form-control" />
+                        <input type="text" id="effectiveTime" name="effectiveTime" class="form-control" onclick="timeShow()"/>
 					</div>
 					<div class="form-group">
-						<label for="displayProbability">显示概率</label>
+						<label for="displayProbability">显示概率(0-100整数)</label>
                         <input type="number" id="displayProbability" name="displayProbability" class="form-control" />
 					</div>	
 					<div class="form-group">
@@ -233,8 +233,10 @@
         <script type="text/javascript" src="${ctx}/assets/bootstrap-timepicker/js/bootstrap-timepicker.js"></script>
         <script type="text/javascript" src="${ctx}/assets/jquery-multi-select/js/jquery.multi-select.js"></script>
         <script type="text/javascript" src="${ctx}/assets/jquery-multi-select/js/jquery.quicksearch.js"></script>
-	
+	    <script type="text/javascript" src="${ctx}/assets/my97datepicker/WdatePicker.js"></script>
 		<script type="text/javascript">
+		var today = '';
+		var effectiveTime='';
 	$.fn.datetimepicker.dates['zh'] = {  
             days:       ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六","星期日"],  
             daysShort:  ["日", "一", "二", "三", "四", "五", "六","日"],  
@@ -245,15 +247,6 @@
             //suffix:      ["st", "nd", "rd", "th"],  
             today:       "今天"  
     };
-	$('#effectiveTime').datetimepicker({
-		format: 'yyyy-mm-dd hh:ii:ss',
-		language: 'zh',
-		startView: 2,
-		autoclose:true,
-		weekStart:1,
-		todayBtn:  1,
-		minView:2
-		});
 	Date.prototype.Format = function(fmt)   
 	{ //author: meizz   
 	  var o = {   
@@ -325,6 +318,26 @@
 	                    }
 	        }
 	    });
+	  	$.ajax({
+	        cache: true,
+	        type: "POST",
+	        dataType :"json",
+	        url:"./getTimeInterval",
+	        async: true,
+	        error: function(request) {
+	            alert('服务器出错'); 
+	        },
+	        success: function(data) {
+	        	  if(data!=null && data!=''&& data.data=='1'){
+	        			 today = data.today;
+	        			 effectiveTime=data.effectiveTime;
+	        	  }else{
+	                    }
+	        }
+	    });
+	  	
+	  	
+	  	
 	  	$('#searchBannerList').change(function(){ 
 	  		sourceTable.draw(true);
 	  	}) 
@@ -474,6 +487,7 @@
 		 }
     }
 	function addAdInfoShow(){
+		reset();
 		$('#modal').modal('show');
 	}
 	   function addAdInfo(){
@@ -502,6 +516,7 @@
 				  	
 	    }
 	   function editAdInfo(id){
+		   reset();
 				 var param = {id:id};
 				  	$.ajax({
 			            cache: true,
@@ -534,7 +549,10 @@
 			        });
 	    }	   
     $('#modal').on('hidden.bs.modal', function () {
-		  $("#id").val(0);
+    	reset();
+   });
+	function reset(){
+		 $("#id").val(0);
 		  $("#adTitle").val('');
 		  $("#adCoverWidth").val('');
 		  $("#adCoverHeight").val('');
@@ -543,9 +561,16 @@
 		  $("#topicId").val('');
 		  $("#adUrl").val('');
 		  $("#adCoverSpan").html('');
-   });
-	
-	
+		  $("#adCoverSpan1").html('');
+		  $("#delImg").click();
+	}
+	function timeShow(){
+		WdatePicker({
+			dateFmt:'yyyy-MM-dd HH:mm:ss',
+			//minDate:today,
+			maxDate:effectiveTime
+			});
+	}
 	</script>
 </body>
 </html>
