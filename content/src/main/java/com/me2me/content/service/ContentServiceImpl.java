@@ -1570,12 +1570,12 @@ public class ContentServiceImpl implements ContentService {
             			}else{
             				contentElement.setAvatarFrame(null);
             			}
-            			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+lastUserProfile.getUid())){
+            			if(null != followMap.get(uid+"_"+lastUserProfile.getUid())){
                             contentElement.setIsFollowed(1);
                         }else{
                             contentElement.setIsFollowed(0);
                         }
-                        if(null != followMap.get(lastUserProfile.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
+                        if(null != followMap.get(lastUserProfile.getUid()+"_"+uid)){
                             contentElement.setIsFollowMe(1);
                         }else{
                             contentElement.setIsFollowMe(0);
@@ -3292,12 +3292,12 @@ public class ContentServiceImpl implements ContentService {
                         }else{
                         	contentElement.setAvatarFrame(null);
                         }
-            			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+lastUserProfile.getUid())){
+            			if(null != followMap.get(uid+"_"+lastUserProfile.getUid())){
                             contentElement.setIsFollowed(1);
                         }else{
                             contentElement.setIsFollowed(0);
                         }
-                        if(null != followMap.get(lastUserProfile.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
+                        if(null != followMap.get(lastUserProfile.getUid()+"_"+uid)){
                             contentElement.setIsFollowMe(1);
                         }else{
                             contentElement.setIsFollowMe(0);
@@ -3677,12 +3677,12 @@ public class ContentServiceImpl implements ContentService {
                         }else{
                         	contentElement.setAvatarFrame(null);
                         }
-            			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+lastUserProfile.getUid())){
+            			if(null != followMap.get(uid+"_"+lastUserProfile.getUid())){
                             contentElement.setIsFollowed(1);
                         }else{
                             contentElement.setIsFollowed(0);
                         }
-                        if(null != followMap.get(lastUserProfile.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
+                        if(null != followMap.get(lastUserProfile.getUid()+"_"+uid)){
                             contentElement.setIsFollowMe(1);
                         }else{
                             contentElement.setIsFollowMe(0);
@@ -8647,12 +8647,12 @@ public class ContentServiceImpl implements ContentService {
 	                			}else{
 	                				contentElement.setAvatarFrame(null);
 	                			}
-	                			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+lastUserProfile.getUid())){
+	                			if(null != followMap.get(uid+"_"+lastUserProfile.getUid())){
 	                                contentElement.setIsFollowed(1);
 	                            }else{
 	                                contentElement.setIsFollowed(0);
 	                            }
-	                            if(null != followMap.get(lastUserProfile.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
+	                            if(null != followMap.get(lastUserProfile.getUid()+"_"+uid)){
 	                                contentElement.setIsFollowMe(1);
 	                            }else{
 	                                contentElement.setIsFollowMe(0);
