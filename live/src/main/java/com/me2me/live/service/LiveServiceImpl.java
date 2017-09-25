@@ -8703,10 +8703,26 @@ public class LiveServiceImpl implements LiveService {
 							}
 						}
 						if (dto.getStatus() != 3) {
-							return Response.failure(500, "没有日签数据！");
+							//return Response.failure(500, "没有日签数据！");
+							dto.setStatus(3);
+							dto.setNickName(userProfile.getNickName());
+							dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+							dto.setUid(uid);
+							dto.setTopicId(0);
+							dto.setFragment("今天懒癌发作，什么都没说~");
+							dto.setImage("");
+							dto.setTopicTitle("");
 						}
 					}else{
-						return Response.failure(500, "没有日签数据！");
+						//return Response.failure(500, "没有日签数据！");
+						dto.setStatus(3);
+						dto.setNickName(userProfile.getNickName());
+						dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+						dto.setUid(uid);
+						dto.setTopicId(0);
+						dto.setFragment("今天懒癌发作，什么都没说~");
+						dto.setImage("");
+						dto.setTopicTitle("");
 					}
 				}
 			} else {

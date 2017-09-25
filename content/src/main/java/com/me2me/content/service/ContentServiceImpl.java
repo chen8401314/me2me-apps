@@ -8534,9 +8534,12 @@ public class ContentServiceImpl implements ContentService {
 								dto.getData().add(baseElement);
 								break;
 							case 53:// 标签集合
-								baseElement.setType(53);
-								baseElement.setTitle("最热标签在这里");
-								dto.getData().add(baseElement);
+								HotDto.TagContentElement tagContentElement = new HotDto.TagContentElement();
+								tagContentElement.setType(53);
+								int tagCount =  userService.getIntegerAppConfigByKey("HOME_HOT_LABELS");
+								tagContentElement.setSize(tagCount);
+								tagContentElement.setTitle("最热标签在这里");
+								dto.getData().add(tagContentElement);
 								break;
 							default:
 								break;
