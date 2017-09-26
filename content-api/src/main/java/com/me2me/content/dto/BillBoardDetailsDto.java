@@ -96,6 +96,8 @@ public class BillBoardDetailsDto implements BaseEntity {
     	private Integer showRMBBrand;
     	
     	private Integer showPriceBrand;
+    	
+    	private String kcName;
     }
 
 
