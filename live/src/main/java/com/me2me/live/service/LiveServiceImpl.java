@@ -8715,7 +8715,7 @@ public class LiveServiceImpl implements LiveService {
 									dto.setFragment(rmaxFragment.get("fragment").toString());
 									dto.setTopicTitle(topic.getTitle());
 									if (rtopicData == null) {
-										dto.setImage("");
+										dto.setImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
 									} else {
 										dto.setImage(
 												Constant.QINIU_DOMAIN + "/" + rtopicData.get("fragment_image").toString());
@@ -8761,7 +8761,7 @@ public class LiveServiceImpl implements LiveService {
 				dto.setTopicTitle(topic.getTitle());
 				if (imageData == null) {
 					dto.setStatus(1);
-					dto.setImage("");
+					dto.setImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
 				} else {
 					dto.setStatus(0);
 					dto.setImage(Constant.QINIU_DOMAIN + "/" + imageData.get("fragment_image").toString());
