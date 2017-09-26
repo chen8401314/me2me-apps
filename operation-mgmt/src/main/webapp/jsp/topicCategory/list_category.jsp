@@ -50,12 +50,14 @@
 								</span>
 							</header>
 							<div class="panel-body">
+							<!-- 
 								<div>
 									<a class="btn btn-primary" href="./addCategory">
 										<i  class=" fa fa-plus "></i>
 										添加新分类
 									</a>
 								</div>
+								 -->
 								<div class="adv-table">
 									<table class="display table table-bordered table-striped" id="dynamic-table">
 										<thead>
@@ -86,7 +88,9 @@
 													</td>
 													<td>
 														<a class="btn btn-warning btn-xs " href="./modifyCategory?id=${item.id}">编辑</a>
+														<!-- 
 														<a class="btn btn-danger btn-xs " href="./deleteCategory?id=${item.id}" onclick="return confirm('确认删除吗？')">删除</a>
+														 -->
 														<a class="btn btn-danger btn-xs " href="./categoryTopicList?category=${item.id}">王国列表</a>
 													</td>
 												</tr>
