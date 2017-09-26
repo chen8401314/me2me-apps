@@ -21,8 +21,6 @@ public class HotDto implements BaseEntity {
 
 	private int openPushPositions;
 
-	private String bubblePositions;
-
 	@Data
 	public static class BaseContentElement implements BaseEntity {
 		
