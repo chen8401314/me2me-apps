@@ -1565,30 +1565,34 @@ public class LiveServiceImpl implements LiveService {
         if(speakDto.getType()==0 && speakDto.getContentType()==0){
         	//cacheService.set(key, value);
         	//判断本王国是否有未过试用期的TAG，如果有，就不打了；
-        	try{
-        		List<String> recTags = searchService.recommendTags(speakDto.getFragment(), 1).getData().getTags();
-        		if(null != recTags && recTags.size() > 0){
-        			//检查王国标签黑名单
-        			String tag = recTags.get(0);
-    	        	boolean exists =liveLocalJdbcDao.existsTrialTagInKingdom(speakDto.getTopicId(),tag);
-    	        	boolean isBadTag = this.liveLocalJdbcDao.isBadTag(speakDto.getTopicId(),tag);
-    	        	if(!exists &&!isBadTag){
-    	        		TopicTag ttag = liveMybatisDao.getTopicTagByTag(tag);
-    	        		TopicTagDetail detail = new TopicTagDetail();
-    	        		detail.setTopicId(speakDto.getTopicId());
-    	        		detail.setUid(-1L);
-    	        		if(ttag!=null){
-    	        			detail.setTagId(ttag.getId());
-    	        		}
-    	        		detail.setTag(tag);
-    	        		detail.setCreateTime(new Date());
-    	        		detail.setStatus(0);
-    	        		detail.setAutoTag(1);
-    	        		liveMybatisDao.insertTopicTagDetail(detail);
-    	        	}
-        		}
-        	}catch(Exception e){
-        		log.error("自动打标签失败", e);
+        	int IS_TOPIC_AUTO_TAG = this.userService.getIntegerAppConfigByKey("IS_TOPIC_AUTO_TAG");// 是否自动打标签开关。
+        	if(IS_TOPIC_AUTO_TAG==1){
+	        	try{
+	        		List<String> recTags = searchService.recommendTags(speakDto.getFragment(), 1).getData().getTags();
+	        		if(null != recTags && recTags.size() > 0){
+	        			//检查王国标签黑名单
+	        			String tag = recTags.get(0);
+	    	        	boolean exists =liveLocalJdbcDao.existsTrialTagInKingdom(speakDto.getTopicId(),tag);
+	    	        	boolean isBadTag = this.liveLocalJdbcDao.isBadTag(speakDto.getTopicId(),tag);
+	    	        	
+	    	        	if(!exists &&!isBadTag){
+	    	        		TopicTag ttag = liveMybatisDao.getTopicTagByTag(tag);
+	    	        		TopicTagDetail detail = new TopicTagDetail();
+	    	        		detail.setTopicId(speakDto.getTopicId());
+	    	        		detail.setUid(-1L);
+	    	        		if(ttag!=null){
+	    	        			detail.setTagId(ttag.getId());
+	    	        		}
+	    	        		detail.setTag(tag);
+	    	        		detail.setCreateTime(new Date());
+	    	        		detail.setStatus(0);
+	    	        		detail.setAutoTag(1);
+	    	        		liveMybatisDao.insertTopicTagDetail(detail);
+	    	        	}
+	        		}
+	        	}catch(Exception e){
+	        		log.error("自动打标签失败", e);
+	        	}
         	}
         }
      // 记录操作日志
