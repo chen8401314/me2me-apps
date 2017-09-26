@@ -1315,4 +1315,38 @@ public class LiveForContentJdbcDao {
 		String sql = "update user_invitation_his set status=1,receive_time=now() where id=?";
 		jdbcTemplate.update(sql, hisId);
 	}
+	
+	public List<Map<String, Object>> getKingdomRelevantInfo(long uid, List<Long> tidList){
+		if(null == tidList || tidList.size() == 0){
+			return null;
+		}
+		StringBuilder inIds = new StringBuilder();
+		for(int i=0;i<tidList.size();i++){
+			if(i>0){
+				inIds.append(",");
+			}
+			inIds.append(tidList.get(i).toString());
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("select o.topic_id,sum(topic_count) as topic_count,sum(review_count) as review_count,");
+		sb.append("sum(favorite_count) as favorite_count,sum(non_core_count) as non_core_count,");
+		sb.append("sum(core_count) as core_count from ((select f.topic_id,count(if(t.uid=f.uid,TRUE,NULL)) as topic_count,");
+		sb.append("count(if(t.uid<>f.uid,TRUE,NULL)) as review_count,0 as favorite_count,0 as non_core_count,");
+		sb.append("0 as core_count from topic t, topic_fragment f where t.id=f.topic_id and t.id in (");
+		sb.append(inIds.toString()).append(") group by f.topic_id) union (");
+		sb.append("select t.topic_id,0 as topic_count,0 as review_count,count(1) favorite_count,0 as non_core_count,");
+		sb.append("0 as core_count from live_favorite t where t.uid=").append(uid);
+		sb.append(" and t.topic_id in (").append(inIds.toString()).append(") group by t.topic_id) union (");
+		sb.append("select f.topic_id,0 as topic_count,0 as review_count,0 as favorite_count,count(1) core_count,");
+		sb.append("0 as non_core_count from live_favorite f,topic t where f.topic_id=t.id");
+		sb.append(" and not FIND_IN_SET(f.uid, SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))");
+		sb.append(" and f.topic_id in (").append(inIds.toString());
+		sb.append(") group by f.topic_id) union (");
+		sb.append("select t.id as topic_id, 0 as topic_count,0 as review_count,0 as favorite_count,0 as non_core_count,");
+		sb.append("LENGTH(t.core_circle)-LENGTH(replace(t.core_circle,',','')) as core_count");
+		sb.append(" from topic t where t.id in (").append(inIds.toString());
+		sb.append(") group by t.id)) o group by o.topic_id");
+		return jdbcTemplate.queryForList(sb.toString());
+	}
 }

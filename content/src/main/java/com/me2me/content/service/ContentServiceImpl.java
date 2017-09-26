@@ -8319,11 +8319,6 @@ public class ContentServiceImpl implements ContentService {
     		page=1;
     	}
 		if (page == 1) {
-/*			String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX + uid;
-			if (!StringUtils.isEmpty(cacheService.get(key))) {
-				String bubblePositions = userService.getAppConfigByKey(Constant.HOTLIST_BUBBLE_POSITION_KEY);
-				dto.setBubblePositions(bubblePositions);
-			}*/
 			int openPushPositions = 0;
 			String openPushPositionsStr = userService.getAppConfigByKey(Constant.OPEN_PUSH_POSITION);
 			if (!StringUtils.isEmpty(openPushPositionsStr)) {
@@ -8396,8 +8391,6 @@ public class ContentServiceImpl implements ContentService {
 		List<Long> topicIdList = new ArrayList<Long>();
 		List<Long> ceTopicIdList = new ArrayList<Long>();
 		List<Long> uidList = new ArrayList<Long>();
-		// double minPrice =Double.parseDouble((String)
-		// userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
 		double minRmb = Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
 
 		if (null != contentList && contentList.size() > 0) {
@@ -8518,15 +8511,7 @@ public class ContentServiceImpl implements ContentService {
 				followMap.put(uf.getSourceUid() + "_" + uf.getTargetUid(), "1");
 			}
 		}
-		// 一次性查询王国订阅信息
-		Map<String, String> liveFavouriteMap = new HashMap<String, String>();
-		List<Map<String, Object>> liveFavouriteList = liveForContentJdbcDao.getLiveFavoritesByUidAndTopicIds(uid,
-				topicIdList);
-		if (null != liveFavouriteList && liveFavouriteList.size() > 0) {
-			for (Map<String, Object> lf : liveFavouriteList) {
-				liveFavouriteMap.put(((Long) lf.get("topic_id")).toString(), "1");
-			}
-		}
+		
 		// 一次性查询聚合王国的子王国数
 		Map<String, Long> acCountMap = new HashMap<String, Long>();
 		if (ceTopicIdList.size() > 0) {
@@ -8547,21 +8532,30 @@ public class ContentServiceImpl implements ContentService {
 				lastFragmentMap.put(((Long) lf.get("topic_id")).toString(), lf);
 			}
 		}
-		// 一次性查询所有王国的国王更新数，以及评论数
+		//一次性查出所有王国的更新数、评论数、王国订阅状态、王国成员数
 		Map<String, Long> topicCountMap = new HashMap<String, Long>();
 		Map<String, Long> reviewCountMap = new HashMap<String, Long>();
-		List<Map<String, Object>> tcList = liveForContentJdbcDao.getTopicUpdateCount(topicIdList);
-		if (null != tcList && tcList.size() > 0) {
-			for (Map<String, Object> m : tcList) {
-				topicCountMap.put(String.valueOf(m.get("topic_id")), (Long) m.get("topicCount"));
-				reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long) m.get("reviewCount"));
+		Map<String, String> liveFavouriteMap = new HashMap<String, String>();
+		Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
+		List<Map<String, Object>> relevantInfoList = liveForContentJdbcDao.getKingdomRelevantInfo(uid, topicIdList);
+		if(null != relevantInfoList && relevantInfoList.size() > 0){
+			for(Map<String, Object> r : relevantInfoList){
+				Long topicId = (Long)r.get("topic_id");
+				long topicCount = ((BigDecimal)r.get("topic_count")).longValue();
+				long reviewCount = ((BigDecimal)r.get("review_count")).longValue();
+				long favoriteCount = ((BigDecimal)r.get("favorite_count")).longValue();
+				long nonCoreCount = ((BigDecimal)r.get("non_core_count")).longValue();
+				long coreCount = ((BigDecimal)r.get("core_count")).longValue();
+				
+				topicCountMap.put(topicId.toString(), Long.valueOf(topicCount));
+				reviewCountMap.put(topicId.toString(), Long.valueOf(reviewCount));
+				if(favoriteCount > 0){
+					liveFavouriteMap.put(topicId.toString(), "1");
+				}
+				topicMemberCountMap.put(topicId.toString(), Long.valueOf(nonCoreCount+coreCount));
 			}
 		}
-		// 一次性查询所有王国的成员数
-		Map<String, Long> topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
-		if (null == topicMemberCountMap) {
-			topicMemberCountMap = new HashMap<String, Long>();
-		}
+		
 		// 一次性查询王国的标签信息
 		Map<String, String> topicTagMap = new HashMap<String, String>();
 		List<Map<String, Object>> topicTagList = liveForContentJdbcDao.getTopicTagDetailListByTopicIds(topicIdList);
