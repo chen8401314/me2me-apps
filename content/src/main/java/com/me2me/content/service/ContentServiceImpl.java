@@ -8923,10 +8923,8 @@ public class ContentServiceImpl implements ContentService {
 		}
 		if(his.getCoins().intValue() > 0){
 			invitationElement.setCoins(his.getCoins().intValue());
-			invitationElement.setBtnAction(1);
 		}else{
 			invitationElement.setCoins(0);
-			invitationElement.setBtnAction(0);
 			//对于不显示按钮的，只会暂时一次
 			liveForContentJdbcDao.updateUserInvitationHisReceive(his.getId());
 		}
@@ -8939,12 +8937,14 @@ public class ContentServiceImpl implements ContentService {
 		}
 		if(his.getCoins().intValue() > 0){
 			ctext.append("\n可获取").append(his.getCoins().intValue()).append("米汤币奖励");
+		}else{
+			invitationElement.setBtnText("点击\n领取奖励");
 		}
 		invitationElement.setCText(ctext.toString());
-		invitationElement.setBtnText("点击\n领取奖励");
 		invitationElement.setHtEnd(2+name.length());
 		invitationElement.setHtStart(2);
 		invitationElement.setInvitationType(his.getType());
+		invitationElement.setBtnAction(his.getType());
 		invitationElement.setUid(his.getFromUid());
 		invitationElement.setV_lv(fromUserProfile.getvLv());
 		dto.getData().add(invitationElement);
