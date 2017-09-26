@@ -8538,6 +8538,13 @@ public class ContentServiceImpl implements ContentService {
 		UserProfile lastUserProfile = null;
 		UserProfile atUserProfile = null;
 		if (null != contentList && contentList.size() > 0) {
+			int likeBtnRatio= userService.getIntegerAppConfigByKey("LIKE_BUTTON_APPEAR_RATIO");
+	        Set<Integer> rightDigs = new HashSet<>();
+	        while(likeBtnRatio>rightDigs.size()){		//随机序列。
+	        	rightDigs.add(RandomUtils.nextInt(0, 101));
+	        }
+	        int maxButtonCount=2;	// 最多显示按钮数量
+			
 			HotDto.HotContentElement contentElement = null;
 			String lastFragmentImage = null;
 			for (int i = 0; i < contentList.size(); i++) {
@@ -8596,6 +8603,15 @@ public class ContentServiceImpl implements ContentService {
 				
 				Content2Dto c = contentList.get(i);
 				contentElement = new HotDto.HotContentElement();
+				if(maxButtonCount>0){
+					contentElement.setIsShowLikeButton(rightDigs.contains(RandomUtils.nextInt(0, 101))?1:0);
+	        		if(contentElement.getIsShowLikeButton()==1){
+	        			maxButtonCount--;
+	        		}
+	        	}else{
+	        		contentElement.setIsShowLikeButton(0);
+	        	}
+				
 				contentElement.setSinceId(c.getUpdateTime().getTime());
 				contentElement.setUid(c.getUid());
 				userProfile = userProfileMap.get(c.getUid().toString());
