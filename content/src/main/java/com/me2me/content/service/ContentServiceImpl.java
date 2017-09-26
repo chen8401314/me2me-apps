@@ -8668,15 +8668,6 @@ public class ContentServiceImpl implements ContentService {
 				
 				Content2Dto c = contentList.get(i);
 				contentElement = new HotDto.HotContentElement();
-				if(maxButtonCount>0){
-					contentElement.setIsShowLikeButton(rightDigs.contains(RandomUtils.nextInt(0, 101))?1:0);
-	        		if(contentElement.getIsShowLikeButton()==1){
-	        			maxButtonCount--;
-	        		}
-	        	}else{
-	        		contentElement.setIsShowLikeButton(0);
-	        	}
-				
 				contentElement.setSinceId(c.getUpdateTime().getTime());
 				contentElement.setUid(c.getUid());
 				userProfile = userProfileMap.get(c.getUid().toString());
@@ -8892,6 +8883,16 @@ public class ContentServiceImpl implements ContentService {
 					} else {
 						contentElement.setTags("");
 					}
+					
+					//王国喜欢不喜欢
+					if(maxButtonCount>0 && contentElement.getInternalStatus() == 0){//自己加入的，自己是核心圈的，自己是国王的不出现喜欢不喜欢
+						contentElement.setIsShowLikeButton(rightDigs.contains(RandomUtils.nextInt(0, 101))?1:0);
+		        		if(contentElement.getIsShowLikeButton()==1){
+		        			maxButtonCount--;
+		        		}
+		        	}else{
+		        		contentElement.setIsShowLikeButton(0);
+		        	}
 				}
 				dto.getData().add(contentElement);
 			}
