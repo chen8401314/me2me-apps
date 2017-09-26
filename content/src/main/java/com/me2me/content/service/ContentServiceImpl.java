@@ -8941,6 +8941,7 @@ public class ContentServiceImpl implements ContentService {
 			ctext.append("\n可获取").append(his.getCoins().intValue()).append("米汤币奖励");
 		}
 		invitationElement.setCText(ctext.toString());
+		invitationElement.setBtnText("点击\n领取奖励");
 		invitationElement.setHtEnd(2+name.length());
 		invitationElement.setHtStart(2);
 		invitationElement.setInvitationType(his.getType());

@@ -43,6 +43,7 @@ public class HotDto implements BaseEntity {
 		private static final long serialVersionUID = 5791045224437406531L;
 		private int type;
 		private String cText;
+		private String btnText;
 		private int htStart;
 		private int htEnd;
 		private String avatar;
