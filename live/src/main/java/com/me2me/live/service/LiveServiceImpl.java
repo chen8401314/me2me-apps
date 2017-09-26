@@ -453,10 +453,15 @@ public class LiveServiceImpl implements LiveService {
                     }else {
                         builder.append(";"+tag);
                     }
+                    
                 }
                 liveCoverDto.setTags(builder.toString());
             }
 
+            if(tagIdList.size() > 0){
+            	liveLocalJdbcDao.removeUserDislikeTags(uid, tagIdList);
+            }
+            
            /* boolean isAdmin = userService.isAdmin(uid);
             if(liveCoverDto.getInternalStatus() == Specification.SnsCircle.CORE.index
                     || isAdmin){//核心圈的或管理员，需要返回推荐标签

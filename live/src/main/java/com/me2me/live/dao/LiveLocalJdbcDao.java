@@ -1650,4 +1650,21 @@ public class LiveLocalJdbcDao {
         }
 		return retList;
 	}
+	
+	public void removeUserDislikeTags(long uid, List<Long> tagIds){
+		if(null == tagIds || tagIds.size() == 0){
+			return;
+		}
+		StringBuilder delSql = new StringBuilder();
+		delSql.append("delete from user_dislike where uid=").append(uid);
+		delSql.append(" and is_like=0 and type=2 and data in (");
+		for(int i=0;i<tagIds.size();i++){
+			if(i>0){
+				delSql.append(",");
+			}
+			delSql.append(tagIds.get(i).toString());
+		}
+		delSql.append(")");
+		jdbcTemplate.update(delSql.toString());
+	}
 }
