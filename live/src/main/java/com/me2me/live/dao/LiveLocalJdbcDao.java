@@ -1254,7 +1254,7 @@ public class LiveLocalJdbcDao {
     
     public Map<String,Object> getMaxFragment(String strDate,long uid,int startNum,int endNum,String specialTopicIds){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("SELECT t.*,tp.title FROM topic_fragment t,topic tp WHERE t.status = 1  AND  t.topic_id = tp.id AND  ((t.type=0 AND t.content_type = 0) OR (t.TYPE=1 AND t.content_type = 0)) ");
+    	sb.append("SELECT t.*,tp.title FROM topic_fragment t,topic tp WHERE t.status = 1  AND  t.topic_id = tp.id AND t.content_type = 0 ");
     	sb.append(" AND t.fragment <> tp.summary ");
     	sb.append(" AND t.create_time >='").append(strDate).append(" 00:00:00' AND t.create_time <='").append(strDate).append(" 23:59:59'");
     	sb.append(" AND t.uid = ").append(uid);
