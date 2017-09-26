@@ -489,7 +489,6 @@
 	function addAdInfoShow(){
 		reset();
 		$('#modal').modal({backdrop: 'static', keyboard: false});
-		alert(1);
 	}
 	   function addAdInfo(){
 		  var formData = new FormData($( "#adInfoForm" )[0]); 
