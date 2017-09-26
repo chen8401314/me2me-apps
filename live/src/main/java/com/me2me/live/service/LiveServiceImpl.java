@@ -10168,6 +10168,7 @@ public class LiveServiceImpl implements LiveService {
         String userCreateKingdomCountStr= cacheService.get(userCreateKingdomCountKey);
         if(StringUtils.isEmpty(userCreateKingdomCountStr)){
         	dto.setCreateKingdomCount(0);
+        	dto.setNeedPrice(0);
         }else{
         	int userCreateKingdomCount  = Integer.parseInt(userCreateKingdomCountStr);
         	dto.setCreateKingdomCount(userCreateKingdomCount);

@@ -8317,11 +8317,11 @@ public class ContentServiceImpl implements ContentService {
     		page=1;
     	}
 		if (page == 1) {
-			String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX + uid;
+/*			String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX + uid;
 			if (!StringUtils.isEmpty(cacheService.get(key))) {
 				String bubblePositions = userService.getAppConfigByKey(Constant.HOTLIST_BUBBLE_POSITION_KEY);
 				dto.setBubblePositions(bubblePositions);
-			}
+			}*/
 			int openPushPositions = 0;
 			String openPushPositionsStr = userService.getAppConfigByKey(Constant.OPEN_PUSH_POSITION);
 			if (!StringUtils.isEmpty(openPushPositionsStr)) {
