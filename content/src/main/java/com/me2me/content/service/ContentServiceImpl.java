@@ -4848,13 +4848,11 @@ public class ContentServiceImpl implements ContentService {
         				liveFavouriteMap.put(((Long) lf.get("topic_id")).toString(), "1");
         			}
         		}
-        		List<TagGroupDto.ImageData> result = new ArrayList<TagGroupDto.ImageData>();
         		for (Map<String, Object> topic : topicList) {
         			TagGroupDto.ImageData data = new TagGroupDto.ImageData();
         			data.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String) topic.get("live_image"));
         			element.getImageData().add(data);
         		}
-                element.setImageData(result);
             }
             int tagPersons=0;
             int kingdomCount = 0;
