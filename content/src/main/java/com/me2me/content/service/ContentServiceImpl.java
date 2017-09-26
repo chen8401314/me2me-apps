@@ -4790,13 +4790,16 @@ public class ContentServiceImpl implements ContentService {
         }
         
         List<String> allTags= Arrays.asList(finalTags);
-       
+       int isShowLikeButtonLimit=1;
         for(String label:allTags){
         	if(label==null) continue;
         	TagInfo info=topicTagMapper.getTagInfo(label);
         	long tagId= info.getTagId();
         	TagGroupDto.KingdomHotTag element = new TagGroupDto.KingdomHotTag();
-           	element.setIsShowLikeButton(userLikeTagSet.contains(label)?0:1);
+        	if(isShowLikeButtonLimit>0){
+        		element.setIsShowLikeButton(userLikeTagSet.contains(label)?0:1);
+        		isShowLikeButtonLimit--;
+        	}
            	if(!org.apache.commons.lang3.StringUtils.isEmpty(info.getCoverImg())){
            		element.setCoverImage(Constant.QINIU_DOMAIN+"/"+info.getCoverImg());
            	}
