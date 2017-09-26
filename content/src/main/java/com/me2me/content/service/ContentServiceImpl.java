@@ -4848,13 +4848,11 @@ public class ContentServiceImpl implements ContentService {
         				liveFavouriteMap.put(((Long) lf.get("topic_id")).toString(), "1");
         			}
         		}
-        		List<TagGroupDto.ImageData> result = new ArrayList<TagGroupDto.ImageData>();
         		for (Map<String, Object> topic : topicList) {
         			TagGroupDto.ImageData data = new TagGroupDto.ImageData();
         			data.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String) topic.get("live_image"));
         			element.getImageData().add(data);
         		}
-                element.setImageData(result);
             }
             int tagPersons=0;
             int kingdomCount = 0;
@@ -5843,6 +5841,14 @@ public class ContentServiceImpl implements ContentService {
                     }
                 }
             }
+            //一次性查出所有分类信息
+            Map<String, Map<String, Object>> kingdomCategoryMap = new HashMap<String, Map<String, Object>>();
+            List<Map<String, Object>> kcList = liveForContentJdbcDao.getAllKingdomCategory();
+            if(null != kcList && kcList.size() > 0){
+            	for(Map<String, Object> m : kcList){
+            		kingdomCategoryMap.put(String.valueOf(m.get("id")), m);
+            	}
+            }
 
             BillBoard billBoard = null;
             BangDanDto.BangDanData bangDanData = null;
@@ -5852,6 +5858,7 @@ public class ContentServiceImpl implements ContentService {
             UserProfile userProfile = null;
             Content topicContent = null;
             BillBoard subBillBoard = null;
+            Map<String, Object> kingdomCategory = null;
             for(BillBoardDetails bbd : showList){
                 billBoard = bMap.get(bbd.getBid().toString());
                 if(null == billBoard){
@@ -5966,6 +5973,13 @@ public class ContentServiceImpl implements ContentService {
                                     bangDanInnerData.setTags(topicTagMap.get(String.valueOf(targetId)));
                                 }else{
                                     bangDanInnerData.setTags("");
+                                }
+                                int categoryId = (Integer)topic.get("category_id");
+                                if(categoryId > 0){
+                                	kingdomCategory = kingdomCategoryMap.get(String.valueOf(categoryId));
+                                	if(null != kingdomCategory){
+                                		bangDanInnerData.setKcName((String)kingdomCategory.get("name"));
+                                	}
                                 }
                             }else if(billBoardRelation.getType()==2){// 人
                                 bangDanInnerData.setSubListId(billBoard.getId());
@@ -6302,10 +6316,19 @@ public class ContentServiceImpl implements ContentService {
                         }
                     }
                 }
+                //一次性查出所有分类信息
+                Map<String, Map<String, Object>> kingdomCategoryMap = new HashMap<String, Map<String, Object>>();
+                List<Map<String, Object>> kcList = liveForContentJdbcDao.getAllKingdomCategory();
+                if(null != kcList && kcList.size() > 0){
+                	for(Map<String, Object> m : kcList){
+                		kingdomCategoryMap.put(String.valueOf(m.get("id")), m);
+                	}
+                }
 
                 Map<String, Object> topic = null;
                 UserProfile userProfile = null;
                 Content topicContent = null;
+                Map<String, Object> kingdomCategory = null;
                 for(BillBoardRelation billBoardRelation : data){
                     BillBoardDetailsDto.InnerDetailData bangDanInnerData = new BillBoardDetailsDto.InnerDetailData();
                     long targetId = billBoardRelation.getTargetId();
@@ -6384,6 +6407,14 @@ public class ContentServiceImpl implements ContentService {
                         bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice()));
                         bangDanInnerData.setShowPriceBrand(bangDanInnerData.getPrice()!=null && bangDanInnerData.getPrice()>=minPrice?1:0);
                         bangDanInnerData.setShowRMBBrand(0);// 显示吊牌不显示RMB吊牌。
+                        
+                        int categoryId = (Integer)topic.get("category_id");
+                        if(categoryId > 0){
+                        	kingdomCategory = kingdomCategoryMap.get(String.valueOf(categoryId));
+                        	if(null != kingdomCategory){
+                        		bangDanInnerData.setKcName((String)kingdomCategory.get("name"));
+                        	}
+                        }
                     }else if(type==2){//人
                         bangDanInnerData.setUid(targetId);
                         userProfile = userMap.get(String.valueOf(targetId));
@@ -6795,11 +6826,20 @@ public class ContentServiceImpl implements ContentService {
                     }
                 }
             }
+            //一次性查出所有分类信息
+            Map<String, Map<String, Object>> kingdomCategoryMap = new HashMap<String, Map<String, Object>>();
+            List<Map<String, Object>> kcList = liveForContentJdbcDao.getAllKingdomCategory();
+            if(null != kcList && kcList.size() > 0){
+            	for(Map<String, Object> m : kcList){
+            		kingdomCategoryMap.put(String.valueOf(m.get("id")), m);
+            	}
+            }
 
             BangDanDto.BangDanData.BangDanInnerData bangDanInnerData = null;
             Map<String,Object> topic = null;
             UserProfile userProfile = null;
             Content topicContent = null;
+            Map<String, Object> kingdomCategory = null;
             for(BillBoardListDTO bbl : result){
                 bangDanInnerData = new BangDanDto.BangDanData.BangDanInnerData();
                 bangDanInnerData.setSubType(type);
@@ -6878,6 +6918,13 @@ public class ContentServiceImpl implements ContentService {
                     bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice()));
                     bangDanInnerData.setShowPriceBrand(bangDanInnerData.getPrice()!=null && bangDanInnerData.getPrice()>=minPrice?1:0);
                     bangDanInnerData.setShowRMBBrand(0);// 显示吊牌不显示RMB吊牌。
+                    int categoryId = (Integer)topic.get("category_id");
+                    if(categoryId > 0){
+                    	kingdomCategory = kingdomCategoryMap.get(String.valueOf(categoryId));
+                    	if(null != kingdomCategory){
+                    		bangDanInnerData.setKcName((String)kingdomCategory.get("name"));
+                    	}
+                    }
                 }else if(type==2){// 人
                     bangDanInnerData.setSubListId(bid);
                     bangDanInnerData.setUid(bbl.getTargetId());
@@ -7022,11 +7069,20 @@ public class ContentServiceImpl implements ContentService {
                     }
                 }
             }
+            //一次性查出所有分类信息
+            Map<String, Map<String, Object>> kingdomCategoryMap = new HashMap<String, Map<String, Object>>();
+            List<Map<String, Object>> kcList = liveForContentJdbcDao.getAllKingdomCategory();
+            if(null != kcList && kcList.size() > 0){
+            	for(Map<String, Object> m : kcList){
+            		kingdomCategoryMap.put(String.valueOf(m.get("id")), m);
+            	}
+            }
 
             BillBoardDetailsDto.InnerDetailData bangDanInnerData = null;
             Map<String, Object> topic = null;
             Content topicContent = null;
             UserProfile userProfile = null;
+            Map<String, Object> kingdomCategory = null;
             for(BillBoardListDTO bbl : result){
                 bangDanInnerData = new BillBoardDetailsDto.InnerDetailData();
                 bangDanInnerData.setSubType(type);
@@ -7104,6 +7160,13 @@ public class ContentServiceImpl implements ContentService {
                         bangDanInnerData.setTags(topicTagMap.get(String.valueOf(bbl.getTargetId())));
                     }else{
                         bangDanInnerData.setTags("");
+                    }
+                    int categoryId = (Integer)topic.get("category_id");
+                    if(categoryId > 0){
+                    	kingdomCategory = kingdomCategoryMap.get(String.valueOf(categoryId));
+                    	if(null != kingdomCategory){
+                    		bangDanInnerData.setKcName((String)kingdomCategory.get("name"));
+                    	}
                     }
                     billBoardDetailsDto.getSubList().add(bangDanInnerData);
                 }else if(type==2){//人
@@ -8250,12 +8313,15 @@ public class ContentServiceImpl implements ContentService {
     	if(!StringUtils.isEmpty(isShowTagsStr)){
     		isShowTags = Integer.parseInt(isShowTagsStr);
     	}
+    	if(page<1){
+    		page=1;
+    	}
 		if (page == 1) {
-			String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX + uid;
+/*			String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX + uid;
 			if (!StringUtils.isEmpty(cacheService.get(key))) {
 				String bubblePositions = userService.getAppConfigByKey(Constant.HOTLIST_BUBBLE_POSITION_KEY);
 				dto.setBubblePositions(bubblePositions);
-			}
+			}*/
 			int openPushPositions = 0;
 			String openPushPositionsStr = userService.getAppConfigByKey(Constant.OPEN_PUSH_POSITION);
 			if (!StringUtils.isEmpty(openPushPositionsStr)) {
