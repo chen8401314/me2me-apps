@@ -8250,6 +8250,9 @@ public class ContentServiceImpl implements ContentService {
     	if(!StringUtils.isEmpty(isShowTagsStr)){
     		isShowTags = Integer.parseInt(isShowTagsStr);
     	}
+    	if(page<1){
+    		page=1;
+    	}
 		if (page == 1) {
 			String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX + uid;
 			if (!StringUtils.isEmpty(cacheService.get(key))) {
