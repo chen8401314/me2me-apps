@@ -113,7 +113,6 @@ import com.me2me.content.mapper.TopicTagSearchMapper;
 import com.me2me.content.mapper.UserVisitLogMapper;
 import com.me2me.content.model.AdBanner;
 import com.me2me.content.model.AdInfo;
-import com.me2me.content.model.AdInfoExample;
 import com.me2me.content.model.AdRecord;
 import com.me2me.content.model.ArticleLikesDetails;
 import com.me2me.content.model.ArticleReview;
