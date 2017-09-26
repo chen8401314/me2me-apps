@@ -3159,7 +3159,7 @@ public class ContentServiceImpl implements ContentService {
 			}
 		}
 		
-		double minRmb = Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
+//		double minRmb = Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
         UserProfile userProfile = null;
         Map<String, Object> topicUserProfile = null;
         List<Map<String, Object>> topicOutDataList = null;
@@ -3267,9 +3267,9 @@ public class ContentServiceImpl implements ContentService {
                         contentElement.setAcCount(acCount);
                     }
 					contentElement.setPrice((Integer) topic.get("price"));
-					contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
-					contentElement.setShowPriceBrand(0); // 首页只显示RMB吊牌
-					contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
+//					contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
+//					contentElement.setShowPriceBrand(0); // 首页只显示RMB吊牌
+//					contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
                 }
                 contentElement.setLiveStatus(0);
                 if(null != reviewCountMap.get(content.getForwardCid().toString())){
