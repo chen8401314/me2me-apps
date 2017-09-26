@@ -8387,7 +8387,6 @@ public class ContentServiceImpl implements ContentService {
 		int pageSize = 20;
 		List<Content2Dto> contentList = contentMybatisDao.getHotContentListByType(uid, 0,(page - 1) * pageSize,
 				 pageSize, ids, blacklistUids, blackTagIds);// 只要UGC+PGC+个人王国
-
 		List<Long> topicIdList = new ArrayList<Long>();
 		List<Long> ceTopicIdList = new ArrayList<Long>();
 		List<Long> uidList = new ArrayList<Long>();
@@ -8403,7 +8402,6 @@ public class ContentServiceImpl implements ContentService {
 				}
 			}
 		}
-
 		Map<String, List<Map<String, Object>>> acTopMap = new HashMap<String, List<Map<String, Object>>>();
 		Map<String, List<Map<String, Object>>> membersMap = new HashMap<String, List<Map<String, Object>>>();
 		if (ceTopicIdList.size() > 0) {
@@ -8425,7 +8423,6 @@ public class ContentServiceImpl implements ContentService {
 				}
 			}
 		}
-
 		// 一次性查出所有王国详情
 		Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
 		List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
@@ -8446,7 +8443,6 @@ public class ContentServiceImpl implements ContentService {
 				}
 			}
 		}
-		
         //一次性获取王国的外露内容
     Map<String, List<Map<String, Object>>> topicOutDataMap = new HashMap<String, List<Map<String, Object>>>();
     String v = userService.getAppConfigByKey("KINGDOM_OUT_MINUTE");
@@ -8492,7 +8488,6 @@ public class ContentServiceImpl implements ContentService {
     		}
     	}
     }
-       
 		
 		
 		// 一次性查出所有的用户信息
@@ -8511,7 +8506,6 @@ public class ContentServiceImpl implements ContentService {
 				followMap.put(uf.getSourceUid() + "_" + uf.getTargetUid(), "1");
 			}
 		}
-		
 		// 一次性查询聚合王国的子王国数
 		Map<String, Long> acCountMap = new HashMap<String, Long>();
 		if (ceTopicIdList.size() > 0) {
@@ -8523,7 +8517,6 @@ public class ContentServiceImpl implements ContentService {
 				}
 			}
 		}
-
 		// 一次性查询王国的最后一条更新记录
 		Map<String, Map<String, Object>> lastFragmentMap = new HashMap<String, Map<String, Object>>();
 		List<Map<String, Object>> lastFragmentList = liveForContentJdbcDao.getLastFragmentByTopicIds(topicIdList);
@@ -8555,7 +8548,6 @@ public class ContentServiceImpl implements ContentService {
 				topicMemberCountMap.put(topicId.toString(), Long.valueOf(nonCoreCount+coreCount));
 			}
 		}
-		
 		// 一次性查询王国的标签信息
 		Map<String, String> topicTagMap = new HashMap<String, String>();
 		List<Map<String, Object>> topicTagList = liveForContentJdbcDao.getTopicTagDetailListByTopicIds(topicIdList);
@@ -8592,6 +8584,7 @@ public class ContentServiceImpl implements ContentService {
         		kingdomCategoryMap.put(String.valueOf(m.get("id")), m);
         	}
         }
+        
 		Map<String, Object> topic = null;
 		UserProfile userProfile = null;
 		Map<String, Object> lastFragment = null;
