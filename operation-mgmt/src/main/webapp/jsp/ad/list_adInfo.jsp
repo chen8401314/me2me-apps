@@ -123,7 +123,7 @@
 							</select>
 					</div>
 					<div class="form-group">
-						<label for="exampleInputFile">礼物图片</label>
+						<label for="exampleInputFile">广告封面图片</label>
 							<div class="fileupload fileupload-new" data-provides="fileupload">
 								<div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
 													<span id="adCoverSpan"></span>
