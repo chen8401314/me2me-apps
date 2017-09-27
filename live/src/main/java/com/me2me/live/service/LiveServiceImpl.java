@@ -4375,7 +4375,11 @@ public class LiveServiceImpl implements LiveService {
         }
         
         topic.setPrice(price + newStealPrice);
-        topic.setCategoryId(createKingdomDto.getKcid());
+        if(createKingdomDto.getKcid() > 0){
+        	topic.setCategoryId(createKingdomDto.getKcid());
+        }else{
+        	topic.setCategoryId(1);//默认为记录
+        }
         liveMybatisDao.createTopic(topic);
 
         //创建直播之后添加到我的UGC
@@ -7119,6 +7123,7 @@ public class LiveServiceImpl implements LiveService {
         tf.setId(null);
         Date now = new Date();
         tf.setCreateTime(now);
+        tf.setUpdateTime(now);
         String extra = tf.getExtra();
         JSONObject json = JSONObject.parseObject(extra);
         json.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
