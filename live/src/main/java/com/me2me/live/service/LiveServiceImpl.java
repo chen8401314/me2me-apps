@@ -2878,6 +2878,14 @@ public class LiveServiceImpl implements LiveService {
         if(null == tf || tf.getStatus().intValue() == Specification.TopicFragmentStatus.DISABLED.index){
             return Response.success(ResponseStatus.TOPIC_FRAGMENT_DELETE_SUCCESS.status, ResponseStatus.TOPIC_FRAGMENT_DELETE_SUCCESS.message);
         }
+        
+        boolean isAdmin = userService.isAdmin(uid);
+        if(tf.getContentType().intValue() == 24){//礼物除了管理员都不可删除
+        	if(!isAdmin){
+        		return Response.success(500, "无法删除");
+        	}
+        }
+        
         try {
             //判断当前用户是否有删除本条内容的权限
             boolean canDel = false;
@@ -2886,7 +2894,7 @@ public class LiveServiceImpl implements LiveService {
                 canDel=true;
             }
             //判断是否是管理员，管理员啥都能删
-            if(userService.isAdmin(uid)){
+            if(isAdmin){
                 canDel = true;
             }
             //再验证是否是国王，国王也啥都能删
@@ -2947,7 +2955,7 @@ public class LiveServiceImpl implements LiveService {
             log.info("delete topic fragment end ...");
             return Response.success(ResponseStatus.TOPIC_FRAGMENT_DELETE_SUCCESS.status, ResponseStatus.TOPIC_FRAGMENT_DELETE_SUCCESS.message);
         } catch (Exception e) {
-            e.printStackTrace();
+        	log.error("fragment删除失败", e);
             return Response.failure(ResponseStatus.TOPIC_FRAGMENT_DELETE_FAILURE.status, ResponseStatus.TOPIC_FRAGMENT_DELETE_FAILURE.message);
         }
     }
