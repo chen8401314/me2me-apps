@@ -338,7 +338,9 @@ public class Contents extends BaseController {
         	request.setUpdateTime(Long.MAX_VALUE);
         }
         int vflag = 0;
-        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
+        if(VersionUtil.isNewVersion(request.getVersion(), "3.0.4")){
+        	vflag = 2;
+        }else if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
         	vflag = 1;
         }
         return contentService.myPublishByType(request.getCustomerId(),request.getSinceId(),request.getType(),request.getUpdateTime(),request.getUid(),vflag);
