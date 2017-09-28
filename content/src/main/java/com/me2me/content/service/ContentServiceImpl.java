@@ -8095,8 +8095,8 @@ public class ContentServiceImpl implements ContentService {
 	}
 
 	@Override
-	public List<NewKingdom> buildFullNewKingdom(long uid, List<Map<String, Object>> topicList) {
-		return kingdomBuider.buildFullNewKingdom(uid, topicList);
+	public List<NewKingdom> buildFullNewKingdom(long uid, List<Map<String, Object>> topicList, int showType) {
+		return kingdomBuider.buildFullNewKingdom(uid, topicList, showType);
 	}
 
 	@Override

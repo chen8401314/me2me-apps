@@ -499,9 +499,10 @@ public interface ContentService{
 	 * @date Sep 19, 2017
 	 * @param uid 用户id.
 	 * @param topicList 王国内容
+	 * @param showType 1RMB,2米汤币
 	 * @return
 	 */
-	List<NewKingdom> buildFullNewKingdom(long uid,List<Map<String,Object>> topicList);
+	List<NewKingdom> buildFullNewKingdom(long uid,List<Map<String,Object>> topicList, int showType);
 	/**
 	 * 构建基础王国列表，只包括 topic表字段。
 	 * @author zhangjiwei

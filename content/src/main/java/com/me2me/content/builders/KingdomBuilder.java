@@ -319,7 +319,8 @@ public class KingdomBuilder {
 
 		return internalStatus;
 	}
-	public List<NewKingdom> buildFullNewKingdom(long currentUid, List<Map<String, Object>> topicList) {
+	//showType 1RMB,2米汤币
+	public List<NewKingdom> buildFullNewKingdom(long currentUid, List<Map<String, Object>> topicList, int showType) {
 		if(topicList==null || topicList.isEmpty()){
 			return new ArrayList<>();
 		}
@@ -496,8 +497,12 @@ public class KingdomBuilder {
 			} else {
 				data.setTags("");
 			}
-			data.setShowPriceBrand(data.getPrice()>=minPrice?1:0);
-			data.setShowRMBBrand(data.getPriceRMB()>=minRmb?1:0);// 显示吊牌
+			if(showType == 2){//米汤币
+				data.setShowPriceBrand(data.getPrice()>=minPrice?1:0);
+			}else if(showType == 1){//RMB
+				data.setShowRMBBrand(data.getPriceRMB()>=minRmb?1:0);// 显示吊牌
+			}
+			
 			result.add(data);
 		}
 		return result;
