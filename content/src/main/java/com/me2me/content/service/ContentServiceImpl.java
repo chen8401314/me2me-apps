@@ -4817,8 +4817,10 @@ public class ContentServiceImpl implements ContentService {
         	long tagId= info.getTagId();
         	TagGroupDto.KingdomHotTag element = new TagGroupDto.KingdomHotTag();
         	if(isShowLikeButtonLimit>0){
-        		element.setIsShowLikeButton(userLikeTagSet.contains(label)?0:1);
-        		isShowLikeButtonLimit--;
+        		if(!userLikeTagSet.contains(label)){
+        			element.setIsShowLikeButton(1);
+            		isShowLikeButtonLimit--;
+        		}
         	}
            	if(!org.apache.commons.lang3.StringUtils.isEmpty(info.getCoverImg())){
            		element.setCoverImage(Constant.QINIU_DOMAIN+"/"+info.getCoverImg());
