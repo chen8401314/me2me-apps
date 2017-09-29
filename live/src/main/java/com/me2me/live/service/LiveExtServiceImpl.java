@@ -83,7 +83,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 		}
    
 		List<Map<String,Object>> topicList =extDao.getCategoryKingdom(kcid,page,PAGE_SIZE);
-		List<NewKingdom> kingdoms = contentService.buildFullNewKingdom(uid, topicList);
+		List<NewKingdom> kingdoms = contentService.buildFullNewKingdom(uid, topicList, 1);
 		if(page==1 && dto.getCoverKingdom()==null && kingdoms.size()>0){
 			dto.setCoverKingdom(kingdoms.get(0));
 		}

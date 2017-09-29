@@ -4386,7 +4386,9 @@ public class LiveServiceImpl implements LiveService {
         if(createKingdomDto.getKcid() > 0){
         	topic.setCategoryId(createKingdomDto.getKcid());
         }else{
-        	topic.setCategoryId(1);//默认为记录
+        	if(kingdomType == 0){
+        		topic.setCategoryId(1);//默认为记录
+        	}
         }
         liveMybatisDao.createTopic(topic);
 

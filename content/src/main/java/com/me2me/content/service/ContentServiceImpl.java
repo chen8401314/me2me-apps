@@ -1928,7 +1928,7 @@ public class ContentServiceImpl implements ContentService {
                 MyPublishDto dto = new MyPublishDto();
                 dto.setUid(uid);
                 dto.setUpdateTime(updateTime);
-                List<Content> contents = contentMybatisDao.loadMyKingdom(dto);
+                List<Content> contents = contentMybatisDao.getMyOwnKingdom(dto);
 //                List<Content> contents = contentMybatisDao.myPublishLive(uid, updateTime);
                 buildDatas(squareDataDto, contents, uid);
             } else if (type == 0) {
@@ -8097,8 +8097,8 @@ public class ContentServiceImpl implements ContentService {
 	}
 
 	@Override
-	public List<NewKingdom> buildFullNewKingdom(long uid, List<Map<String, Object>> topicList) {
-		return kingdomBuider.buildFullNewKingdom(uid, topicList);
+	public List<NewKingdom> buildFullNewKingdom(long uid, List<Map<String, Object>> topicList, int showType) {
+		return kingdomBuider.buildFullNewKingdom(uid, topicList, showType);
 	}
 
 	@Override
