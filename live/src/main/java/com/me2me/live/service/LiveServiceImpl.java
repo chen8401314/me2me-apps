@@ -8944,7 +8944,11 @@ public class LiveServiceImpl implements LiveService {
         }
         
         topic.setPrice(price + newStealPrice);
-        topic.setCategoryId(1);//默认的记录类型
+        if(createKingdomDto.getTitle().contains("兴趣爱好") || createKingdomDto.getTitle().contains("每日一拍")){
+        	topic.setCategoryId(4);//show
+        }else{
+        	topic.setCategoryId(1);//默认的记录类型
+        }
         liveMybatisDao.createTopic(topic);
 
         //创建直播之后添加到我的UGC
