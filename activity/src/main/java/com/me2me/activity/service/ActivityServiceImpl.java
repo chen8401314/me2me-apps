@@ -5444,4 +5444,14 @@ public class ActivityServiceImpl implements ActivityService {
     	
     	return Response.success(200, "报名成功");
     }
+    
+    @Override
+    public Response gameUserInfo(long gameUid){
+    	GameUserInfoQueryDTO result = new GameUserInfoQueryDTO();
+    	
+    	
+    	
+    	
+    	return Response.success(result);
+    }
 }

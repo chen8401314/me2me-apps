@@ -314,4 +314,11 @@ public interface ActivityService {
      * @return
      */
     Response enterAnchor(long uid, long aid);
+    
+    /**
+     * 游戏活动信息查询接口
+     * @param gameUid
+     * @return
+     */
+    Response gameUserInfo(long gameUid);
 }

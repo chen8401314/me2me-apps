@@ -14,6 +14,7 @@ import com.me2me.web.request.ChatQueryRequest;
 import com.me2me.web.request.ChatRequest;
 import com.me2me.web.request.CheckUserActivityKindomRequest;
 import com.me2me.web.request.EnterAnchorRequest;
+import com.me2me.web.request.GameUserInfoRequest;
 import com.me2me.web.request.GetTaskListRequest;
 import com.me2me.web.request.OptForcedPairingRequest;
 import com.me2me.web.request.QiUserRequest;
@@ -612,5 +613,16 @@ public class Activity extends BaseController {
     @RequestMapping(value = "/enterAnchor")
     public Response enterAnchor(EnterAnchorRequest request){
     	return activityService.enterAnchor(request.getUid(), request.getAid());
+    }
+    
+    /**
+     * 游戏活动信息查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/gameUserInfo")
+    public Response gameUserInfo(GameUserInfoRequest request){
+    	return activityService.gameUserInfo(request.getGameUid());
     }
 }
