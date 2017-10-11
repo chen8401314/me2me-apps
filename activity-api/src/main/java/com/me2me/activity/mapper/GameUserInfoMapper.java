@@ -96,6 +96,7 @@ public interface GameUserInfoMapper {
     
     int updateCoins(GameUserInfo record);
 
-	void updateCoins2ZeroByUid(long uid);
-    
+	void updateGameUserInfoCoinsByUidAndCoins(GameUserInfo record);
+
+	
 }

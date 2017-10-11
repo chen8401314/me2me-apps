@@ -5448,37 +5448,42 @@ public class ActivityServiceImpl implements ActivityService {
     
     @Override
     public Response gameUserInfo(long gameUid){
+    	//根据uid查找用户信息（昵称跟头像）,确保数据库中存在该用户
+    	UserProfile userProfile = userService.getUserProfileByUid(gameUid);
+    	if(null == userProfile){
+    		return Response.failure(ResponseStatus.USER_NOT_EXISTS.status, ResponseStatus.USER_NOT_EXISTS.message);
+    	}
+    	
     	GameUserInfoQueryDTO result = new GameUserInfoQueryDTO();
     	//根据uid获取到活动信息表中的信息，若表中不存在该用户，则新增一条用户信息
-    	List<GameUserInfo> gameUserInfos = activityMybatisDao.getGameUserInfoByUid(gameUid);
-    	if(gameUserInfos==null||gameUserInfos.size()==0){
+    	GameUserInfo gameUserInfo = activityMybatisDao.getGameUserInfoByUid(gameUid);
+    	if(null == gameUserInfo){
     		//创建新用户并查询出用户信息
-    		activityMybatisDao.createNewGameUserInfoByUid(gameUid);
-    		gameUserInfos =activityMybatisDao.getGameUserInfoByUid(gameUid);
+    		gameUserInfo = new GameUserInfo();
+    		gameUserInfo.setUid(gameUid);
+    		gameUserInfo.setCoins(0);
+    		gameUserInfo.setCreateTime(new Date());
+    		activityMybatisDao.createNewGameUserInfo(gameUserInfo);
     	}
-    	//根据uid查找用户信息（昵称跟头像）必须保证数据中存在该用户，否则会出现空指针
-    	UserProfile userProfile = userService.getUserProfileByUid(gameUid);
+    	
     	//根据gameId查找出所有与当前用户相关的数据
-    	List<GameUserRecord> gameUserRecords = activityMybatisDao.getGameUserRecordByGameId(gameUserInfos.get(0).getId());
-    	List<RankingElement> rankingList = Lists.newArrayList();
-    	List<Long> uids = Lists.newArrayList();
+    	List<GameUserRecord> gameUserRecords = activityMybatisDao.getGameUserRecordByGameId(gameUserInfo.getId());
     	if(gameUserRecords!=null&&gameUserRecords.size()>0){
-    		//对获取到的所有的用户进行排序,次数相同者按照创建时间排序
-    		Collections.sort(gameUserRecords,new Comparator(){
-                @Override
-                public int compare(Object o1, Object o2) {
-                	GameUserRecord u1 = (GameUserRecord)o1;
-                	GameUserRecord u2 = (GameUserRecord)o2;
-                     int i = u1.getRecord().compareTo(u2.getRecord());
-                     if(i == 0){
-                         return -(u1.getCreateTime().compareTo(u2.getCreateTime()));
-                     }
-                     return -i;
-                }
-             });
+    		List<Long> uids = Lists.newArrayList();
+    		for(GameUserRecord gur : gameUserRecords){
+    			uids.add(gur.getUid());
+    		}
+    		List<UserProfile> userProfiles = userService.getUserProfilesByUids(uids);
+    		Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+    		if(null != userProfiles && userProfiles.size() > 0){
+    			for(UserProfile user : userProfiles){
+    				userMap.put(user.getUid().toString(), user);
+    			}
+    		}
     		//在集合中找出gameuid对应的用户信息，取出游戏次数，以及排名
+    		UserProfile rUser = null;
     		for(int i=0;i<gameUserRecords.size();i++){
-    			if(gameUserRecords.get(i).getUid()==gameUid){
+    			if(gameUserRecords.get(i).getUid().longValue()==gameUid){
     				result.setRecord(gameUserRecords.get(i).getRecord());
     				result.setRank(i+1);
     			}
@@ -5487,47 +5492,44 @@ public class ActivityServiceImpl implements ActivityService {
     			element.setRecord(gameUserRecords.get(i).getRecord());
     			element.setUid(gameUserRecords.get(i).getUid());
     			element.setRank(i+1);
-    			rankingList.add(element);
+    			rUser = userMap.get(gameUserRecords.get(i).getUid().toString());
+    			if(null != rUser){
+    				element.setAvatar(Constant.QINIU_DOMAIN + "/" + rUser.getAvatar());
+    				element.setNickName(rUser.getNickName());
+    			}
+    			result.getRankingList().add(element);
     			uids.add(gameUserRecords.get(i).getUid());
     		}
     	}
-    	//根据每个用户uid查找出用户信息,将用户头像跟昵称放入rankingList集合中
-    	List<UserProfile> userProfiles = userService.getUserProfilesByUids(uids);
-    	for(int i=0;i<rankingList.size();i++){
-			if(rankingList.get(i).getUid()==userProfiles.get(i).getUid()){
-				rankingList.get(i).setAvatar(userProfiles.get(i).getAvatar());
-				rankingList.get(i).setNickName(userProfiles.get(i).getNickName());
-			}
-    	}
+    	
     	result.setUid(gameUid);
-    	result.setRankingList(rankingList);
-    	result.setAvatar(userProfile.getAvatar());
+    	result.setGameId(gameUserInfo.getId());
+    	result.setCoins(gameUserInfo.getCoins());
     	result.setNickName(userProfile.getNickName());
-    	result.setGameId(gameUserInfos.get(0).getId());
-    	result.setCoins(gameUserInfos.get(0).getCoins());
-    	result.setPrice(((double)gameUserInfos.get(0).getCoins())/100+"");
+    	result.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+    	result.setPrice(String.format("%.2f", gameUserInfo.getCoins().floatValue()));
     	return Response.success(result);
     }
 
 	@Override
 	public Response gameResult(long uid, long gameId, int record) {
+		int coin = record>60?60:record;
 		//根据uid跟gameId去数据库中查询
-		List<GameUserRecord> gameUserRecords = activityMybatisDao.getGameUserRecordByUidAndGameId(uid,gameId);
-		GameUserRecord gameUserRecord = null;
-		if(gameUserRecords!=null&&gameUserRecords.size()>0){
-			gameUserRecord = gameUserRecords.get(0);
+		GameUserRecord gameUserRecord = activityMybatisDao.getGameUserRecordByUidAndGameId(uid,gameId);
+		if(gameUserRecord != null){
 			//获取到数据库中原始的record
 			int originalRecord = gameUserRecord.getRecord();
-			//用新的record减去原始的得到二者之间的差值
-			int sub = record - originalRecord;
-			//如果差值大于0，将新的record更新到数据库中，并将差值加到gameUserInfo表中的coins中，否则不做任何操作
-			if(sub>0){
-				activityMybatisDao.updateGameUserRecordByUidAndGameIdAndRecord(uid,gameId,record);
-				activityMybatisDao.updateGameUserInfoByGameIdAndCoins(gameId,sub);
+			if(record > originalRecord){
+				int originalCoin = originalRecord>60?60:originalRecord;
+				activityMybatisDao.updateGameUserRecordByIdAndRecord(gameUserRecord.getId(),record);
+				if(coin > originalCoin){
+					activityMybatisDao.updateGameUserInfoByGameIdAndCoins(gameId,coin-originalCoin);
+				}
 			}
 		}else{
+			//如果数据库中不存在该记录，则创建一条新记录
 			activityMybatisDao.createNewGameRecordByUidAndGameIdAndRecord(uid,gameId,record);
-			activityMybatisDao.updateGameUserInfoByGameIdAndCoins(gameId,record);
+			activityMybatisDao.updateGameUserInfoByGameIdAndCoins(gameId,record>60?60:record);
 		}
 		return Response.success(200, "OK");
 	}
@@ -5535,17 +5537,15 @@ public class ActivityServiceImpl implements ActivityService {
 	@Override
 	public Response gameReceiveCoins(long uid) {
 		//根据uid去game_user_info表中获取coins
-		int coins;
-		List<GameUserInfo> gameUserInfos =  activityMybatisDao.getGameUserInfoCoinsByUid(uid);
-		if(gameUserInfos!=null&&gameUserInfos.size()>0){
-			coins = gameUserInfos.get(0).getCoins();
+		GameUserInfo gameUserInfo =  activityMybatisDao.getGameUserInfoByUid(uid);
+		if(gameUserInfo != null){
+			int coins = gameUserInfo.getCoins();
 			//将取到的coins加入到user_profile中的available_coin
 			activityMybatisDao.updateUserProfileAvailableCoinByReciveCoinsAndUid(coins,uid);
 			//game_user_receive_his插入领取数据
-			activityMybatisDao.insertGameUserReceiveHisByGameIdAndCoinsAndUid(gameUserInfos.get(0).getId(),gameUserInfos.get(0).getCoins(),gameUserInfos.get(0).getUid());
-			//将game_user_info,game_user_record中的coins设为0
-			activityMybatisDao.updateGameUserInfoCoins2ZeroByUid(uid);
-			activityMybatisDao.updateGameUserRecordCoinsAndRecord2ZeroByGameId(gameUserInfos.get(0).getId());
+			activityMybatisDao.insertGameUserReceiveHisByGameIdAndCoinsAndUid(gameUserInfo.getId(),gameUserInfo.getCoins(),gameUserInfo.getUid());
+			//将game_user_info中的米汤币-coins
+			activityMybatisDao.updateGameUserInfoCoinsSubCoinsByUid(uid,coins);
 			return Response.success(200,"OK");
 		}	
 			return Response.failure(500, "failure");
