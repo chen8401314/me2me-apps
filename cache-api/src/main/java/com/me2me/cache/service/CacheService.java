@@ -168,4 +168,18 @@ public interface CacheService {
     		
     public void cacheJavaObject(String key,Object obj,int expireSeconds);
 
+    /**
+     * redis实现分布式锁
+     * 本方法为获取分布式锁
+     * @param key
+     * @return 1获取到锁，0未获取到锁
+     */
+    int getLock(String key);
+    
+    /**
+     * redis实现分布式锁
+     * 本方法为释放分布式锁
+     * @param key
+     */
+    void releaseLock(String key);
 }
