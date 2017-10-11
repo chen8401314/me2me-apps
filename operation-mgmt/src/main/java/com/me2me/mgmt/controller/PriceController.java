@@ -29,6 +29,7 @@ import com.me2me.mgmt.dao.LocalJdbcDao;
 import com.me2me.mgmt.request.ConfigItem;
 import com.me2me.mgmt.request.KingdomBusinessDTO;
 import com.me2me.mgmt.request.KingdomDTO;
+import com.me2me.mgmt.request.KingdomGiftRequest;
 import com.me2me.mgmt.request.KingdomQueryDTO;
 import com.me2me.mgmt.request.KingdomUserRequest;
 import com.me2me.mgmt.request.SearchUserDTO;
@@ -73,6 +74,37 @@ public class PriceController {
 		ModelAndView view = new ModelAndView("price/kingdomList");
 		view.addObject("dataObj",dto);
 		return view;
+	}
+	
+	@RequestMapping(value = "/kingdomGift")
+	public ModelAndView kingdomGift(KingdomQueryDTO dto){
+		ModelAndView view = new ModelAndView("price/kingdomGift");
+		view.addObject("dataObj",dto);
+		return view;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/kingdomGiftPage")
+	public KingdomGiftRequest kingdomGiftPage(KingdomGiftRequest dto){
+		PageBean page= dto.toPageBean();
+		
+		StringBuilder pageSql = new StringBuilder();
+		pageSql.append("select u.uid,u.nick_name,m.totalPrice,n.deviceInfo from user_profile u,(");
+		pageSql.append("select h.uid,sum(h.gift_topic_price) as totalPrice from gift_history h");
+		pageSql.append(" where h.topic_id=? group by h.uid");
+		pageSql.append(") m LEFT JOIN (select i.uid,group_concat(DISTINCT i.device_code) as deviceInfo");
+		pageSql.append(" from user_device_info i where i.device_code is not NULL and i.device_code!=''");
+		pageSql.append(" group by i.uid) n on m.uid=n.uid where u.uid=m.uid order by m.totalPrice desc");
+
+		List<Map<String, Object>> dataList = localJdbcDao.queryForList(pageSql.toString(), dto.getTopicId());
+		if(null != dataList && dataList.size() > 0){
+			dto.setRecordsTotal(dataList.size());
+		}else{
+			dto.setRecordsTotal(0);
+		}
+		
+		dto.setData(dataList);
+		return dto;
 	}
 	
 	@RequestMapping(value = "/kingdomUser")

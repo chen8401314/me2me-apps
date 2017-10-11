@@ -269,7 +269,7 @@ var parserDatetimeStr = function(time){
 													<td>${item.approve }</td>
 													<td>
 													<a target="_blank" href='./kingdomUser?topicId=${item.id}'>成员列表</a>
-													<!-- <a href="${ctx}/price/kingdom/${item.id }">交易</a> -->
+													|<a target="_blank" href='./kingdomGift?topicId=${item.id}'>送礼用户列表</a>
 													</td>
 												</tr>
 											</c:forEach>
