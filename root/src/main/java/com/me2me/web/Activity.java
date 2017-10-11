@@ -14,6 +14,8 @@ import com.me2me.web.request.ChatQueryRequest;
 import com.me2me.web.request.ChatRequest;
 import com.me2me.web.request.CheckUserActivityKindomRequest;
 import com.me2me.web.request.EnterAnchorRequest;
+import com.me2me.web.request.GameReceiveCoinsRequest;
+import com.me2me.web.request.GameResultRequest;
 import com.me2me.web.request.GameUserInfoRequest;
 import com.me2me.web.request.GetTaskListRequest;
 import com.me2me.web.request.OptForcedPairingRequest;
@@ -37,6 +39,10 @@ import java.net.UnknownHostException;
 
 /**
  * Created by 马秀成 on 2016/10/18.
+ */
+/**
+ * @author pc308
+ *
  */
 @Controller
 @RequestMapping(value = "/api/activity")
@@ -624,5 +630,26 @@ public class Activity extends BaseController {
     @RequestMapping(value = "/gameUserInfo")
     public Response gameUserInfo(GameUserInfoRequest request){
     	return activityService.gameUserInfo(request.getGameUid());
+    }
+    
+    
+    /**游戏活动游戏结果接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/gameResult")
+    public Response gameResult(GameResultRequest request){
+    	return activityService.gameResult(request.getUid(),request.getGameId(),request.getRecord());
+    }
+    
+    /**游戏活动领取奖金池接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/gameReceiveCoins")
+    public Response gameReceiveCoins(GameReceiveCoinsRequest request){
+    	return activityService.gameReceiveCoins(request.getUid());
     }
 }

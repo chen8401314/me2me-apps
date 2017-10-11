@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
 import com.me2me.user.model.User;
 
@@ -68,5 +69,29 @@ public class LiveServiceTest {
 		TestObject newObj = (TestObject) cache.getJavaObject("___no_serialized_obj__");
 		Assert.assertEquals(obj.getName(), newObj.getName());
 		
+	}
+	
+	
+	@Autowired
+	ActivityService activityService;
+	
+	@Test
+	public void testGameUserInfo(){
+		long uid = 300;
+		activityService.gameUserInfo(uid);
+	}
+	
+	@Test
+	public void testGameResult(){
+		long uid = 300;
+		long gameId = 3;
+		int record = 1;
+		activityService.gameResult(uid,gameId,record);
+	}
+	
+	@Test
+	public void  gameReceiveCoins(){
+		long uid = 300;
+		activityService.gameReceiveCoins(uid);
 	}
 }

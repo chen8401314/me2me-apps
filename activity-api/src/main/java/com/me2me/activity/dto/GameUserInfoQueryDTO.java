@@ -18,6 +18,7 @@ public class GameUserInfoQueryDTO implements BaseEntity {
 	private int rank;
 	private int coins;
 	private String price;
+	private long gameId;
 	
 	private List<RankingElement> rankingList = Lists.newArrayList();
 	

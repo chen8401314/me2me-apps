@@ -910,4 +910,7 @@
 		
   </update>
   
+  <update id="updateAvailableCoin" parameterType="com.me2me.user.model.UserProfile">
+  	update user_profile set available_coin = available_coin +  #{availableCoin,jdbcType=INTEGER} where uid = #{uid,jdbcType=BIGINT}
+  </update>
 </mapper>

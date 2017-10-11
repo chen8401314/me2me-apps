@@ -321,4 +321,17 @@ public interface ActivityService {
      * @return
      */
     Response gameUserInfo(long gameUid);
+
+    
+    /**游戏活动游戏结果接口
+     * @param request
+     * @return
+     */
+	Response gameResult(long uid, long gameId, int record);
+	
+	 /**游戏活动领取奖金池接口
+     * @param request
+     * @return
+     */
+	Response gameReceiveCoins(long uid);
 }

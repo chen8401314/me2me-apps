@@ -93,4 +93,9 @@ public interface GameUserInfoMapper {
      * @mbggenerated Tue Oct 10 10:15:54 CST 2017
      */
     int updateByPrimaryKey(GameUserInfo record);
+    
+    int updateCoins(GameUserInfo record);
+
+	void updateCoins2ZeroByUid(long uid);
+    
 }
