@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dao.LiveForActivityDao;
 import com.me2me.activity.dto.*;
+import com.me2me.activity.dto.GameUserInfoQueryDTO.RankingElement;
 import com.me2me.activity.event.LinkPushEvent;
 import com.me2me.activity.event.TaskPushEvent;
 import com.me2me.activity.model.*;
@@ -5448,10 +5449,105 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public Response gameUserInfo(long gameUid){
     	GameUserInfoQueryDTO result = new GameUserInfoQueryDTO();
-    	
-    	
-    	
-    	
+    	//根据uid获取到活动信息表中的信息，若表中不存在该用户，则新增一条用户信息
+    	List<GameUserInfo> gameUserInfos = activityMybatisDao.getGameUserInfoByUid(gameUid);
+    	if(gameUserInfos==null||gameUserInfos.size()==0){
+    		//创建新用户并查询出用户信息
+    		activityMybatisDao.createNewGameUserInfoByUid(gameUid);
+    		gameUserInfos =activityMybatisDao.getGameUserInfoByUid(gameUid);
+    	}
+    	//根据uid查找用户信息（昵称跟头像）必须保证数据中存在该用户，否则会出现空指针
+    	UserProfile userProfile = userService.getUserProfileByUid(gameUid);
+    	//根据gameId查找出所有与当前用户相关的数据
+    	List<GameUserRecord> gameUserRecords = activityMybatisDao.getGameUserRecordByGameId(gameUserInfos.get(0).getId());
+    	List<RankingElement> rankingList = Lists.newArrayList();
+    	List<Long> uids = Lists.newArrayList();
+    	if(gameUserRecords!=null&&gameUserRecords.size()>0){
+    		//对获取到的所有的用户进行排序,次数相同者按照创建时间排序
+    		Collections.sort(gameUserRecords,new Comparator(){
+                @Override
+                public int compare(Object o1, Object o2) {
+                	GameUserRecord u1 = (GameUserRecord)o1;
+                	GameUserRecord u2 = (GameUserRecord)o2;
+                     int i = u1.getRecord().compareTo(u2.getRecord());
+                     if(i == 0){
+                         return -(u1.getCreateTime().compareTo(u2.getCreateTime()));
+                     }
+                     return -i;
+                }
+             });
+    		//在集合中找出gameuid对应的用户信息，取出游戏次数，以及排名
+    		for(int i=0;i<gameUserRecords.size();i++){
+    			if(gameUserRecords.get(i).getUid()==gameUid){
+    				result.setRecord(gameUserRecords.get(i).getRecord());
+    				result.setRank(i+1);
+    			}
+    			//根据gameid查找出帮助gameuid赚取米汤币的所有人的用户信息
+    			RankingElement element = new RankingElement();
+    			element.setRecord(gameUserRecords.get(i).getRecord());
+    			element.setUid(gameUserRecords.get(i).getUid());
+    			element.setRank(i+1);
+    			rankingList.add(element);
+    			uids.add(gameUserRecords.get(i).getUid());
+    		}
+    	}
+    	//根据每个用户uid查找出用户信息,将用户头像跟昵称放入rankingList集合中
+    	List<UserProfile> userProfiles = userService.getUserProfilesByUids(uids);
+    	for(int i=0;i<rankingList.size();i++){
+			if(rankingList.get(i).getUid()==userProfiles.get(i).getUid()){
+				rankingList.get(i).setAvatar(userProfiles.get(i).getAvatar());
+				rankingList.get(i).setNickName(userProfiles.get(i).getNickName());
+			}
+    	}
+    	result.setUid(gameUid);
+    	result.setRankingList(rankingList);
+    	result.setAvatar(userProfile.getAvatar());
+    	result.setNickName(userProfile.getNickName());
+    	result.setGameId(gameUserInfos.get(0).getId());
+    	result.setCoins(gameUserInfos.get(0).getCoins());
+    	result.setPrice(((double)gameUserInfos.get(0).getCoins())/100+"");
     	return Response.success(result);
     }
+
+	@Override
+	public Response gameResult(long uid, long gameId, int record) {
+		//根据uid跟gameId去数据库中查询
+		List<GameUserRecord> gameUserRecords = activityMybatisDao.getGameUserRecordByUidAndGameId(uid,gameId);
+		GameUserRecord gameUserRecord = null;
+		if(gameUserRecords!=null&&gameUserRecords.size()>0){
+			gameUserRecord = gameUserRecords.get(0);
+			//获取到数据库中原始的record
+			int originalRecord = gameUserRecord.getRecord();
+			//用新的record减去原始的得到二者之间的差值
+			int sub = record - originalRecord;
+			//如果差值大于0，将新的record更新到数据库中，并将差值加到gameUserInfo表中的coins中，否则不做任何操作
+			if(sub>0){
+				activityMybatisDao.updateGameUserRecordByUidAndGameIdAndRecord(uid,gameId,record);
+				activityMybatisDao.updateGameUserInfoByGameIdAndCoins(gameId,sub);
+			}
+		}else{
+			activityMybatisDao.createNewGameRecordByUidAndGameIdAndRecord(uid,gameId,record);
+			activityMybatisDao.updateGameUserInfoByGameIdAndCoins(gameId,record);
+		}
+		return Response.success(200, "OK");
+	}
+
+	@Override
+	public Response gameReceiveCoins(long uid) {
+		//根据uid去game_user_info表中获取coins
+		int coins;
+		List<GameUserInfo> gameUserInfos =  activityMybatisDao.getGameUserInfoCoinsByUid(uid);
+		if(gameUserInfos!=null&&gameUserInfos.size()>0){
+			coins = gameUserInfos.get(0).getCoins();
+			//将取到的coins加入到user_profile中的available_coin
+			activityMybatisDao.updateUserProfileAvailableCoinByReciveCoinsAndUid(coins,uid);
+			//game_user_receive_his插入领取数据
+			activityMybatisDao.insertGameUserReceiveHisByGameIdAndCoinsAndUid(gameUserInfos.get(0).getId(),gameUserInfos.get(0).getCoins(),gameUserInfos.get(0).getUid());
+			//将game_user_info,game_user_record中的coins设为0
+			activityMybatisDao.updateGameUserInfoCoins2ZeroByUid(uid);
+			activityMybatisDao.updateGameUserRecordCoinsAndRecord2ZeroByGameId(gameUserInfos.get(0).getId());
+			return Response.success(200,"OK");
+		}	
+			return Response.failure(500, "failure");
+	}
 }

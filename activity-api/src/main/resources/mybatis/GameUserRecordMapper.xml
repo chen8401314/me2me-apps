@@ -300,4 +300,8 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  
+  <update id="updateCoins2ZeroByGameId" parameterType="java.lang.Long">
+  	update game_user_record set coins = 0 ,record = 0 where game_id = #{gameId,jdbcType=BIGINT}
+  </update>
 </mapper>

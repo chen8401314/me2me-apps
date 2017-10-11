@@ -421,4 +421,29 @@ public class CacheServiceImpl implements CacheService {
 			
 		}
 	}
+	
+	@Override
+	public int getLock(String key){
+		Long result = jedisTemplate.execute(new JedisTemplate.JedisActionResult() {
+            @Override
+            public Long actionResult(Jedis jedis) {
+                return jedis.setnx(key, "1");
+            }
+        });
+		
+		int res = result.intValue();
+		
+		if(res > 0){//set成功了，也即拿到了锁
+			res = 1;
+			//设置超时时间，防止死锁
+			this.expire(key, 60);//60秒的超时，可以了
+		}
+		
+		return res;
+	}
+	
+	@Override
+	public void releaseLock(String key){
+		this.del(key);
+	}
 }

@@ -124,4 +124,6 @@ public interface UserProfileMapper {
 	 * @date Apr 10, 2017
 	 */
 	void delUserCountDay();
+	
+	int updateAvailableCoin(UserProfile record);
 }

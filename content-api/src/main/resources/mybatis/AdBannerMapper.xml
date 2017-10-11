@@ -283,4 +283,17 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+  
+  <select id="getNormalBanners" resultMap="BaseResultMap">
+    select b.* 
+    from ad_banner b LEFT JOIN (
+      select i.banner_id,1 as has
+      from ad_info i
+      where i.status=0
+      and i.effective_time>now()
+      group by i.banner_id
+    ) m on b.id=m.banner_id
+    where b.status=0
+    and m.has is not NULL
+  </select>
 </mapper>

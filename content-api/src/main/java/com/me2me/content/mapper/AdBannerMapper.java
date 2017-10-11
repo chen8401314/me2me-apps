@@ -93,4 +93,10 @@ public interface AdBannerMapper {
      * @mbggenerated Tue Sep 19 18:04:55 CST 2017
      */
     int updateByPrimaryKey(AdBanner record);
+    
+    /**
+     * 获取有正常广告的广告位
+     * @return
+     */
+    List<AdBanner> getNormalBanners();
 }

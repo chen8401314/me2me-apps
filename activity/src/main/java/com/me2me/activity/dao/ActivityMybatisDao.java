@@ -8,6 +8,8 @@ import com.me2me.activity.dto.LuckActStatDTO;
 import com.me2me.activity.mapper.*;
 import com.me2me.activity.model.*;
 import com.me2me.common.web.Specification;
+import com.me2me.user.mapper.UserProfileMapper;
+import com.me2me.user.model.UserProfile;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -112,6 +114,18 @@ public class ActivityMybatisDao {
     
     @Autowired
     private AcommonChatMapper acommonChatMapper;
+    
+    @Autowired
+    private GameUserInfoMapper gameUserInfoMapper;
+    
+    @Autowired
+    private GameUserRecordMapper gameUserRecordMapper;
+    
+    @Autowired
+    private GameUserReceiveHisMapper gameUserReceiveHisMapper;
+    
+    @Autowired
+    private UserProfileMapper userProfileMapper;
 
     public List<Tchannel> getAppChannel(String code){
     	TchannelExample example = new TchannelExample();
@@ -1502,4 +1516,96 @@ public class ActivityMybatisDao {
     	example.setOrderByClause(" long_time asc ");
     	return acommonChatMapper.selectByExample(example);
     }
+    
+    public List<GameUserInfo> getGameUserInfoByUid(long uid){
+    	GameUserInfoExample example = new GameUserInfoExample();
+    	GameUserInfoExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	return gameUserInfoMapper.selectByExample(example);
+    }
+    
+    public void createNewGameUserInfoByUid(long uid){
+    	GameUserInfo record = new GameUserInfo();
+    	record.setUid(uid);
+    	record.setCoins(0);
+    	record.setCreateTime(new Date());
+    	gameUserInfoMapper.insert(record);
+    }
+    
+    public List<GameUserRecord> getGameUserRecordByGameId(long gameid){
+    	GameUserRecordExample example = new GameUserRecordExample();
+    	GameUserRecordExample.Criteria criteria = example.createCriteria();
+    	criteria.andGameIdEqualTo(gameid);
+    	return gameUserRecordMapper.selectByExample(example);
+    }
+
+	public List<GameUserRecord> getGameUserRecordByUidAndGameId(long uid, long gameId) {
+		GameUserRecordExample example = new GameUserRecordExample();
+		GameUserRecordExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		criteria.andGameIdEqualTo(gameId);
+		return gameUserRecordMapper.selectByExample(example);
+	}
+
+	public void createNewGameRecordByUidAndGameIdAndRecord(long uid, long gameId, int record) {
+		GameUserRecord gameUserRecord = new GameUserRecord();
+		gameUserRecord.setGameId(gameId);
+		gameUserRecord.setUid(uid);
+		gameUserRecord.setRecord(record);
+		gameUserRecord.setCoins(record);
+		gameUserRecord.setCreateTime(new Date());
+		gameUserRecordMapper.insert(gameUserRecord);
+	}
+
+	public void updateGameUserRecordByUidAndGameIdAndRecord(long uid, long gameId, int record) {
+		GameUserRecord gameUserRecord = new GameUserRecord();
+		gameUserRecord.setRecord(record);
+		gameUserRecord.setCoins(record);
+		GameUserRecordExample example = new GameUserRecordExample();
+		GameUserRecordExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		criteria.andGameIdEqualTo(gameId);
+		gameUserRecordMapper.updateByExampleSelective(gameUserRecord, example);
+	}
+
+	public void updateGameUserInfoByGameIdAndCoins(long gameId, int coins) {
+		GameUserInfo gameUserInfo = new GameUserInfo();
+		gameUserInfo.setCoins(coins);
+		gameUserInfo.setId(gameId);
+		gameUserInfoMapper.updateCoins(gameUserInfo);
+		
+	}
+
+	public List<GameUserInfo> getGameUserInfoCoinsByUid(long uid) {
+		GameUserInfoExample example = new GameUserInfoExample();
+		GameUserInfoExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		return gameUserInfoMapper.selectByExample(example);
+	}
+
+	public void updateUserProfileAvailableCoinByReciveCoinsAndUid(int coins,long uid) {
+		UserProfile profile = new UserProfile();
+		profile.setUid(uid);
+		profile.setAvailableCoin(coins);
+		userProfileMapper.updateAvailableCoin(profile);
+	}
+
+	public void insertGameUserReceiveHisByGameIdAndCoinsAndUid(Long gameId, Integer coins, Long uid) {
+		GameUserReceiveHis record = new GameUserReceiveHis();
+		record.setCoins(coins);
+		record.setGameId(gameId);
+		record.setUid(uid);
+		record.setCreateTime(new Date());
+		gameUserReceiveHisMapper.insert(record);
+	}
+
+	public void updateGameUserInfoCoins2ZeroByUid(long uid) {
+		gameUserInfoMapper.updateCoins2ZeroByUid(uid);
+	}
+
+	public void updateGameUserRecordCoinsAndRecord2ZeroByGameId(Long gameId) {
+		gameUserRecordMapper.updateCoins2ZeroByGameId(gameId);
+	}
+    
+    
 }
