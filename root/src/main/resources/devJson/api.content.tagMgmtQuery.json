@@ -1,0 +1,17 @@
+{
+"code": 200,
+"data": {
+    "kingdomTagList": [{
+        "tagId": 11,
+        "tagName": "铲屎官的日常",
+        "coverImage": "http://cdn.me-to-me.com/250a51c79a6d43159327ae3f474a8a7e.JPG",
+        "personCount": 4632,
+        "kingdomCount": 53,
+        "imageData": [
+            {"coverImage": "http://cdn.me-to-me.com/250a51c79a6d43159327ae3f474a8a7e.JPG"},
+            {"coverImage": "http://cdn.me-to-me.com/250a51c79a6d43159327ae3f474a8a7e.JPG"}
+            ],
+        }]
+    },
+"message": "ok"
+}

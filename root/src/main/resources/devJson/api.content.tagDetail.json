@@ -1,0 +1,57 @@
+{
+"code": 200,
+"data": {
+    "tagId":11,
+    "tagName":"铲屎官的日常",
+    "isLike":0,
+    "tagKingdomList":[
+        {
+           "type": 12,
+           "cid": 1000
+        },
+        {
+            "type": 3,
+            "title": "曹昌昊的兴趣爱好",
+            "audioData": [],
+            "avatar": "https://cdn.me-to-me.com/icon.png",
+            "avatarFrame": "",
+            "cid": 8586,
+            "topicId": 8586,
+            "content": "曹昌昊的兴趣爱好",
+            "contentType": 0,
+            "coverImage": "https://cdn.me-to-me.com/deb2270f53a4165bfb819b56bd57eca0",
+            "createTime": 1505439912000,
+            "favorite": 0,
+            "favoriteCount": 1,
+            "updateTime": 1505439912000,
+            "imageData": [],
+            "isFollowMe": 0,
+            "isFollowed": 0,
+            "isShowLikeButton": 0,
+            "level": 1,
+            "likeCount": 0,
+            "nickName": "曹昌昊",
+            "personCount": 0,
+            "price": 0,
+            "priceRMB": 0,
+            "readCount": 7,
+           "reviewCount": 0,
+            "showPriceBrand": 0,
+            "showRMBBrand": 0,
+            "showTag": 0,
+            "tags": "曹昌昊的兴趣爱好",
+            "textData": [],
+            "topicPrice": 0,
+            "topicRMB": 0,
+            "transferPrice": 0,
+            "ugcData": [],
+            "uid": 12734,
+            "kcid": 0,
+            "vip":1,
+            "kcIcon": "王国分类图标",
+            "kcName": "王国分类名"
+        }
+    ]
+},
+"message": "ok"
+}
