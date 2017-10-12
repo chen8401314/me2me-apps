@@ -91,7 +91,7 @@ public class UserLogAnalyzeTask{
 				BeanUtils.populate(tagInfo, tag);
 				tagCache.put(key,tagInfo);
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("copy属性失败", e);
 			}
 		}
 		
@@ -151,7 +151,7 @@ public class UserLogAnalyzeTask{
 		
 		while(true){
 			List<Map<String,Object>> dataList =this.getUserVisitLogByDay(day,skip, pageSize);
-			logger.info("分析用户访问日志：{} ,data pos:{} size:{}",day,skip);
+			logger.info("分析用户访问日志：{} ,data pos:{} size:{}",day,skip,dataList.size());
 			if(dataList.isEmpty()){
 				break;
 			}
