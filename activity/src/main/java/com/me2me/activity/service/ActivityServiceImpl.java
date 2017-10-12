@@ -5565,7 +5565,7 @@ public class ActivityServiceImpl implements ActivityService {
 
 	@Override
 	public Response gameReceiveCoins(long uid) {
-		String GAME_RECEIVE_COINS_LOCK = "GAME_RESULT_LOCK_"+uid;
+		String GAME_RECEIVE_COINS_LOCK = "GAME_RECEIVE_COINS_LOCK_"+uid;
 		try {
 			//拿锁
 			int stop = 0;
@@ -5576,7 +5576,7 @@ public class ActivityServiceImpl implements ActivityService {
 					break;
 				}else{
 					if(stop > 100){
-						return Response.failure(500,"记录失败");
+						return Response.failure(500,"领取失败");
 					}else{
 						log.info("[{}]锁被占，等待100ms", GAME_RECEIVE_COINS_LOCK);
 						Thread.sleep(100);
@@ -5585,7 +5585,7 @@ public class ActivityServiceImpl implements ActivityService {
 			}
 		} catch (InterruptedException e1) {
 			log.error("获取锁失败", e1);
-			return Response.failure(500,"记录失败");
+			return Response.failure(500,"领取失败");
 		}
 		
 		try {
@@ -5600,12 +5600,14 @@ public class ActivityServiceImpl implements ActivityService {
 				// 将game_user_info中的米汤币-coins
 				activityMybatisDao.updateGameUserInfoCoinsSubCoinsByUid(uid, coins);
 				return Response.success(200, "OK");
+			}else{
+				return Response.failure(500, "未参加活动");
 			}
 		} catch (Exception e) {
-			log.error("记录失败", e);
+			log.error("领取失败", e);
+			throw new RuntimeException("领取失败");
 		} finally{
 			cacheService.releaseLock(GAME_RECEIVE_COINS_LOCK);
 		}
-		return Response.failure(500, "未参加活动");
 	}
 }
