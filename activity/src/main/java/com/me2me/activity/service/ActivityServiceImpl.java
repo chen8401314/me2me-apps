@@ -5513,67 +5513,98 @@ public class ActivityServiceImpl implements ActivityService {
 
 	@Override
 	public Response gameResult(long uid, long gameId, int record) {
-		int coin = record>60?60:record;
-		String GAME_RESULT_KEY ="GAME_RESULT_KEY_"+uid+"_"+gameId;
+		String GAME_RESULT_LOCK ="GAME_RESULT_LOCK_"+uid+"_"+gameId;
 		try {
-			Boolean flag = true;
+			//拿锁
 			int stop = 0;
-			while(flag){
+			while(true){
 				stop++;
-				if(cacheService.getLock(GAME_RESULT_KEY) > 0){
-					//根据uid跟gameId去数据库中查询
-					GameUserRecord gameUserRecord = activityMybatisDao.getGameUserRecordByUidAndGameId(uid,gameId);
-					if(gameUserRecord != null){
-						//获取到数据库中原始的record
-						int originalRecord = gameUserRecord.getRecord();
-						if(record > originalRecord){
-							int originalCoin = originalRecord>60?60:originalRecord;
-							activityMybatisDao.updateGameUserRecordAndCoinsByIdAndRecordAndCoins(gameUserRecord.getId(),record,coin);
-							if(coin > originalCoin){
-								activityMybatisDao.updateGameUserInfoByGameIdAndCoins(gameId,coin-originalCoin);
-							}
-						}
-					}else{
-						//如果数据库中不存在该记录，则创建一条新记录
-						activityMybatisDao.createNewGameRecordByUidAndGameIdAndRecordAndCoins(uid,gameId,record,coin);
-						activityMybatisDao.updateGameUserInfoByGameIdAndCoins(gameId,coin);
-					}
-					flag = false;
+				int lock = cacheService.getLock(GAME_RESULT_LOCK);
+				if(lock>0){
+					break;
 				}else{
-					if(stop<100){
-						Timer timer = new Timer();
-						timer.schedule(new TimerTask() {
-							@Override
-							public void run() {
-								cacheService.getLock(GAME_RESULT_KEY);
-							}
-						},50);
+					if(stop > 100){
+						return Response.failure(500,"记录失败");
 					}else{
-						return Response.failure(500,"无法获取锁");
+						log.info("[{}]锁被占，等待100ms", GAME_RESULT_LOCK);
+						Thread.sleep(100);
 					}
 				}
-			}	
-		} catch (Exception e) {
-			e.printStackTrace();
+			}
+		} catch (InterruptedException e1) {
+			log.error("获取锁失败", e1);
+			return Response.failure(500,"记录失败");
+		}
+		
+		try{
+			int coin = record>60?60:record;
+			//根据uid跟gameId去数据库中查询
+			GameUserRecord gameUserRecord = activityMybatisDao.getGameUserRecordByUidAndGameId(uid,gameId);
+			if(gameUserRecord != null){
+				//获取到数据库中原始的record
+				int originalRecord = gameUserRecord.getRecord();
+				if(record > originalRecord){
+					int originalCoin = originalRecord>60?60:originalRecord;
+					activityMybatisDao.updateGameUserRecordAndCoinsByIdAndRecordAndCoins(gameUserRecord.getId(),record,coin);
+					if(coin > originalCoin){
+						activityMybatisDao.updateGameUserInfoByGameIdAndCoins(gameId,coin-originalCoin);
+					}
+				}
+			}else{
+				//如果数据库中不存在该记录，则创建一条新记录
+				activityMybatisDao.createNewGameRecordByUidAndGameIdAndRecordAndCoins(uid,gameId,record,coin);
+				activityMybatisDao.updateGameUserInfoByGameIdAndCoins(gameId,coin);
+			}
+		}catch(Exception e){
+			log.error("记录失败", e);
 		} finally {
-			cacheService.releaseLock(GAME_RESULT_KEY);
+			cacheService.releaseLock(GAME_RESULT_LOCK);
 		}
 		return Response.success(200, "OK");
 	}
 
 	@Override
 	public Response gameReceiveCoins(long uid) {
-		// 根据uid去game_user_info表中获取coins
-		GameUserInfo gameUserInfo = activityMybatisDao.getGameUserInfoByUid(uid);
-		if (gameUserInfo != null) {
-			int coins = gameUserInfo.getCoins();
-			// 将取到的coins加入到user_profile中的available_coin
-			activityMybatisDao.updateUserProfileAvailableCoinByReciveCoinsAndUid(coins, uid);
-			// game_user_receive_his插入领取数据
-			activityMybatisDao.insertGameUserReceiveHisByGameIdAndCoinsAndUid(gameUserInfo.getId(), gameUserInfo.getCoins(), gameUserInfo.getUid());
-			// 将game_user_info中的米汤币-coins
-			activityMybatisDao.updateGameUserInfoCoinsSubCoinsByUid(uid, coins);
-			return Response.success(200, "OK");
+		String GAME_RECEIVE_COINS_LOCK = "GAME_RESULT_LOCK_"+uid;
+		try {
+			//拿锁
+			int stop = 0;
+			while(true){
+				stop++;
+				int lock = cacheService.getLock(GAME_RECEIVE_COINS_LOCK);
+				if(lock>0){
+					break;
+				}else{
+					if(stop > 100){
+						return Response.failure(500,"记录失败");
+					}else{
+						log.info("[{}]锁被占，等待100ms", GAME_RECEIVE_COINS_LOCK);
+						Thread.sleep(100);
+					}
+				}
+			}
+		} catch (InterruptedException e1) {
+			log.error("获取锁失败", e1);
+			return Response.failure(500,"记录失败");
+		}
+		
+		try {
+			// 根据uid去game_user_info表中获取coins
+			GameUserInfo gameUserInfo = activityMybatisDao.getGameUserInfoByUid(uid);
+			if (gameUserInfo != null) {
+				int coins = gameUserInfo.getCoins();
+				// 将取到的coins加入到user_profile中的available_coin
+				activityMybatisDao.updateUserProfileAvailableCoinByReciveCoinsAndUid(coins, uid);
+				// game_user_receive_his插入领取数据
+				activityMybatisDao.insertGameUserReceiveHisByGameIdAndCoinsAndUid(gameUserInfo.getId(), gameUserInfo.getCoins(), gameUserInfo.getUid());
+				// 将game_user_info中的米汤币-coins
+				activityMybatisDao.updateGameUserInfoCoinsSubCoinsByUid(uid, coins);
+				return Response.success(200, "OK");
+			}
+		} catch (Exception e) {
+			log.error("记录失败", e);
+		} finally{
+			cacheService.releaseLock(GAME_RECEIVE_COINS_LOCK);
 		}
 		return Response.failure(500, "未参加活动");
 	}
