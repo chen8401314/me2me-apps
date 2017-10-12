@@ -1,5 +1,6 @@
 package com.me2me.cache.service;
 
+import com.me2me.cache.CacheConstant;
 import com.me2me.core.cache.JedisTemplate;
 
 import lombok.extern.slf4j.Slf4j;
@@ -424,10 +425,11 @@ public class CacheServiceImpl implements CacheService {
 	
 	@Override
 	public int getLock(String key){
+		final String lockKey = CacheConstant.CACHE_LOCK_PRE + key;
 		Long result = jedisTemplate.execute(new JedisTemplate.JedisActionResult() {
             @Override
             public Long actionResult(Jedis jedis) {
-                return jedis.setnx(key, "1");
+                return jedis.setnx(lockKey, "1");
             }
         });
 		
@@ -436,7 +438,9 @@ public class CacheServiceImpl implements CacheService {
 		if(res > 0){//set成功了，也即拿到了锁
 			res = 1;
 			//设置超时时间，防止死锁
-			this.expire(key, 60);//60秒的超时，可以了
+			this.expire(lockKey, 20);//因为dubbo的超时时间是20秒，20秒内足够完成业务了，实在完不成也被dubbo超时了，所以这里设置个20秒足够了
+		}else{
+			res = 0;
 		}
 		
 		return res;
@@ -444,6 +448,7 @@ public class CacheServiceImpl implements CacheService {
 	
 	@Override
 	public void releaseLock(String key){
-		this.del(key);
+		String lockKey = CacheConstant.CACHE_LOCK_PRE + key;
+		this.del(lockKey);
 	}
 }

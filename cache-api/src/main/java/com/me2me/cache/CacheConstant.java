@@ -50,4 +50,6 @@ public class CacheConstant {
 	public static final String USER_REC_INIT_LIST_KEY_PRE = "USER_REC_INIT_LIST:";
 	public static final String USER_REC_DAY_LIST_KEY_PRE = "USER_REC_DAY_LIST:";
 	public static final String USER_REC_DATE_KEY = "USER_REC_DATE";
+	
+	public static final String CACHE_LOCK_PRE = "LOCK:";
 }

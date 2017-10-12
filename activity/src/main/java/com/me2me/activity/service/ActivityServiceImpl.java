@@ -5536,18 +5536,18 @@ public class ActivityServiceImpl implements ActivityService {
 
 	@Override
 	public Response gameReceiveCoins(long uid) {
-		//根据uid去game_user_info表中获取coins
-		GameUserInfo gameUserInfo =  activityMybatisDao.getGameUserInfoByUid(uid);
-		if(gameUserInfo != null){
+		// 根据uid去game_user_info表中获取coins
+		GameUserInfo gameUserInfo = activityMybatisDao.getGameUserInfoByUid(uid);
+		if (gameUserInfo != null) {
 			int coins = gameUserInfo.getCoins();
-			//将取到的coins加入到user_profile中的available_coin
-			activityMybatisDao.updateUserProfileAvailableCoinByReciveCoinsAndUid(coins,uid);
-			//game_user_receive_his插入领取数据
-			activityMybatisDao.insertGameUserReceiveHisByGameIdAndCoinsAndUid(gameUserInfo.getId(),gameUserInfo.getCoins(),gameUserInfo.getUid());
-			//将game_user_info中的米汤币-coins
-			activityMybatisDao.updateGameUserInfoCoinsSubCoinsByUid(uid,coins);
-			return Response.success(200,"OK");
-		}	
-			return Response.failure(500, "failure");
+			// 将取到的coins加入到user_profile中的available_coin
+			activityMybatisDao.updateUserProfileAvailableCoinByReciveCoinsAndUid(coins, uid);
+			// game_user_receive_his插入领取数据
+			activityMybatisDao.insertGameUserReceiveHisByGameIdAndCoinsAndUid(gameUserInfo.getId(), gameUserInfo.getCoins(), gameUserInfo.getUid());
+			// 将game_user_info中的米汤币-coins
+			activityMybatisDao.updateGameUserInfoCoinsSubCoinsByUid(uid, coins);
+			return Response.success(200, "OK");
+		}
+		return Response.failure(500, "未参加活动");
 	}
 }
