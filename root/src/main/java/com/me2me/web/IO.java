@@ -1,15 +1,11 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
-import com.me2me.common.web.ResponseWapx;
 import com.me2me.io.service.FileTransferService;
-import com.me2me.user.dto.WapxIosDto;
 import com.me2me.web.request.GetQiniuAccessTokenRequest;
-import com.me2me.web.request.WapxIosRequest;
 import com.me2me.web.request.WeChatRequest;
 import com.me2me.web.request.WxJsApiTicketRequest;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -35,7 +31,7 @@ public class IO extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getQiniuAccessToken",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getQiniuAccessToken(GetQiniuAccessTokenRequest request){
-        return fileTransferService.getQiniuAccessToken(request.getType());
+        return fileTransferService.getQiniuAccessToken(request.getBucket());
     }
 
 

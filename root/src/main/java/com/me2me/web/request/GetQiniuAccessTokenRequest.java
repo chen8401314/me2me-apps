@@ -9,5 +9,5 @@ public class GetQiniuAccessTokenRequest extends Request {
 
 	@Getter
     @Setter
-	private int type;
+	private int bucket;
 }
