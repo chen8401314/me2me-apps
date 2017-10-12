@@ -269,12 +269,16 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
   
-  <update id="updateCoins" parameterType="com.me2me.activity.model.GameUserInfo">
+  <update id="userInfoAddCoinsByGameId" parameterType="com.me2me.activity.model.GameUserInfo">
   	update game_user_info set coins = coins + #{coins,jdbcType=INTEGER} where id = #{id,jdbcType=BIGINT}
   </update>
   
-  <update id="updateGameUserInfoCoinsByUidAndCoins" parameterType="com.me2me.activity.model.GameUserInfo">
+  <update id="gameUserInfoSubCoinsByUidAndCoins" parameterType="com.me2me.activity.model.GameUserInfo">
   	update game_user_info set coins = coins - #{coins,jdbcType=INTEGER}  where uid = #{uid,jdbcType=BIGINT}
+  </update>
+  
+  <update id="userProfileAddAvailableCoinByCoinsAndUid" parameterType="map">
+  	update user_profile set available_coin = available_coin +  #{coins,jdbcType=INTEGER} where uid = #{uid,jdbcType=BIGINT}
   </update>
   
 </mapper>
