@@ -51,6 +51,8 @@ public class FileTransferServiceImpl implements FileTransferService{
     private static final String SECRET_KEY ="9fmLV9tnplKRITWQV7QOQYANArqCNELd_SXtjwh9";
 
     private static final String BUCKET = "ifeeling";
+    
+    private static final String BUCKET_VIDEO = "m2m-video";
 
     private static int DEFAULT_TIME_OUT = 60000000;
 
@@ -82,8 +84,12 @@ public class FileTransferServiceImpl implements FileTransferService{
     }
 
     @Override
-    public Response getQiniuAccessToken() {
-        String token = auth.uploadToken(BUCKET);
+    public Response getQiniuAccessToken(int type) {
+    	String bucket = BUCKET;
+    	if(type == 1){
+    		bucket = BUCKET_VIDEO;
+    	}
+        String token = auth.uploadToken(bucket);
         QiniuAccessTokenDto qiniuAccessTokenDto = new QiniuAccessTokenDto();
         qiniuAccessTokenDto.setToken(token);
         qiniuAccessTokenDto.setExpireTime(60*1000*10);

@@ -24,7 +24,7 @@ public interface FileTransferService {
      * 获取七牛访问token
      * @return
      */
-    Response getQiniuAccessToken();
+    Response getQiniuAccessToken(int type);
 
 
     String upload(byte[] data, String key);
