@@ -72,5 +72,6 @@
 		<!-- <table tableName="user_avatar_frame" domainObjectName="UserAvatarFrame"/> -->
 		<!-- <table tableName="user_device_info" domainObjectName="UserDeviceInfo"/> -->
 		<!-- <table tableName="user_invitation_his" domainObjectName="UserInvitationHis"/> -->
+		<!-- <table tableName="user_tag" domainObjectName="UserTag"/> -->
     </context>
 </generatorConfiguration>
