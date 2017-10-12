@@ -363,4 +363,9 @@ public class Contents extends BaseController {
     public Response shareRecord(ShareRecordRequest request){
     	return contentService.shareRecord(request.getUid(), request.getType(), request.getCid(), request.getShareAddr());
     }
+    @RequestMapping(value = "/tagMgmtQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response tagMgmtQuery(TagMgmtQueryRequest request){
+    	return contentService.tagMgmtQuery(request.getType(), request.getPage(), request.getUid());
+    }
 }

@@ -123,5 +123,52 @@ public interface TopicTagSearchMapper {
 	@ResultType(String.class)
 	@Select("select tag from topic_tag where  pid =#{0}  and status=0")
 	public List<String> getSubTags(long tagId);
+	
+	
+	
+	/**
+	 * 按标签类型查询标签列表
+	 * @param uid
+	 * @param type
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	public List<Map<String, Object>> getUserTagListByType(
+			@Param("uid") long uid,
+			@Param("type") int type,
+			@Param("page")int page, 
+			@Param("pageSize")int pageSize);
+	
+	/**
+	 * 按标签类型查询标签列表
+	 * @param uid
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	public List<Map<String, Object>> getUserTagListOther(
+			@Param("uid") long uid,
+			@Param("page")int page, 
+			@Param("pageSize")int pageSize);
+	
+	
+	  /**
+     * 按标签查询王国
+     * @author zhangjiwei
+	 * @param uid 
+     * @date Jun 29, 2017
+     * @param order 排序规则
+     * @param page 当前页
+     * @param pageSize 页大小
+     * @return
+     */
+	public List<Map<String, Object>> getKingdomsByTagInfo(
+			@Param("uid") long uid,
+			@Param("topicIds") List<Long> topicIds,
+			@Param("order")String order,
+			@Param("page")int page, 
+			@Param("pageSize")int pageSize,
+			@Param("blacklistUids")List<Long> blacklistUids);
 
 }

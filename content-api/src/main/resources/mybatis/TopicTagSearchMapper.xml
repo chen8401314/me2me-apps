@@ -89,5 +89,47 @@
 		(select data from user_dislike where uid=#{uid} and is_like=1 and type=2) userlike 
 		where t.id=userlike.data
 	</select>
+	<select id="getUserTagListByType" resultType="map">
+		select tt.id,tt.tag,tt.cover_img,ut.is_top FROM topic_tag tt,user_tag ut
+		WHERE tt.id = ut.tag_id AND tt.status = 0
+		AND ut.uid = #{uid}
+		AND ut.type = #{type}
+		ORDER BY ut.is_top DESC,ut.top_time DESC,tt.is_sys DESC
+		LIMIT ${(page-1)*pageSize},#{pageSize}
+	</select>
+		<select id="getUserTagListOther" resultType="map">
+	          select tt.id,tt.tag,tt.cover_img,ut.is_top,tt.is_sys FROM topic_tag tt
+	          LEFT JOIN user_tag ut
+	          ON tt.id = ut.tag_id AND ut.uid = #{uid}
+	          WHERE
+	          (ut.type IS NULL OR ut.type NOT IN (1,2))
+	          AND tt.status = 0
+	          ORDER BY tt.is_sys DESC,ut.id DESC
+	          LIMIT ${(page-1)*pageSize},#{pageSize}
+	    </select>
+   <select id="getKingdomsByTagInfo" resultType="map">
+		select t.*,td.last_price_incr from topic t
+		left join topic_data td on  td.topic_id=t.id
+		where 
+			t.id in
+				<foreach open="(" separator="," close=")" collection="topicIds" item="bid">
+	        		#{bid}
+	      		</foreach>
+			<if test="blacklistUids!=null and blacklistUids.size() &gt; 0">
+	      		and t.uid not in
+	      		<foreach open="(" separator="," close=")" collection="topicIds" item="bid">
+	        		#{bid}
+	      		</foreach>
+    		</if>
+		  <choose>
+             <when test="order=='price'">
+                order by t.price DESC,t.id desc
+             </when>
+             <otherwise>
+                order by td.last_price_incr DESC,t.id desc
+              </otherwise>
+           </choose>
+		   limit ${(page-1)*pageSize},#{pageSize}
+     </select>
 	
 </mapper>

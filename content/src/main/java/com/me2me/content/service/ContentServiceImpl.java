@@ -104,6 +104,7 @@ import com.me2me.content.dto.ShowUserContentsDTO;
 import com.me2me.content.dto.SquareDataDto;
 import com.me2me.content.dto.TagGroupDto;
 import com.me2me.content.dto.TagKingdomDto;
+import com.me2me.content.dto.TagMgmtQueryDto;
 import com.me2me.content.dto.UserContentSearchDTO;
 import com.me2me.content.dto.UserGroupDto;
 import com.me2me.content.dto.WriteTagDto;
@@ -8973,4 +8974,97 @@ public class ContentServiceImpl implements ContentService {
 		}
         return  Response.success();
     }
+    
+    
+	@Override
+	public Response tagMgmtQuery(int type,int page,long uid) {
+		if(page<1)
+			page=1;
+		TagMgmtQueryDto dto = new TagMgmtQueryDto();
+		List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
+        List<String> blackTagNameList = new ArrayList<>();
+        List<TagInfo> blackTags = topicTagMapper.getUserLikeTagAndSubTag(uid,0);	
+        for(TagInfo info:blackTags){
+        	blackTagNameList.add(info.getTagName());
+        }
+        int pageSize = 20;
+        List<Map<String,Object>> listTags = new ArrayList<Map<String,Object>>();
+    	if(type == 1 || type ==2 ){
+    		listTags = topicTagMapper.getUserTagListByType(uid, type, page, pageSize);
+    	}else{
+    		listTags = topicTagMapper.getUserTagListOther(uid,page, pageSize);
+    	}
+        for(Map<String,Object> tag:listTags){
+        	if(tag==null) continue;
+        	TagMgmtQueryDto.KingdomTag element = new TagMgmtQueryDto.KingdomTag();
+        	if(type == 1 || type ==2 ){
+        		element.setIsShowLikeButton(0);
+               	int isTop = (Integer)tag.get("is_top");
+               	element.setIsTop(isTop);
+        	}else{
+        		element.setIsShowLikeButton(1);
+        		element.setIsTop(0);
+        	}
+        	long tagId = (Long)tag.get("id");
+        	element.setTagId(tagId);
+        	String tagName  =tag.get("tag").toString();
+        	element.setTagName(tagName);
+           	if(!StringUtils.isEmpty(tag.get("cover_img")) ){
+           		element.setCoverImage(Constant.QINIU_DOMAIN+"/"+tag.get("cover_img").toString());
+           	}
+           	List<Long> topicIds = topicTagMapper.getTopicIdsByTagAndSubTag(tagId);
+           	List<Map<String,Object>> topicList = null;
+           	if(null != topicIds && topicIds.size() > 0){
+           		topicList = this.topicTagMapper.getKingdomsByTagInfo(uid,topicIds,"new",1,4, blacklistUids);
+           	}
+            if(topicList!=null && topicList.size()>0){
+        		List<Long> topicIdList = new ArrayList<Long>();
+        		Long tid = null;
+        		for(Map<String,Object> m : topicList){
+        			tid = (Long)m.get("id");
+        			if(!topicIdList.contains(tid)){
+        				topicIdList.add(tid);
+        			}
+        		}
+        		for (Map<String, Object> topic : topicList) {
+        			TagMgmtQueryDto.ImageData data = new TagMgmtQueryDto.ImageData();
+        			data.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String) topic.get("live_image"));
+        			element.getImageData().add(data);
+        		}
+            }
+            int tagPersons=0;
+            int kingdomCount = 0;
+            
+            Map<String,Object> totalPrice = null;
+        	String cacheKey = "OBJ:TAGPRICEANDKINGDOMCOUNT:"+tagName;
+        	Object tagRes = cacheService.getJavaObject(cacheKey);
+        	if(null != tagRes){
+        		totalPrice = (Map<String,Object>)tagRes;
+        	}else{
+        		if(null != topicIds && topicIds.size() > 0){
+        			totalPrice = topicTagMapper.getTagPriceAndKingdomCount(topicIds);
+        		}
+        		Map<String, Object> cacheObj = new HashMap<String, Object>();
+        		if(null != totalPrice && totalPrice.size() > 0){
+        			cacheObj.putAll(totalPrice);
+        		}
+        		cacheService.cacheJavaObject(cacheKey, cacheObj, 2*60*60);//缓存两小时
+        	}
+        	if(null == totalPrice){
+        		totalPrice = new HashMap<String, Object>();
+        	}
+            if(totalPrice.containsKey("tagPersons")){
+                tagPersons=((Number)totalPrice.get("tagPersons")).intValue();
+            }
+            if(totalPrice.containsKey("kingdomCount")){
+                kingdomCount=((Number)totalPrice.get("kingdomCount")).intValue();
+            }
+            element.setKingdomCount(kingdomCount);
+            element.setPersonCount(tagPersons);
+            dto.getKingdomTagList().add(element);
+        }
+		return Response.success(dto);
+	}
+    
+    
 }

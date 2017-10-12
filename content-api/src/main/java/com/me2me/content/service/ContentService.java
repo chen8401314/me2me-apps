@@ -624,4 +624,13 @@ public interface ContentService{
      * @return
      */
     public Response adRead(long adid,long uid);
+    
+	/**
+	 * 标签管理页查询
+	 * @param type
+	 * @param page
+	 * @param uid
+	 * @return
+	 */
+	public Response tagMgmtQuery(int type,int page,long uid) ;
 }
