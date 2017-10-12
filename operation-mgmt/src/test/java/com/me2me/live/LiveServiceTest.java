@@ -77,22 +77,22 @@ public class LiveServiceTest {
 	
 	@Test
 	public void testGameUserInfo(){
-		long uid = 295;
+		long uid = 296;
 		activityService.gameUserInfo(uid);
 	}
 	
 	@Test
 	public void testGameResult(){
 		//0  295  296  297 
-		long uid = 295;
-		long gameId = 9;
-		int record = 2;
+		long uid = 290;
+		long gameId = 8;
+		int record = 65;
 		activityService.gameResult(uid,gameId,record);
 	}
 	
 	@Test
 	public void  gameReceiveCoins(){
-		long uid = 295;
+		long uid = 0;
 		activityService.gameReceiveCoins(uid);
 	}
 }

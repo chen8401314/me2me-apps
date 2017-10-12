@@ -1,24 +1,112 @@
 package com.me2me.activity.dao;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.me2me.activity.dto.BlurSearchDto;
-import com.me2me.activity.dto.LuckActStat2DTO;
-import com.me2me.activity.dto.LuckActStatDTO;
-import com.me2me.activity.mapper.*;
-import com.me2me.activity.model.*;
-import com.me2me.common.web.Specification;
-import com.me2me.user.mapper.UserProfileMapper;
-import com.me2me.user.model.UserProfile;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.me2me.activity.dto.BlurSearchDto;
+import com.me2me.activity.dto.LuckActStat2DTO;
+import com.me2me.activity.dto.LuckActStatDTO;
+import com.me2me.activity.mapper.AactivityMapper;
+import com.me2me.activity.mapper.AactivityStageMapper;
+import com.me2me.activity.mapper.AcommonChatMapper;
+import com.me2me.activity.mapper.AcommonHotDetailMapper;
+import com.me2me.activity.mapper.AcommonListMapper;
+import com.me2me.activity.mapper.ActivityLikesDetailsMapper;
+import com.me2me.activity.mapper.ActivityMapper;
+import com.me2me.activity.mapper.ActivityReviewMapper;
+import com.me2me.activity.mapper.ActivityTagsDetailsMapper;
+import com.me2me.activity.mapper.AdoubleTopicApplyMapper;
+import com.me2me.activity.mapper.AforcedPairingMapper;
+import com.me2me.activity.mapper.AkingDomListMapper;
+import com.me2me.activity.mapper.AkingDomMapper;
+import com.me2me.activity.mapper.AmiliDataMapper;
+import com.me2me.activity.mapper.AppLightboxSourceMapper;
+import com.me2me.activity.mapper.AppUiControlMapper;
+import com.me2me.activity.mapper.ArecommendUserDescMapper;
+import com.me2me.activity.mapper.ArecommendUserMapper;
+import com.me2me.activity.mapper.AtaskMapper;
+import com.me2me.activity.mapper.AtaskUserMapper;
+import com.me2me.activity.mapper.AtopicMapper;
+import com.me2me.activity.mapper.AuserMapper;
+import com.me2me.activity.mapper.GameUserInfoMapper;
+import com.me2me.activity.mapper.GameUserReceiveHisMapper;
+import com.me2me.activity.mapper.GameUserRecordMapper;
+import com.me2me.activity.mapper.LuckActMapper;
+import com.me2me.activity.mapper.LuckCountMapper;
+import com.me2me.activity.mapper.LuckPrizeMapper;
+import com.me2me.activity.mapper.LuckStatusMapper;
+import com.me2me.activity.mapper.LuckWinnersMapper;
+import com.me2me.activity.mapper.TchannelMapper;
+import com.me2me.activity.mapper.UserActivityMapper;
+import com.me2me.activity.model.Aactivity;
+import com.me2me.activity.model.AactivityExample;
+import com.me2me.activity.model.AactivityStage;
+import com.me2me.activity.model.AactivityStageExample;
+import com.me2me.activity.model.AcommonChat;
+import com.me2me.activity.model.AcommonChatExample;
+import com.me2me.activity.model.AcommonHotDetail;
+import com.me2me.activity.model.AcommonHotDetailExample;
+import com.me2me.activity.model.AcommonList;
+import com.me2me.activity.model.AcommonListExample;
+import com.me2me.activity.model.ActivityExample;
+import com.me2me.activity.model.ActivityLikesDetails;
+import com.me2me.activity.model.ActivityLikesDetailsExample;
+import com.me2me.activity.model.ActivityReview;
+import com.me2me.activity.model.ActivityReviewExample;
+import com.me2me.activity.model.ActivityTagsDetails;
+import com.me2me.activity.model.ActivityWithBLOBs;
+import com.me2me.activity.model.AdoubleTopicApply;
+import com.me2me.activity.model.AdoubleTopicApplyExample;
+import com.me2me.activity.model.AforcedPairing;
+import com.me2me.activity.model.AforcedPairingExample;
+import com.me2me.activity.model.AkingDom;
+import com.me2me.activity.model.AkingDomExample;
+import com.me2me.activity.model.AkingDomList;
+import com.me2me.activity.model.AkingDomListExample;
+import com.me2me.activity.model.AmiliData;
+import com.me2me.activity.model.AmiliDataExample;
+import com.me2me.activity.model.AppLightboxSource;
+import com.me2me.activity.model.AppLightboxSourceExample;
+import com.me2me.activity.model.AppUiControl;
+import com.me2me.activity.model.AppUiControlExample;
+import com.me2me.activity.model.ArecommendUser;
+import com.me2me.activity.model.ArecommendUserDesc;
+import com.me2me.activity.model.ArecommendUserExample;
+import com.me2me.activity.model.AtaskExample;
+import com.me2me.activity.model.AtaskUser;
+import com.me2me.activity.model.AtaskUserExample;
+import com.me2me.activity.model.AtaskWithBLOBs;
+import com.me2me.activity.model.Atopic;
+import com.me2me.activity.model.AtopicExample;
+import com.me2me.activity.model.Auser;
+import com.me2me.activity.model.AuserExample;
+import com.me2me.activity.model.GameUserInfo;
+import com.me2me.activity.model.GameUserInfoExample;
+import com.me2me.activity.model.GameUserReceiveHis;
+import com.me2me.activity.model.GameUserRecord;
+import com.me2me.activity.model.GameUserRecordExample;
+import com.me2me.activity.model.LuckAct;
+import com.me2me.activity.model.LuckActExample;
+import com.me2me.activity.model.LuckCount;
+import com.me2me.activity.model.LuckCountExample;
+import com.me2me.activity.model.LuckPrize;
+import com.me2me.activity.model.LuckPrizeExample;
+import com.me2me.activity.model.LuckStatus;
+import com.me2me.activity.model.LuckStatusExample;
+import com.me2me.activity.model.LuckWinners;
+import com.me2me.activity.model.LuckWinnersExample;
+import com.me2me.activity.model.Tchannel;
+import com.me2me.activity.model.TchannelExample;
+import com.me2me.activity.model.UserActivity;
+import com.me2me.common.web.Specification;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -123,9 +211,7 @@ public class ActivityMybatisDao {
     
     @Autowired
     private GameUserReceiveHisMapper gameUserReceiveHisMapper;
-    
-    @Autowired
-    private UserProfileMapper userProfileMapper;
+   
 
     public List<Tchannel> getAppChannel(String code){
     	TchannelExample example = new TchannelExample();
@@ -1552,19 +1638,19 @@ public class ActivityMybatisDao {
 		return null;
 	}
 
-	public void createNewGameRecordByUidAndGameIdAndRecord(long uid, long gameId, int record) {
+	public void createNewGameRecordByUidAndGameIdAndRecordAndCoins(long uid, long gameId, int record,int coins) {
 		GameUserRecord gameUserRecord = new GameUserRecord();
 		gameUserRecord.setGameId(gameId);
 		gameUserRecord.setUid(uid);
 		gameUserRecord.setRecord(record);
-		gameUserRecord.setCoins(record>60?60:record);
+		gameUserRecord.setCoins(coins);
 		gameUserRecordMapper.insertSelective(gameUserRecord);
 	}
 
-	public void updateGameUserRecordByIdAndRecord(long id, int record) {
+	public void updateGameUserRecordAndCoinsByIdAndRecordAndCoins(long id, int record,int coins) {
 		GameUserRecord gameUserRecord = new GameUserRecord();
 		gameUserRecord.setRecord(record);
-		gameUserRecord.setCoins(record>60?60:record);
+		gameUserRecord.setCoins(coins);
 		GameUserRecordExample example = new GameUserRecordExample();
 		GameUserRecordExample.Criteria criteria = example.createCriteria();
 		criteria.andIdEqualTo(id);
@@ -1575,15 +1661,11 @@ public class ActivityMybatisDao {
 		GameUserInfo gameUserInfo = new GameUserInfo();
 		gameUserInfo.setCoins(coins);
 		gameUserInfo.setId(gameId);
-		gameUserInfoMapper.updateCoins(gameUserInfo);
-		
+		gameUserInfoMapper.userInfoAddCoinsByGameId(gameUserInfo);
 	}
 
 	public void updateUserProfileAvailableCoinByReciveCoinsAndUid(int coins,long uid) {
-		UserProfile profile = new UserProfile();
-		profile.setUid(uid);
-		profile.setAvailableCoin(coins);
-		userProfileMapper.updateAvailableCoin(profile);
+		gameUserInfoMapper.userProfileAddAvailableCoinByCoinsAndUid(coins,uid);
 	}
 
 	public void insertGameUserReceiveHisByGameIdAndCoinsAndUid(Long gameId, Integer coins, Long uid) {
@@ -1598,7 +1680,7 @@ public class ActivityMybatisDao {
 		GameUserInfo gameUserInfo = new GameUserInfo();
 		gameUserInfo.setUid(uid);
 		gameUserInfo.setCoins(coins);
-		gameUserInfoMapper.updateGameUserInfoCoinsByUidAndCoins(gameUserInfo);
+		gameUserInfoMapper.gameUserInfoSubCoinsByUidAndCoins(gameUserInfo);
 	}
 	
 }

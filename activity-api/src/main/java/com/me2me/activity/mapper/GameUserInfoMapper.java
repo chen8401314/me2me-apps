@@ -2,6 +2,7 @@ package com.me2me.activity.mapper;
 
 import com.me2me.activity.model.GameUserInfo;
 import com.me2me.activity.model.GameUserInfoExample;
+
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
@@ -94,9 +95,10 @@ public interface GameUserInfoMapper {
      */
     int updateByPrimaryKey(GameUserInfo record);
     
-    int updateCoins(GameUserInfo record);
+	void userInfoAddCoinsByGameId(GameUserInfo gameUserInfo);
 
-	void updateGameUserInfoCoinsByUidAndCoins(GameUserInfo record);
+	void gameUserInfoSubCoinsByUidAndCoins(GameUserInfo gameUserInfo);
 
-	
+	void userProfileAddAvailableCoinByCoinsAndUid(@Param("coins")int coins, @Param("uid")long uid);
+
 }
