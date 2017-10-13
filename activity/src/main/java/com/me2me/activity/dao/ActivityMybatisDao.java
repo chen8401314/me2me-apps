@@ -38,6 +38,7 @@ import com.me2me.activity.mapper.AtopicMapper;
 import com.me2me.activity.mapper.AuserMapper;
 import com.me2me.activity.mapper.GameUserInfoMapper;
 import com.me2me.activity.mapper.GameUserReceiveHisMapper;
+import com.me2me.activity.mapper.GameUserRecordHisMapper;
 import com.me2me.activity.mapper.GameUserRecordMapper;
 import com.me2me.activity.mapper.LuckActMapper;
 import com.me2me.activity.mapper.LuckCountMapper;
@@ -93,6 +94,8 @@ import com.me2me.activity.model.GameUserInfoExample;
 import com.me2me.activity.model.GameUserReceiveHis;
 import com.me2me.activity.model.GameUserRecord;
 import com.me2me.activity.model.GameUserRecordExample;
+import com.me2me.activity.model.GameUserRecordHis;
+import com.me2me.activity.model.GameUserRecordHisExample;
 import com.me2me.activity.model.LuckAct;
 import com.me2me.activity.model.LuckActExample;
 import com.me2me.activity.model.LuckCount;
@@ -211,6 +214,10 @@ public class ActivityMybatisDao {
     
     @Autowired
     private GameUserReceiveHisMapper gameUserReceiveHisMapper;
+    
+    
+    @Autowired
+    private GameUserRecordHisMapper gameUserRecordHisMapper;
    
 
     public List<Tchannel> getAppChannel(String code){
@@ -1681,6 +1688,34 @@ public class ActivityMybatisDao {
 		gameUserInfo.setUid(uid);
 		gameUserInfo.setCoins(coins);
 		gameUserInfoMapper.gameUserInfoSubCoinsByUidAndCoins(gameUserInfo);
+	}
+
+	public void countGameUserRecordHisRecordByUidAndGameIdAndRecord(long uid, long gameId, int record) {
+		GameUserRecordHis gameUserRecordHis = new GameUserRecordHis();
+		gameUserRecordHis.setUid(uid);
+		gameUserRecordHis.setGameId(gameId);
+		gameUserRecordHis.setRecord(record);
+		gameUserRecordHisMapper.addUserRecordHisRecordByUidAndGameIdAndRecord(uid,gameId,record);
+	}
+
+	public GameUserRecordHis getGameUserRecordHisByUidAndGameId(long uid, long gameId) {
+		GameUserRecordHisExample example = new GameUserRecordHisExample();
+		GameUserRecordHisExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		criteria.andGameIdEqualTo(gameId);
+		List<GameUserRecordHis> list = gameUserRecordHisMapper.selectByExample(example);
+		if(list!=null&&list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	public void createNewGameUserRecordHisByUidAndGameIdAndRecord(long uid, long gameId, int record) {
+		GameUserRecordHis gameUserRecordHis = new GameUserRecordHis();
+		gameUserRecordHis.setUid(uid);
+		gameUserRecordHis.setGameId(gameId);
+		gameUserRecordHis.setRecord(record);
+		gameUserRecordHisMapper.insertSelective(gameUserRecordHis);
 	}
 	
 }

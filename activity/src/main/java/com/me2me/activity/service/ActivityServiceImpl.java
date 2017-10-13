@@ -5527,12 +5527,23 @@ public class ActivityServiceImpl implements ActivityService {
     	result.setCoins(gameUserInfo.getCoins());
     	result.setNickName(userProfile.getNickName());
     	result.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-    	result.setPrice(String.format("%.2f", gameUserInfo.getCoins().floatValue()));
+    	result.setPrice(String.format("%.2f", gameUserInfo.getCoins().floatValue()/100));
     	return Response.success(result);
     }
 
 	@Override
 	public Response gameResult(long uid, long gameId, int record) {
+		//根据uid,gamId,record向game_user_record_his表中插入或更新一条数据
+		//先根据uid,gameId查询表中是否存在该用户的游戏记录
+		GameUserRecordHis gameUserRecordHis = activityMybatisDao.getGameUserRecordHisByUidAndGameId(uid,gameId);
+		if(gameUserRecordHis!=null){
+			//用户信息存在执行更新操作
+			activityMybatisDao.countGameUserRecordHisRecordByUidAndGameIdAndRecord(uid,gameId,record);
+		}else{
+			//用户信息不存在执行新增操作
+			activityMybatisDao.createNewGameUserRecordHisByUidAndGameIdAndRecord(uid,gameId,record);
+		}
+		
 		String GAME_RESULT_LOCK ="GAME_RESULT_LOCK_"+uid+"_"+gameId;
 		try {
 			//拿锁

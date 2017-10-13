@@ -65,6 +65,6 @@
 		<!-- <table tableName="game_user_info" domainObjectName="GameUserInfo"/> -->
 		<!-- <table tableName="game_user_receive_his" domainObjectName="GameUserReceiveHis"/> -->
 		<!-- <table tableName="game_user_record" domainObjectName="GameUserRecord"/> -->
-
+		<!-- <table tableName="game_user_record_his" domainObjectName="GameUserRecordHis"/>	 -->
     </context>
 </generatorConfiguration>
