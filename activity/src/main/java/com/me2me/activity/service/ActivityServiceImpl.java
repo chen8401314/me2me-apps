@@ -5468,6 +5468,26 @@ public class ActivityServiceImpl implements ActivityService {
     	
     	//根据gameId查找出所有与当前用户相关的数据
     	List<GameUserRecord> gameUserRecords = activityMybatisDao.getGameUserRecordByGameId(gameUserInfo.getId());
+    	if(gameUserRecords==null){
+    		gameUserRecords = new ArrayList<GameUserRecord>();
+    	}
+    	boolean isIn = false;
+    	for(GameUserRecord f :gameUserRecords){
+    		if(f.getUid().longValue() == gameUid){
+    			isIn = true;
+    			break;
+    		}
+    	}
+    	
+    	if(!isIn){
+    		GameUserRecord gur = new GameUserRecord();
+    		gur.setCoins(0);
+    		gur.setGameId(gameUserInfo.getId());
+    		gur.setRecord(0);
+    		gur.setUid(gameUid);
+    		gameUserRecords.add(gur);
+    	}
+    	
     	if(gameUserRecords!=null&&gameUserRecords.size()>0){
     		List<Long> uids = Lists.newArrayList();
     		for(GameUserRecord gur : gameUserRecords){
