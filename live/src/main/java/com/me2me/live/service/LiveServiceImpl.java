@@ -1296,6 +1296,14 @@ public class LiveServiceImpl implements LiveService {
                 topicFragment.setAtUid(speakDto.getAtUid());
             }
             topicFragment.setSource(speakDto.getSource());
+            //这里擦个屁股，由于前段有点问题，这里做下兼容
+            if((speakDto.getType()==51||speakDto.getType()==52) && speakDto.getContentType() == 73){
+            	if(!StringUtils.isEmpty(speakDto.getExtra())){
+                    JSONObject obj = JSON.parseObject(speakDto.getExtra());
+                    obj.put("subType", 1);
+                    speakDto.setExtra(obj.toJSONString());
+            	}
+            }
             topicFragment.setExtra(speakDto.getExtra());
             boolean isOut = false;
             if(speakDto.getType() == 12 || speakDto.getType() == 13

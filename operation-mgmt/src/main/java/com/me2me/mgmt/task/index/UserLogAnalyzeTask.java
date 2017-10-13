@@ -151,14 +151,13 @@ public class UserLogAnalyzeTask{
 		
 		while(true){
 			List<Map<String,Object>> dataList =this.getUserVisitLogByDay(day,skip, pageSize);
-			logger.info("分析用户访问日志：{} ,data pos:{} size:{}",day,skip,dataList.size());
 			if(dataList.isEmpty()){
 				break;
 			}
+			logger.info("分析用户访问日志：{} ,data pos:{} size:{}",day,skip,dataList.size());
 			
 			// 干活了。
 			for(Map<String,Object> data:dataList){
-				//logger.info("日志=>{}",data);
 				long uid =Long.parseLong(data.get("uid").toString());
 				String action = data.get("action").toString();
 				Integer score=scoreMap.get(action);				// 计分

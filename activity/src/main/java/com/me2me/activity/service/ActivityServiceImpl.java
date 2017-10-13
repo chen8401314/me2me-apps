@@ -5527,7 +5527,7 @@ public class ActivityServiceImpl implements ActivityService {
     	result.setCoins(gameUserInfo.getCoins());
     	result.setNickName(userProfile.getNickName());
     	result.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-    	result.setPrice(String.format("%.2f", gameUserInfo.getCoins().floatValue()));
+    	result.setPrice(String.format("%.2f", gameUserInfo.getCoins().floatValue()/100));
     	return Response.success(result);
     }
 
@@ -5575,6 +5575,7 @@ public class ActivityServiceImpl implements ActivityService {
 				activityMybatisDao.createNewGameRecordByUidAndGameIdAndRecordAndCoins(uid,gameId,record,coin);
 				activityMybatisDao.updateGameUserInfoByGameIdAndCoins(gameId,coin);
 			}
+			activityMybatisDao.createNewGameUserRecordHisByUidAndGameIdAndRecord(uid,gameId,record);
 		}catch(Exception e){
 			log.error("记录失败", e);
 		} finally {
