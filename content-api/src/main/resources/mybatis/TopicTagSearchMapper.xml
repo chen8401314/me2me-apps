@@ -156,7 +156,7 @@
 		select t.id as
 		tagId,t.tag as tagName from
 		topic_tag t,
-		(SELECT tag_id FROM user_tag WHERE uid=#{uid} and type = in(1,2)) userlike
+		(SELECT tag_id FROM user_tag WHERE uid=#{uid} and type in(1,2)) userlike
 		where t.id=userlike.tag_id
 	</select>
 </mapper>
