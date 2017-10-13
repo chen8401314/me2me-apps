@@ -170,5 +170,17 @@ public interface TopicTagSearchMapper {
 			@Param("page")int page, 
 			@Param("pageSize")int pageSize,
 			@Param("blacklistUids")List<Long> blacklistUids);
+	
+	
+	/**
+	 * 查询其他单个标签(排除喜欢不喜欢的)
+	 * @param uid
+	 * @param tagId
+	 * @return
+	 */
+	public Map<String, Object> getOtherNormalTag(
+			@Param("uid") long uid,
+			@Param("tagId") long tagId
+			);
 
 }

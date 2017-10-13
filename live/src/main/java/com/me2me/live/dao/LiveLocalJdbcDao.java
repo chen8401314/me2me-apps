@@ -1576,7 +1576,9 @@ public class LiveLocalJdbcDao {
 	
 	public void updateUserLikeTagScore(long uid, String tag, int score) {
 		jdbcTemplate.update("update user_tag_like set score=score+? where uid=? and tag=?",score,uid,tag);
-		
+	}
+	public void updateUserLikeTagScore(long uid, long tagId, int score) {
+		jdbcTemplate.update("update user_tag set score=score+? where uid=? and tag_id=?",score,uid,tagId);
 	}
 	public void updateUserLikeTagScoreTo0(long uid, String tag) {
 		jdbcTemplate.update("update user_tag_like set score=0 where uid=? and tag=?",uid,tag);		

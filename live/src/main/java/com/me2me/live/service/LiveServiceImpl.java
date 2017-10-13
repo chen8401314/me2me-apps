@@ -59,6 +59,7 @@ import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.CreateContentSuccessDto;
 import com.me2me.content.dto.LikeDto;
+import com.me2me.content.dto.TagMgmtQueryDto;
 import com.me2me.content.dto.TeaseInfoDto;
 import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.model.Content;
@@ -207,6 +208,7 @@ import com.me2me.user.model.UserNo;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
+import com.me2me.user.model.UserTag;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
 
@@ -9932,6 +9934,7 @@ public class LiveServiceImpl implements LiveService {
 
 	@Override
 	public Response userLike(long uid, long dataId, int isLike, int type) {
+	com.me2me.content.dto.UserLikeDto  dto = new com.me2me.content.dto.UserLikeDto();
 		UserDislikeExample example = new UserDislikeExample();
 		example.createCriteria().andUidEqualTo(uid).andDataEqualTo(dataId).andTypeEqualTo(type);
 		boolean exists = dislikeMapper.countByExample(example)>0;
@@ -9952,6 +9955,37 @@ public class LiveServiceImpl implements LiveService {
 				TopicTag tag = liveMybatisDao.getTopicTagById(dislike.getData());
 				this.liveLocalJdbcDao.updateUserLikeTagScoreTo0(uid,tag.getTag());
 			}
+		//3.0.5版本处理
+			UserTag userTag = userService.getUserTagByUidAndTagid(uid, dataId);
+			int isSave = 0; //1保存 0更新
+			if(userTag==null){
+				userTag = new UserTag();
+				userTag.setUid(uid);
+				userTag.setTagId(dataId);
+				isSave  =1;
+			}
+			if(dislike.getIsLike()==0){	// 不喜欢
+				userTag.setType(2);
+				userTag.setScore(0);
+				dto = contentService.getOtherNormalTag(uid, dataId);
+			}
+			if(dislike.getIsLike()==1){	// 喜欢
+				userTag.setType(1);
+			}
+			if(dislike.getIsLike()==2){	// 置顶
+				userTag.setIsTop(1);
+			}
+			if(dislike.getIsLike()==3){	// 移除
+				userTag.setType(0);
+			}
+			if(dislike.getIsLike()==4){	// 取消置顶
+				userTag.setIsTop(0);
+			}
+			if(isSave==1){
+				userService.saveUserTag(userTag);
+			}else{
+				userService.updateUserTag(userTag);
+			}
 		}else{		//	王国
 			List<TopicTagDetail> detailList = liveMybatisDao.getTopicTagDetailsByTopicId(dataId);
 			int score=0;
@@ -9962,9 +9996,10 @@ public class LiveServiceImpl implements LiveService {
 			}
 			for(TopicTagDetail detail:detailList){
 				this.liveLocalJdbcDao.updateUserLikeTagScore(uid,detail.getTag(),score);
+				this.liveLocalJdbcDao.updateUserLikeTagScore(uid,detail.getTagId(),score);
 			}
 		}
-		return Response.success();
+		return Response.success(dto);
 	}
 	public Response badTag(long uid,long topicId,String tag){
 		if(userService.isAdmin(uid)){

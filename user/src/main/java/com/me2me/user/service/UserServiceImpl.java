@@ -5234,4 +5234,18 @@ public class UserServiceImpl implements UserService {
 	public UserInvitationHis userLastestInvitation(long uid){
 		return userMybatisDao.getUserLastestInvitation(uid, 0);
 	}
+	@Override
+    public void saveUserTag(UserTag userTag){
+		userMybatisDao.saveUserTag(userTag);
+    }
+	
+	@Override
+    public void updateUserTag(UserTag userTag){
+		userMybatisDao.updateUserTag(userTag);
+    }
+	
+	@Override
+    public UserTag getUserTagByUidAndTagid(long uid,long tagId){
+		return userMybatisDao.getUserTagByUidAndTagid(uid, tagId);
+	}
 }

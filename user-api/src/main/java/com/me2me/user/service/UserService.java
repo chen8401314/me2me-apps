@@ -623,4 +623,11 @@ public interface UserService {
 	 * @return
 	 */
 	UserInvitationHis userLastestInvitation(long uid);
+	
+    public void saveUserTag(UserTag userTag);
+	
+    public void updateUserTag(UserTag userTag);
+	
+    public UserTag getUserTagByUidAndTagid(long uid,long tagId);
+	
 }

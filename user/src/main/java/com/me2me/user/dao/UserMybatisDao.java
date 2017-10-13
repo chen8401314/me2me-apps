@@ -160,6 +160,9 @@ public class UserMybatisDao {
     @Autowired
     private UserInvitationHisMapper userInvitationHisMapper;
     
+    @Autowired
+    private UserTagMapper userTagMapper;
+    
     /**
      * 保存用户注册信息
      * @param user
@@ -1536,6 +1539,25 @@ public class UserMybatisDao {
     	criteria.andStatusEqualTo(status);
     	example.setOrderByClause(" id asc limit 1 ");
     	List<UserInvitationHis> list = userInvitationHisMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public void saveUserTag(UserTag userTag){
+    	userTagMapper.insertSelective(userTag);
+    }
+    public void updateUserTag(UserTag userTag){
+    	userTagMapper.updateByPrimaryKey(userTag);
+    }
+    public UserTag getUserTagByUidAndTagid(long uid,long tagId){
+    	UserTagExample example = new UserTagExample();
+    	UserTagExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andTagIdEqualTo(tagId);
+    	example.setOrderByClause(" id asc limit 1 ");
+    	List<UserTag> list = userTagMapper.selectByExample(example);
     	if(null != list && list.size() > 0){
     		return list.get(0);
     	}

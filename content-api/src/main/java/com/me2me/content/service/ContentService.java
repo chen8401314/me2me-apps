@@ -633,4 +633,13 @@ public interface ContentService{
 	 * @return
 	 */
 	public Response tagMgmtQuery(int type,int page,long uid) ;
+	
+	
+	/**
+	 * 查询其他单个除喜欢和不喜欢的标签
+	 * @param uid
+	 * @param tagId
+	 * @return
+	 */
+	public com.me2me.content.dto.UserLikeDto getOtherNormalTag(long uid,long tagId) ;
 }

@@ -131,5 +131,15 @@
            </choose>
 		   limit ${(page-1)*pageSize},#{pageSize}
      </select>
+		<select id="getOtherNormalTag" resultType="map">
+	           select tt.id,tt.tag,tt.cover_img,tt.is_sys FROM topic_tag tt
+            	LEFT JOIN user_tag ut
+	           ON tt.id = ut.tag_id AND ut.uid = #{uid}
+	           WHERE (ut.type IS NULL OR ut.type NOT IN (1,2))
+	           AND tt.status = 0
+             	AND tt.id != #{tagId}
+	           ORDER BY tt.is_sys DESC,ut.id DESC
+	           LIMIT 1
+	    </select>
 	
 </mapper>
