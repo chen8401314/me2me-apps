@@ -1349,4 +1349,13 @@ public class LiveForContentJdbcDao {
 		sb.append(") group by t.id)) o group by o.topic_id");
 		return jdbcTemplate.queryForList(sb.toString());
 	}
+	public Map<String, Object> getTopiciTagByTag(String tag){
+		String sql  ="select * from topic_tag where tag = ? and status =0";
+		return jdbcTemplate.queryForMap(sql,tag);
+	}
+	public List<Map<String, Object>> getAdBannerByTagId(long tagId){
+		String sql = "select distinct banner_id,position from ad_tag where tag_id =?";
+		return jdbcTemplate.queryForList(sql,tagId);
+	}
+	
 }

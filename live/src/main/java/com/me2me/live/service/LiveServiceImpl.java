@@ -9944,16 +9944,20 @@ public class LiveServiceImpl implements LiveService {
 		dislike.setIsLike(isLike);
 		dislike.setType(type);
 		dislike.setCreateTime(new Date());
+		if(isLike==0 || isLike==1){
 		if(!exists){
 			dislikeMapper.insert(dislike);
 		}else{
 			dislikeMapper.updateByExampleSelective(dislike, example);
 		}
+		}
 		// 标签加减分
 		if(dislike.getType()==2){		// 不喜欢标签
 			if(dislike.getIsLike()==0){	// 不喜欢
 				TopicTag tag = liveMybatisDao.getTopicTagById(dislike.getData());
+				if(tag!=null){
 				this.liveLocalJdbcDao.updateUserLikeTagScoreTo0(uid,tag.getTag());
+				}
 			}
 		//3.0.5版本处理
 			UserTag userTag = userService.getUserTagByUidAndTagid(uid, dataId);
@@ -9974,7 +9978,7 @@ public class LiveServiceImpl implements LiveService {
 			}
 			if(dislike.getIsLike()==2){	// 置顶
 				userTag.setIsTop(1);
-			}
+			} 
 			if(dislike.getIsLike()==3){	// 移除
 				userTag.setType(0);
 			}

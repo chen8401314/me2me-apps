@@ -368,4 +368,11 @@ public class Contents extends BaseController {
     public Response tagMgmtQuery(TagMgmtQueryRequest request){
     	return contentService.tagMgmtQuery(request.getType(), request.getPage(), request.getUid());
     }
+    
+    @RequestMapping(value = "/tagDetail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response tagDetail(TagDetailRequest request){
+    	return contentService.tagDetail(request.getUid(), request.getTagId(), request.getTagName(), request.getPage());
+    }
+    
 }

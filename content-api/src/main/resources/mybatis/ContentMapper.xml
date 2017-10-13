@@ -1268,4 +1268,29 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
     order by v.id desc limit 10
   </select>
 
+  <select id="getTagTopicList" parameterType="java.util.Map" resultMap="ResultMapWithBLOBs">
+	select
+	c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image,
+	c.forward_title, c.forward_url, c.content_type,
+	c.thumbnail, c.hot_value,
+	c.like_count,c.review_count,c.person_count,c.favorite_count,
+	c.read_count, c.read_count_dummy ,c.authorization, c.create_time,
+	c.status,c.content,c.rights
+	FROM content c,(
+	SELECT t.id,t.long_time
+	FROM topic t,topic_tag_detail td
+	WHERE t.id =td.topic_id AND td.tag_id = #{tagId}
+	      <if test="blacklistUids!=null and blacklistUids.size() &gt; 0">
+      and t.uid not in
+      <foreach close=")" collection="blacklistUids" item="bid" open="(" separator=",">
+        #{bid}
+      </foreach>
+      </if>
+	ORDER BY t.long_time DESC LIMIT ${(page-1)*pageSize},#{pageSize}
+	) m
+	WHERE c.forward_cid=m.id AND c.type=3
+	AND c.status=0
+	ORDER BY m.long_time DESC
+  </select>
+
 </mapper>

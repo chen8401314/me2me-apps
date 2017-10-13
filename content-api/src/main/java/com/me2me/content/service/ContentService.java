@@ -642,4 +642,15 @@ public interface ContentService{
 	 * @return
 	 */
 	public com.me2me.content.dto.UserLikeDto getOtherNormalTag(long uid,long tagId) ;
+	
+	
+    /**
+     * 新标签详情
+     * @param uid
+     * @param tagId
+     * @param tagName
+     * @param page
+     * @return
+     */
+    public Response tagDetail(long uid, long tagId, String tagName,int page);
 }

@@ -8,6 +8,7 @@ import com.me2me.content.mapper.*;
 import com.me2me.content.model.*;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -1076,6 +1077,10 @@ public class ContentMybatisDao {
 	 */
 	public int saveAdRecrod(AdRecord adRecord){
 		return adRecordMapper.insertSelective(adRecord);
+	}
+	
+	public List<Content> getTagTopicList(long tagId, List<Long> blacklistUids,int page,int pageSize){
+		return contentMapper.getTagTopicList(tagId, blacklistUids,page,pageSize);
 	}
 	
 }

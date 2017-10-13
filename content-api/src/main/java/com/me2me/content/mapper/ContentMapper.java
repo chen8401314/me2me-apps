@@ -193,4 +193,6 @@ public interface ContentMapper {
     List<Content> loadMyPublishLiveData2(Map map);
 
     List<Content> getAttention(Map map);
+    
+    List<Content> getTagTopicList(@Param("tagId") long tagId, @Param("blacklistUids") List<Long> blacklistUids,@Param("page") int page,@Param("pageSize") int pageSize);
 }
