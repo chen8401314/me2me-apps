@@ -5533,17 +5533,6 @@ public class ActivityServiceImpl implements ActivityService {
 
 	@Override
 	public Response gameResult(long uid, long gameId, int record) {
-		//根据uid,gamId,record向game_user_record_his表中插入或更新一条数据
-		//先根据uid,gameId查询表中是否存在该用户的游戏记录
-		GameUserRecordHis gameUserRecordHis = activityMybatisDao.getGameUserRecordHisByUidAndGameId(uid,gameId);
-		if(gameUserRecordHis!=null){
-			//用户信息存在执行更新操作
-			activityMybatisDao.countGameUserRecordHisRecordByUidAndGameIdAndRecord(uid,gameId,record);
-		}else{
-			//用户信息不存在执行新增操作
-			activityMybatisDao.createNewGameUserRecordHisByUidAndGameIdAndRecord(uid,gameId,record);
-		}
-		
 		String GAME_RESULT_LOCK ="GAME_RESULT_LOCK_"+uid+"_"+gameId;
 		try {
 			//拿锁
@@ -5586,6 +5575,7 @@ public class ActivityServiceImpl implements ActivityService {
 				activityMybatisDao.createNewGameRecordByUidAndGameIdAndRecordAndCoins(uid,gameId,record,coin);
 				activityMybatisDao.updateGameUserInfoByGameIdAndCoins(gameId,coin);
 			}
+			activityMybatisDao.createNewGameUserRecordHisByUidAndGameIdAndRecord(uid,gameId,record);
 		}catch(Exception e){
 			log.error("记录失败", e);
 		} finally {

@@ -1690,14 +1690,6 @@ public class ActivityMybatisDao {
 		gameUserInfoMapper.gameUserInfoSubCoinsByUidAndCoins(gameUserInfo);
 	}
 
-	public void countGameUserRecordHisRecordByUidAndGameIdAndRecord(long uid, long gameId, int record) {
-		GameUserRecordHis gameUserRecordHis = new GameUserRecordHis();
-		gameUserRecordHis.setUid(uid);
-		gameUserRecordHis.setGameId(gameId);
-		gameUserRecordHis.setRecord(record);
-		gameUserRecordHisMapper.addUserRecordHisRecordByUidAndGameIdAndRecord(uid,gameId,record);
-	}
-
 	public GameUserRecordHis getGameUserRecordHisByUidAndGameId(long uid, long gameId) {
 		GameUserRecordHisExample example = new GameUserRecordHisExample();
 		GameUserRecordHisExample.Criteria criteria = example.createCriteria();
