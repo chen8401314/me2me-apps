@@ -4774,7 +4774,7 @@ public class ContentServiceImpl implements ContentService {
         int curPos =0;
         
         //用户在首页的标签上点击了喜欢,注意在喜欢了之后,在推荐和查询的时候,连同下方的子标签也会一起加入展示,除非用户手动对子标签选择了不喜欢
-        List<TagInfo> userLikeTagInfo= topicTagMapper.getUserLikeTag(uid);	// 我明确喜欢的标签
+        List<TagInfo> userLikeTagInfo= topicTagMapper.getUserLikeTagInfo(uid);	// 我明确喜欢和不喜欢的标签
         Set<String> userLikeTagSet= new HashSet<>();
         for(TagInfo info:userLikeTagInfo){
         	userLikeTagSet.add(info.getTagName());
@@ -4786,7 +4786,7 @@ public class ContentServiceImpl implements ContentService {
         }
         if(ProbabilityUtils.isInProb(40)){		//40%概率出现行为补贴。
 	      //除以上两种标签外,通过用户行为产生的排名最高的前5个"体系标签",且评分必须超过20
-	        List<String> favoTags = this.topicTagMapper.getUserFavoTags(uid,10);
+	        List<String> favoTags = this.topicTagMapper.getUserFavoriteTags(uid,10);
 	        
 	        int rndSize= RandomUtils.nextInt(1, 3);
 	        if(curPos+rndSize>=tagCount){
@@ -8336,7 +8336,7 @@ public class ContentServiceImpl implements ContentService {
 		TagGroupDto dto = new TagGroupDto();
 		List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
         List<String> blackTagNameList = new ArrayList<>();
-        List<TagInfo> blackTags = topicTagMapper.getUserLikeTagAndSubTag(uid,0);	
+        List<TagInfo> blackTags = topicTagMapper.getUserLikeTagAndSubTagInfo(uid,2);	
         for(TagInfo info:blackTags){
         	blackTagNameList.add(info.getTagName());
         }
@@ -8422,7 +8422,7 @@ public class ContentServiceImpl implements ContentService {
 		}
 		List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
 		List<Long> blackTagIdList = new ArrayList<>();
-		List<TagInfo> blackTags = topicTagMapper.getUserLikeTagAndSubTag(uid, 0); // 不喜欢的标签和子标签。
+		List<TagInfo> blackTags = topicTagMapper.getUserLikeTagAndSubTagInfo(uid, 2); // 不喜欢的标签和子标签。
 		for (TagInfo info : blackTags) {
 			blackTagIdList.add(info.getTagId());
 		}
