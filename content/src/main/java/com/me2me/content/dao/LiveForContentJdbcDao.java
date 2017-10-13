@@ -582,6 +582,54 @@ public class LiveForContentJdbcDao {
     }
     
     /**
+     * 邀请榜单(人榜)
+     * @param startTime
+     * @param endTime
+     * @param start
+     * @param pageSize
+     * @param blacklistUids
+     * @return
+     */
+    public List<BillBoardListDTO> invitationBillboard(String startTime, String endTime, long start, int pageSize, List<Long> blacklistUids){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select p.uid,m.cc,p.nick_name from user_profile p,(");
+    	sb.append("select u.referee_uid,count(1) as cc,max(u.create_time) as maxtime");
+    	sb.append(" from user_profile u where u.referee_uid>0 and u.is_activate=1");
+    	sb.append(" and u.create_time>='").append(startTime).append("' and u.create_time<'");
+    	sb.append(endTime).append("' group by u.referee_uid) m where p.uid=m.referee_uid");
+    	sb.append(" and p.nick_name not like '%米汤客服%'");
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and p.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
+    	sb.append(" order by m.cc DESC,m.maxtime asc limit ");
+    	sb.append(start).append(",").append(pageSize);
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO bbl = null;
+    		Map<String, Object> m = null;
+    		for(int i=0;i<list.size();i++){
+    			m = list.get(i);
+    			bbl = new BillBoardListDTO();
+    			bbl.setTargetId((Long)m.get("uid"));
+    			bbl.setType(2);
+    			bbl.setSinceId(start+i+1);
+    			result.add(bbl);
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
      * 个人米汤币排行榜
      * @param start
      * @param pageSize

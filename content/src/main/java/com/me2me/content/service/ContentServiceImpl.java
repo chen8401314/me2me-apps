@@ -46,6 +46,7 @@ import com.me2me.common.enums.USER_OPRATE_TYPE;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.utils.CollectionUtils;
 import com.me2me.common.utils.CommonUtils;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.utils.ProbabilityUtils;
 import com.me2me.common.web.Response;
@@ -6723,6 +6724,22 @@ public class ContentServiceImpl implements ContentService {
                 }
             	result = liveForContentJdbcDao.kingdomLotteryList(sinceId, pageSize, blacklistUids);
             	break;
+//            case 36://邀请排行榜(人榜)
+//            	if(sinceId < 0){
+//                    sinceId = 0l;
+//                }
+//            	//周期：周六0点到下周六0点
+//            	Calendar cal = Calendar.getInstance();
+//            	int weekday=cal.get(Calendar.DAY_OF_WEEK);//1周日，2周一，3周二，4周三，5周四，6周五，7周六
+//            	if(weekday<7){
+//            		cal.add(Calendar.DATE, 0-weekday);
+//            	}
+//            	String startTime = DateUtil.date2string(cal.getTime(), "yyyy-MM-dd")+" 00:00:00";
+//            	cal.add(Calendar.DATE, 7);
+//            	String endTime = DateUtil.date2string(cal.getTime(), "yyyy-MM-dd")+" 00:00:00";
+//            	
+//            	result = liveForContentJdbcDao.invitationBillboard(startTime, endTime, sinceId, pageSize, blacklistUids);
+//            	break;
             default:
                 break;
         }
