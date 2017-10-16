@@ -4832,7 +4832,7 @@ public class ContentServiceImpl implements ContentService {
            	List<Long> topicIds = topicTagMapper.getTopicIdsByTagAndSubTag(tagId);
            	List<Map<String,Object>> topicList = null;
            	if(null != topicIds && topicIds.size() > 0){
-           		topicList = this.topicTagMapper.getKingdomsByTag(uid,topicIds,"new",1,4, blacklistUids);
+           		topicList = this.topicTagMapper.getKingdomsByTagInfo(uid,topicIds,"new",1,4, blacklistUids);
            	}
             
             //List<Integer> topicIds = this.topicTagMapper.getTopicIdsByTag(label);

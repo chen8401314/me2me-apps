@@ -382,6 +382,12 @@ public class UserServiceImpl implements UserService {
 		            invitedHis.setType(Specification.UserInvitationType.INVITED.index);
 		            invitedHis.setUid(currentUid);
 		            userMybatisDao.saveUserInvitationHis(invitedHis);
+		            
+		            //邀请继承标签逻辑
+		            userInitJdbcDao.copyUserTag(currentUid, refereeUid);
+		            userInitJdbcDao.copyUserDislike(currentUid, refereeUid);
+		            userInitJdbcDao.copyUserTagLike(currentUid, refereeUid);
+		            
 				}
 			}
 		} catch (Exception e) {

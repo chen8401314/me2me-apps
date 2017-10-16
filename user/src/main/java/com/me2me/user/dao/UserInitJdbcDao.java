@@ -397,5 +397,28 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 		return ret;
 	}
 
-
+    public void copyUserTag(long uid,long refereeUid) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("insert user_tag(uid,tag_id,type,score)  select ");
+		sb.append(uid);
+		sb.append(",tag_id,type,score from user_tag where type in (0,1) and uid = ");
+		sb.append(refereeUid);
+        super.execute(sb.toString());
+    }
+    public void copyUserDislike(long uid,long refereeUid) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("insert user_dislike(uid,data,is_like,type) select ");
+		sb.append(uid);
+		sb.append(",data,is_like,type from user_dislike where type=2 and is_like=1 and uid = ");
+		sb.append(refereeUid);
+        super.execute(sb.toString());
+    }
+    public void copyUserTagLike(long uid,long refereeUid) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("insert user_tag_like(uid,tag,score) select ");
+		sb.append(uid);
+		sb.append(",tag,score from user_tag_like where uid =  ");
+		sb.append(refereeUid);
+        super.execute(sb.toString());
+    }
 }
