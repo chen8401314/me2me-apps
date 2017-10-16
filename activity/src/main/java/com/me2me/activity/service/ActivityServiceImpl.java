@@ -5447,7 +5447,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
     
     @Override
-    public Response gameUserInfo(long gameUid){
+    public Response gameUserInfo(long gameUid,int gameChannel,long uid){
     	//根据uid查找用户信息（昵称跟头像）,确保数据库中存在该用户
     	UserProfile userProfile = userService.getUserProfileByUid(gameUid);
     	if(null == userProfile){
@@ -5458,12 +5458,21 @@ public class ActivityServiceImpl implements ActivityService {
     	//根据uid获取到活动信息表中的信息，若表中不存在该用户，则新增一条用户信息
     	GameUserInfo gameUserInfo = activityMybatisDao.getGameUserInfoByUid(gameUid);
     	if(null == gameUserInfo){
-    		//创建新用户并查询出用户信息
+    		//创建新用户
     		gameUserInfo = new GameUserInfo();
     		gameUserInfo.setUid(gameUid);
     		gameUserInfo.setCoins(0);
     		gameUserInfo.setCreateTime(new Date());
+    		gameUserInfo.setGameChannel(gameChannel);
     		activityMybatisDao.createNewGameUserInfo(gameUserInfo);
+    	}
+    
+    	//如果gameUid与uid不同，则向user_look_his表中插入一条数据
+    	if(gameUid!=uid){
+    		GameLookHis gameLookHis = new GameLookHis();
+    		gameLookHis.setGameUid(gameUid);
+    		gameLookHis.setUid(uid);
+    		activityMybatisDao.insertNewGameLookHis(gameLookHis);
     	}
     	
     	//根据gameId查找出所有与当前用户相关的数据
@@ -5631,4 +5640,6 @@ public class ActivityServiceImpl implements ActivityService {
 			cacheService.releaseLock(GAME_RECEIVE_COINS_LOCK);
 		}
 	}
+
+
 }

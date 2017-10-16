@@ -36,6 +36,7 @@ import com.me2me.activity.mapper.AtaskMapper;
 import com.me2me.activity.mapper.AtaskUserMapper;
 import com.me2me.activity.mapper.AtopicMapper;
 import com.me2me.activity.mapper.AuserMapper;
+import com.me2me.activity.mapper.GameLookHisMapper;
 import com.me2me.activity.mapper.GameUserInfoMapper;
 import com.me2me.activity.mapper.GameUserReceiveHisMapper;
 import com.me2me.activity.mapper.GameUserRecordHisMapper;
@@ -89,6 +90,7 @@ import com.me2me.activity.model.Atopic;
 import com.me2me.activity.model.AtopicExample;
 import com.me2me.activity.model.Auser;
 import com.me2me.activity.model.AuserExample;
+import com.me2me.activity.model.GameLookHis;
 import com.me2me.activity.model.GameUserInfo;
 import com.me2me.activity.model.GameUserInfoExample;
 import com.me2me.activity.model.GameUserReceiveHis;
@@ -215,11 +217,12 @@ public class ActivityMybatisDao {
     @Autowired
     private GameUserReceiveHisMapper gameUserReceiveHisMapper;
     
-    
     @Autowired
     private GameUserRecordHisMapper gameUserRecordHisMapper;
    
-
+    @Autowired
+    private GameLookHisMapper gameLookHisMapper;
+    
     public List<Tchannel> getAppChannel(String code){
     	TchannelExample example = new TchannelExample();
     	if(!StringUtils.isEmpty(code)){
@@ -1708,6 +1711,10 @@ public class ActivityMybatisDao {
 		gameUserRecordHis.setGameId(gameId);
 		gameUserRecordHis.setRecord(record);
 		gameUserRecordHisMapper.insertSelective(gameUserRecordHis);
+	}
+
+	public void insertNewGameLookHis(GameLookHis gameLookHis) {
+		gameLookHisMapper.insertSelective(gameLookHis);
 	}
 	
 }

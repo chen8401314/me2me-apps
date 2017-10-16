@@ -629,7 +629,7 @@ public class Activity extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/gameUserInfo")
     public Response gameUserInfo(GameUserInfoRequest request){
-    	return activityService.gameUserInfo(request.getGameUid());
+    	return activityService.gameUserInfo(request.getGameUid(),request.getGameChannel(),request.getUid());
     }
     
     

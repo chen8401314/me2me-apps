@@ -318,9 +318,11 @@ public interface ActivityService {
     /**
      * 游戏活动信息查询接口
      * @param gameUid
+     * @param l 
+     * @param i 
      * @return
      */
-    Response gameUserInfo(long gameUid);
+    Response gameUserInfo(long gameUid, int gameChannel,long uid);
 
     
     /**游戏活动游戏结果接口

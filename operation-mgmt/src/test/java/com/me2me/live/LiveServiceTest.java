@@ -77,8 +77,10 @@ public class LiveServiceTest {
 	
 	@Test
 	public void testGameUserInfo(){
-		long uid = 100;
-		activityService.gameUserInfo(uid);
+		int gameChannel = 1;
+		long gameUid = 300;
+		long uid = 300;
+		activityService.gameUserInfo(gameUid,gameChannel,uid);
 	}
 	
 	@Test
@@ -86,7 +88,7 @@ public class LiveServiceTest {
 		//0  295  296  297 
 		long uid = 296;
 		long gameId = 8;
-		int record = 1;
+		int record = 15;
 		activityService.gameResult(uid,gameId,record);
 	}
 	
