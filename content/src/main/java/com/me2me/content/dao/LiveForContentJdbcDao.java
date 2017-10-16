@@ -1330,7 +1330,7 @@ public class LiveForContentJdbcDao {
 		StringBuilder sb = new StringBuilder();
     	sb.append("select a.id,a.ad_title,a.ad_cover,a.ad_cover_width,a.ad_cover_height,a.ad_url,");
     	sb.append("a.topic_id,a.type,a.display_probability,t.type AS topic_type,t.core_circle ");
-    	sb.append("  FROM ad_info a LEFT JOIN topic t ON a.topic_id = t.id WHERE a.effective_time>NOW() AND  a.banner_id = ").append(bannerId);
+    	sb.append("  FROM ad_info a LEFT JOIN topic t ON a.topic_id = t.id WHERE a.status=0 and a.effective_time>NOW() AND  a.banner_id = ").append(bannerId);
     	sb.append(" ORDER BY a.effective_time DESC");
 		return jdbcTemplate.queryForList(sb.toString());
 	}
@@ -1402,7 +1402,7 @@ public class LiveForContentJdbcDao {
 		return jdbcTemplate.queryForMap(sql,tag);
 	}
 	public List<Map<String, Object>> getAdBannerByTagId(long tagId){
-		String sql = "select distinct banner_id,position from ad_tag where tag_id =?";
+		String sql = "select DISTINCT a.banner_id,a.position FROM ad_tag a,ad_banner b WHERE a.banner_id=b.id AND b.type IN (0,2) AND  tag_id  =?";
 		return jdbcTemplate.queryForList(sql,tagId);
 	}
 	

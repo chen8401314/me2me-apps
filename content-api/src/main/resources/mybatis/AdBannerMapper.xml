@@ -310,7 +310,7 @@
       and i.effective_time&gt;now()
       group by i.banner_id
     ) m on b.id=m.banner_id
-    where b.status=0
+    where b.status=0 and b.type in (0,1) 
     and m.has is not NULL
   </select>
 </mapper>
