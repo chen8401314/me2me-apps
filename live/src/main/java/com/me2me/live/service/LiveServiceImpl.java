@@ -9941,8 +9941,8 @@ public class LiveServiceImpl implements LiveService {
 	}
 
 	@Override
-	public Response userLike(long uid, long dataId, int isLike, int type) {
-	com.me2me.content.dto.UserLikeDto  dto = new com.me2me.content.dto.UserLikeDto();
+	public Response userLike(long uid, long dataId, int isLike, int type,int needNew) {
+	com.me2me.content.dto.UserLikeDto  dto = null;
 		UserDislikeExample example = new UserDislikeExample();
 		example.createCriteria().andUidEqualTo(uid).andDataEqualTo(dataId).andTypeEqualTo(type);
 		boolean exists = dislikeMapper.countByExample(example)>0;
@@ -9980,7 +9980,9 @@ public class LiveServiceImpl implements LiveService {
 				userTag.setType(2);
 				userTag.setScore(0);
 				userTag.setIsTop(0);
-				dto = contentService.getOtherNormalTag(uid, dataId);
+				if(needNew==1){
+					dto = contentService.getOtherNormalTag(uid, dataId);
+				}
 			}
 			if(dislike.getIsLike()==1){	// 喜欢
 				userTag.setType(1);
@@ -10015,7 +10017,11 @@ public class LiveServiceImpl implements LiveService {
 				this.liveLocalJdbcDao.updateUserLikeTagScore(uid,detail.getTagId(),score);
 			}
 		}
-		return Response.success(dto);
+		if(dto!=null){
+			return Response.success(dto);
+		}else{
+			return Response.success();
+		}
 	}
 	public Response badTag(long uid,long topicId,String tag){
 		if(userService.isAdmin(uid)){

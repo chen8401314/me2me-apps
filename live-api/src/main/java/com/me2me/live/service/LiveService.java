@@ -730,7 +730,7 @@ public interface LiveService {
      * @param type 1王国，2标签
      * @return
      */
-    Response userLike(long uid,long data,int isLike,int type);
+    Response userLike(long uid,long data,int isLike,int type,int needNew);
     /**
      * 举报标签。
      * @author zhangjiwei
