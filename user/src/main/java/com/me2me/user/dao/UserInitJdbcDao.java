@@ -421,4 +421,27 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 		sb.append(refereeUid);
         super.execute(sb.toString());
     }
+    
+    public void updateUserTagActive(long uid){
+    	//先删
+    	String delSql = "delete from user_tag where uid=? and type=0";
+    	super.update(delSql, uid);
+    	
+    	//再重置
+    	StringBuilder sb = new StringBuilder();
+		sb.append("insert into user_tag(uid,tag_id,type,score)");
+		sb.append(" select ").append(uid).append(",g.id,0,n.totalScore");
+		sb.append(" from (select m.tag,sum(m.score) as totalScore");
+		sb.append(" from (select l.tag,l.score from user_tag_like l");
+		sb.append(" where l.uid=").append(uid);
+		sb.append(" UNION ALL ");
+		sb.append("select t.tag,30 as score from user_hobby h,topic_tag t");
+		sb.append(" where FIND_IN_SET(h.hobby,t.user_hobby_ids)");
+		sb.append(" and t.status=0 and h.uid=").append(uid).append(") m");
+		sb.append(" group by m.tag having totalScore>20) n,topic_tag g left on (");
+		sb.append("select t2.tag_id as checkid from user_tag t2 where t2.uid=").append(uid);
+		sb.append(" and t2.type in (1,2)) x on g.id=x.checkid");
+		sb.append(" where g.tag=n.tag and g.status=0 and x.checkid is null order by n.totalScore desc");
+		super.update(sb.toString());
+    }
 }

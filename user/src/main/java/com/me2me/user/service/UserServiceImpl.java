@@ -1080,23 +1080,22 @@ public class UserServiceImpl implements UserService {
      */
      
     public Response modifyUserHobby(ModifyUserHobbyDto modifyUserHobbyDto){
-		User user = userMybatisDao.getUserByUid(modifyUserHobbyDto.getUid());
 		String hobby = modifyUserHobbyDto.getHobby();
-		UserHobby deleteUserHobby = new UserHobby();
-		deleteUserHobby.setUid(user.getUid());
-		userMybatisDao.deleteUserHobby(deleteUserHobby);
-		Set<Long> userHobbyTags = new LinkedHashSet<>();
 		if (!StringUtils.isEmpty(hobby)) {
+			UserHobby deleteUserHobby = new UserHobby();
+			deleteUserHobby.setUid(modifyUserHobbyDto.getUid());
+			userMybatisDao.deleteUserHobby(deleteUserHobby);
+			
 			String[] hobbies = hobby.split(";");
 			for (String h : hobbies) {
 				UserHobby userHobby = new UserHobby();
 				userHobby.setHobby(Long.parseLong(h));
-				userHobby.setUid(user.getUid());
+				userHobby.setUid(modifyUserHobbyDto.getUid());
 				userMybatisDao.createUserHobby(userHobby);
-				List<Long> tags= userInitJdbcDao.getTagFromUserHobby(userHobby.getHobby());
-				userHobbyTags.addAll(tags);
 			}
-			userInitJdbcDao.batchInsertUserLikeTags(user.getUid(),userHobbyTags);
+			
+			//重置active标签
+			userInitJdbcDao.updateUserTagActive(modifyUserHobbyDto.getUid());
 		}
         return Response.success(ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.status,ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.message);
     }
@@ -4254,11 +4253,11 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	private void modifyUserHobby4Persona(long uid, String hobbys){
-		UserHobby deleteUserHobby = new UserHobby();
-		deleteUserHobby.setUid(uid);
-		userMybatisDao.deleteUserHobby(deleteUserHobby);
 		if(!StringUtils.isEmpty(hobbys)){
-			Set<Long> userHobbyTags = new LinkedHashSet<>();
+			UserHobby deleteUserHobby = new UserHobby();
+			deleteUserHobby.setUid(uid);
+			userMybatisDao.deleteUserHobby(deleteUserHobby);
+			
 			String[] hobbies = hobbys.split(",");
 			for (String h : hobbies) {
 				if(!StringUtils.isEmpty(h)){
@@ -4266,13 +4265,11 @@ public class UserServiceImpl implements UserService {
 					userHobby.setHobby(Long.parseLong(h));
 					userHobby.setUid(uid);
 					userMybatisDao.createUserHobby(userHobby);
-					List<Long> tags= userInitJdbcDao.getTagFromUserHobby(userHobby.getHobby());
-					userHobbyTags.addAll(tags);
 				}
 			}
-			if(!userHobbyTags.isEmpty()){
-				userInitJdbcDao.batchInsertUserLikeTags(uid,userHobbyTags);
-			}
+			
+			//重置active标签
+			userInitJdbcDao.updateUserTagActive(uid);
 		}
 	}
 	
