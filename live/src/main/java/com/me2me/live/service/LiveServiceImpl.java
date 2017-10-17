@@ -9979,10 +9979,12 @@ public class LiveServiceImpl implements LiveService {
 			if(dislike.getIsLike()==0){	// 不喜欢
 				userTag.setType(2);
 				userTag.setScore(0);
+				userTag.setIsTop(0);
 				dto = contentService.getOtherNormalTag(uid, dataId);
 			}
 			if(dislike.getIsLike()==1){	// 喜欢
 				userTag.setType(1);
+				userTag.setIsTop(0);
 			}
 			if(dislike.getIsLike()==2){	// 置顶
 				userTag.setIsTop(1);
@@ -9990,6 +9992,7 @@ public class LiveServiceImpl implements LiveService {
 			} 
 			if(dislike.getIsLike()==3){	// 移除
 				userTag.setType(0);
+				userTag.setIsTop(0);
 			}
 			if(dislike.getIsLike()==4){	// 取消置顶
 				userTag.setIsTop(0);
