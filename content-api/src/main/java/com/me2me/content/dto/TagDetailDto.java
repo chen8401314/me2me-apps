@@ -24,7 +24,7 @@ public class TagDetailDto  implements BaseEntity {
     
     private String tagName;
     
-    private int isLke;
+    private int isLike;
 	
     //内容
     @Data

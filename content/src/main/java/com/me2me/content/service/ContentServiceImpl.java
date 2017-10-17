@@ -9185,9 +9185,9 @@ public class ContentServiceImpl implements ContentService {
 		   dto.setTagName(tagName);
 		   UserTag userTag = userService.getUserTagByUidAndTagid(uid, tagId);
 		   if(userTag==null){
-			   dto.setIsLke(0);
+			   dto.setIsLike(0);
 		   }else{
-			   dto.setIsLke(userTag.getType());
+			   dto.setIsLike(userTag.getType());
 		   }
 			//是否显示标签信息
 	    	String isShowTagsStr = userService.getAppConfigByKey("IS_SHOW_TAGS");
