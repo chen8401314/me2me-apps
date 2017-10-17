@@ -9986,6 +9986,7 @@ public class LiveServiceImpl implements LiveService {
 			}
 			if(dislike.getIsLike()==2){	// 置顶
 				userTag.setIsTop(1);
+				userTag.setTopTime(new Date());
 			} 
 			if(dislike.getIsLike()==3){	// 移除
 				userTag.setType(0);
