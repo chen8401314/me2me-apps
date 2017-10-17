@@ -9161,6 +9161,8 @@ public class ContentServiceImpl implements ContentService {
 		   if(topicTag==null){
 			  return Response.failure(500,"找不到该标签信息"); 
 		   }
+		   tagId = (long)topicTag.get("id");
+		   tagName = topicTag.get("tag").toString();
 			// 广告位位置信息
 			Map<String, String> adPositionMap = new HashMap<String, String>();
 			if (page == 1) {
@@ -9179,8 +9181,6 @@ public class ContentServiceImpl implements ContentService {
 
 			}
 		   
-		   tagId = (long)topicTag.get("id");
-		   tagName = topicTag.get("tag").toString();
 		   dto.setTagId(tagId);
 		   dto.setTagName(tagName);
 		   UserTag userTag = userService.getUserTagByUidAndTagid(uid, tagId);
