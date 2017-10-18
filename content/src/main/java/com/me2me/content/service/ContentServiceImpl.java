@@ -406,6 +406,16 @@ public class ContentServiceImpl implements ContentService {
                 liveFavoriteMap.put(String.valueOf(lf.get("topic_id")), lf);
             }
         }
+        //一次性查出所有分类信息
+        Map<String, Map<String, Object>> kingdomCategoryMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String, Object>> kcList = liveForContentJdbcDao.getAllKingdomCategory();
+        if(null != kcList && kcList.size() > 0){
+        	for(Map<String, Object> m : kcList){
+        		kingdomCategoryMap.put(String.valueOf(m.get("id")), m);
+        	}
+        }
+        
+        Map<String, Object> kingdomCategory = null;
         UserProfile userProfile = null;
         Map<String, Object> topicUserProfile = null;
         for (Content content : contents) {
@@ -485,6 +495,23 @@ public class ContentServiceImpl implements ContentService {
                 //王国增加身份信息
                 Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
                 if(null != topic){
+                	int kcid = (Integer)topic.get("category_id");
+                	if(kcid > 0){
+                		kingdomCategory = kingdomCategoryMap.get(String.valueOf(kcid));
+                    	if(null != kingdomCategory){
+                    		squareDataElement.setKcid((Integer)kingdomCategory.get("id"));
+                    		squareDataElement.setKcName((String)kingdomCategory.get("name"));
+                    		String kcImage = (String)kingdomCategory.get("cover_img");
+                        	if(!StringUtils.isEmpty(kcImage)){
+                        		squareDataElement.setKcImage(Constant.QINIU_DOMAIN+"/"+kcImage);
+                        	}
+                        	String kcIcon = (String)kingdomCategory.get("icon");
+                        	if(!StringUtils.isEmpty(kcIcon)){
+                        		squareDataElement.setKcIcon(Constant.QINIU_DOMAIN+"/"+kcIcon);
+                        	}
+                    	}
+                    }
+                	
                     int internalStatust = this.getInternalStatus(topic, uid);
                     if(internalStatust==Specification.SnsCircle.OUT.index){
                     	if( liveFavoriteMap.get(String.valueOf(topic.get("id")))!=null){
