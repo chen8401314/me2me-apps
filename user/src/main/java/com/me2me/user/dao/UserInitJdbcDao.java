@@ -3,7 +3,6 @@ package com.me2me.user.dao;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.Lists;
 import com.me2me.core.dao.BaseJdbcDao;
-import com.me2me.user.model.UserHobby;
 import com.me2me.user.rule.CoinRule;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -438,7 +437,7 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 		sb.append("select t.tag,30 as score from user_hobby h,topic_tag t");
 		sb.append(" where FIND_IN_SET(h.hobby,t.user_hobby_ids)");
 		sb.append(" and t.status=0 and h.uid=").append(uid).append(") m");
-		sb.append(" group by m.tag having totalScore>20) n,topic_tag g left on (");
+		sb.append(" group by m.tag having totalScore>20) n,topic_tag g left join (");
 		sb.append("select t2.tag_id as checkid from user_tag t2 where t2.uid=").append(uid);
 		sb.append(" and t2.type in (1,2)) x on g.id=x.checkid");
 		sb.append(" where g.tag=n.tag and g.status=0 and x.checkid is null order by n.totalScore desc");
