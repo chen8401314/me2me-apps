@@ -9638,6 +9638,11 @@ public class ContentServiceImpl implements ContentService {
 	            }
 	            dto.getTagKingdomList().add(contentElement);
 	        }
+	        
+	        if(page == 1){//第一页记录下点击标签的操作记录
+	            this.addUserOprationLog(uid, USER_OPRATE_TYPE.HIT_TAG, tagName);
+	        }
+	        
 	        return Response.success(dto);
 	    }
 	
