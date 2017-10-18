@@ -463,6 +463,7 @@ public class LiveServiceImpl implements LiveService {
             //临时逻辑，本王国的标签如果自己有不喜欢的，将被撤销不喜欢
             if(tagIdList.size() > 0){
             	liveLocalJdbcDao.removeUserDislikeTags(uid, tagIdList);
+            	liveLocalJdbcDao.removeUserDislikeUserTags(uid, tagIdList);
             }
             
            /* boolean isAdmin = userService.isAdmin(uid);
