@@ -4253,11 +4253,11 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	private void modifyUserHobby4Persona(long uid, String hobbys){
+		UserHobby deleteUserHobby = new UserHobby();
+		deleteUserHobby.setUid(uid);
+		userMybatisDao.deleteUserHobby(deleteUserHobby);
+		
 		if(!StringUtils.isEmpty(hobbys)){
-			UserHobby deleteUserHobby = new UserHobby();
-			deleteUserHobby.setUid(uid);
-			userMybatisDao.deleteUserHobby(deleteUserHobby);
-			
 			String[] hobbies = hobbys.split(",");
 			for (String h : hobbies) {
 				if(!StringUtils.isEmpty(h)){
