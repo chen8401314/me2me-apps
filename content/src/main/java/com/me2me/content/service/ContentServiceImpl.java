@@ -8430,6 +8430,8 @@ public class ContentServiceImpl implements ContentService {
 		int pageSize = 20;
 		List<Content2Dto> contentList = contentMybatisDao.getHotContentListByType(uid, 0,(page - 1) * pageSize,
 				 pageSize, ids, blacklistUids, blackTagIds);// 只要UGC+PGC+个人王国
+		
+		
 		List<Long> topicIdList = new ArrayList<Long>();
 		List<Long> ceTopicIdList = new ArrayList<Long>();
 		List<Long> uidList = new ArrayList<Long>();
@@ -8635,7 +8637,7 @@ public class ContentServiceImpl implements ContentService {
 		Map<String, Object> topicOutData = null;
 		UserProfile lastUserProfile = null;
 		UserProfile atUserProfile = null;
-		if (null != contentList && contentList.size() > 0) {
+		
 			int likeBtnRatio= userService.getIntegerAppConfigByKey("LIKE_BUTTON_APPEAR_RATIO");
 	        Set<Integer> rightDigs = new HashSet<>();
 	        while(likeBtnRatio>rightDigs.size()){		//随机序列。
@@ -8645,7 +8647,7 @@ public class ContentServiceImpl implements ContentService {
 			
 			HotDto.HotContentElement contentElement = null;
 			String lastFragmentImage = null;
-			for (int i = 0; i < contentList.size(); i++) {
+			for (int i = 0; i < 20; i++) {
 				if (page == 1) {
 					if (adPositionMap.get(String.valueOf(i)) != null) {
 						String[] adids = adPositionMap.get(String.valueOf(i)).toString().split(",");
@@ -8698,7 +8700,10 @@ public class ContentServiceImpl implements ContentService {
 						}
 					}
 				}
-				
+				//假如热点王国数量不够其他占位继续显示
+				if(i>=contentList.size()){
+					continue;
+				}
 				Content2Dto c = contentList.get(i);
 				contentElement = new HotDto.HotContentElement();
 				contentElement.setSinceId(c.getUpdateTime().getTime());
@@ -8929,7 +8934,6 @@ public class ContentServiceImpl implements ContentService {
 				}
 				dto.getData().add(contentElement);
 			}
-		}
 		return Response.success(dto);
 	}
 	
