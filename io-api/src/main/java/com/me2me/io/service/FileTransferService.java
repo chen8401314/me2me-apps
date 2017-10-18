@@ -26,8 +26,23 @@ public interface FileTransferService {
      */
     Response getQiniuAccessToken(int type);
 
-
+    /**
+     * 上传，这里默认上传到七牛图片的库里
+     * @param data
+     * @param key
+     * @return
+     */
     String upload(byte[] data, String key);
+    
+    /**
+     * 根据类型将内容上传到七牛
+     * @param data
+     * @param key
+     * @param type	0图片库，1视频库
+     * @return
+     */
+    void upload(byte[] data, String key, int type);
+    
     /**
      * 删除qiniu资源。
      * @author zhangjiwei

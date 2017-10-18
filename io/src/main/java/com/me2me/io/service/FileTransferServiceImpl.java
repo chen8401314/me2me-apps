@@ -96,15 +96,25 @@ public class FileTransferServiceImpl implements FileTransferService{
         return Response.success(ResponseStatus.GET_QINIU_TOKEN_SUCCESS.status,ResponseStatus.GET_QINIU_TOKEN_SUCCESS.message,qiniuAccessTokenDto);
     }
 
+    @Override
     public String upload(byte[] data, String key){
-        //上传到七牛后保存的文件名
-        String token = auth.uploadToken(BUCKET);
+        this.upload(data, key, 0);//默认到图片库
+        return  null;
+    }
+    
+    @Override
+    public void upload(byte[] data, String key, int type){
+    	String bucket = BUCKET;
+    	if(type == 1){
+    		bucket = BUCKET_VIDEO;
+    	}
+    	//上传到七牛后保存的文件名
+        String token = auth.uploadToken(bucket);
         try {
         	uploadManager.put(data,key,token);
         } catch (QiniuException e) {
-            e.printStackTrace();
+        	log.error("上传七牛失败", e);
         }
-        return  null;
     }
 
     public byte[] download(String domain,String key) throws IOException {
