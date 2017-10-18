@@ -8718,7 +8718,7 @@ public class ContentServiceImpl implements ContentService {
 								tagContentElement.setType(53);
 								int tagCount =  userService.getIntegerAppConfigByKey("HOME_HOT_LABELS");
 								tagContentElement.setSize(tagCount);
-								tagContentElement.setTitle("最热标签在这里");
+								tagContentElement.setTitle("推荐标签在这里");
 								dto.getData().add(tagContentElement);
 								break;
 							default:
