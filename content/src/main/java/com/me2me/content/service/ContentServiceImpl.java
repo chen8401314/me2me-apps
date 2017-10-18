@@ -11,8 +11,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -4795,8 +4798,7 @@ public class ContentServiceImpl implements ContentService {
         //除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
         int tagCount =  userService.getIntegerAppConfigByKey("HOME_HOT_LABELS");
         
-        String[] finalTags = new String[tagCount];
-        
+        Map<String,TagInfo> tagMap  =  new LinkedHashMap<String,TagInfo>() ;
         
         int curPos =0;
         
@@ -4805,50 +4807,62 @@ public class ContentServiceImpl implements ContentService {
         Set<String> userLikeTagSet= new HashSet<>();
         for(TagInfo info:userLikeTagInfo){
         	userLikeTagSet.add(info.getTagName());
-        	finalTags[curPos]=info.getTagName();
+        	tagMap.put(String.valueOf(info.getTagId()), info);
         	curPos++;
-        	if(curPos>=tagCount){
+        	if(curPos>=tagMap.size()){
         		break;
         	}
         }
         if(ProbabilityUtils.isInProb(40)){		//40%概率出现行为补贴。
 	      //除以上两种标签外,通过用户行为产生的排名最高的前5个"体系标签",且评分必须超过20
-	        List<String> favoTags = this.topicTagMapper.getUserFavoriteTags(uid,10);
-	        
+	        List<TagInfo> favoTags = this.topicTagMapper.getUserFavoriteTags(uid,10);
 	        int rndSize= RandomUtils.nextInt(1, 3);
 	        if(curPos+rndSize>=tagCount){
 	        	curPos=tagCount-rndSize;
 	        }
-	                
-	        for(int i=0;i<rndSize && i<favoTags.size();i++){		// 填充1~2个行为标签。
-	        	String tag = favoTags.get(i);
-	        	if(!blackTags.contains(tag) && !CollectionUtils.contains(finalTags, tag)){
-	        		finalTags[curPos]=tag;
+	        for(TagInfo info:favoTags){		// 填充1~2个行为标签。
+	        	if(tagMap.get(String.valueOf(info.getTagId()))==null){
+	        		tagMap.put(String.valueOf(info.getTagId()), info);
 	        		curPos++;
 	        	}
 	        }
         }
         // 取系统标签，老邓说后台指定的标签仅仅是起个数量的作用。
-        List<String> sysTagList = topicTagMapper.getSysTags();
+        List<TagInfo> sysTagList = topicTagMapper.getSysTagsInfo();
         int n=0;
         while(curPos<tagCount && n<sysTagList.size()){		// 	填充剩余空位。
-        	String sysTag = sysTagList.get(n);
-        	if(!StringUtils.isEmpty(sysTag) &&!blackTags.contains(sysTag) && !CollectionUtils.contains(finalTags, sysTag)){
-        		finalTags[curPos]=sysTag;
+        	TagInfo tagInfo= sysTagList.get(n);
+        	if(!blackTags.contains(tagInfo.getTagName()) && tagMap.get(String.valueOf(tagInfo.getTagId()))==null){
+        		tagMap.put(String.valueOf(tagInfo.getTagId()), tagInfo);
         		curPos++;
         	}
         	n++;
         }
         
-        List<String> allTags= Arrays.asList(finalTags);
        int isShowLikeButtonLimit=1;
-        for(String label:allTags){
-        	if(label==null) continue;
-        	TagInfo info=topicTagMapper.getTagInfo(label);
+       Iterator<Entry<String, TagInfo>> iterator1= tagMap.entrySet().iterator();
+       List<Long> tagIds  =  new ArrayList<Long>();
+       while(iterator1.hasNext())  
+       {  
+           Map.Entry entry = iterator1.next();  
+        	TagInfo info=(TagInfo)entry.getValue();
+        	tagIds.add(info.getTagId());
+       }
+       //一次性查询出所有标签王国信息
+       List<Map<String,Object>> listTagTopicInfo = liveForContentJdbcDao.getTagTopicInfo(tagIds);
+       Map<String,Map<String,Object>> tagTopicMap = new HashMap<String,Map<String,Object>>();
+       for (Map<String, Object> map : listTagTopicInfo) {
+    	   tagTopicMap.put(String.valueOf(map.get("tag_id")), map);
+	   }
+       Iterator<Entry<String, TagInfo>> iterator= tagMap.entrySet().iterator();  
+       while(iterator.hasNext())  
+       {  
+           Map.Entry entry = iterator.next();  
+        	TagInfo info=(TagInfo)entry.getValue();
         	long tagId= info.getTagId();
         	TagGroupDto.KingdomHotTag element = new TagGroupDto.KingdomHotTag();
         	if(isShowLikeButtonLimit>0){
-        		if(!userLikeTagSet.contains(label)){
+        		if(!userLikeTagSet.contains(info.getTagName())){
         			element.setIsShowLikeButton(1);
             		isShowLikeButtonLimit--;
         		}
@@ -4861,25 +4875,7 @@ public class ContentServiceImpl implements ContentService {
            	if(null != topicIds && topicIds.size() > 0){
            		topicList = this.topicTagMapper.getKingdomsByTagInfo(uid,topicIds,"new",1,4, blacklistUids);
            	}
-            
-            //List<Integer> topicIds = this.topicTagMapper.getTopicIdsByTag(label);
-            Map<String,Object> totalPrice = null;
-        	String cacheKey = "OBJ:TAGPRICEANDKINGDOMCOUNT:"+label;
-        	Object tagRes = cacheService.getJavaObject(cacheKey);
-        	if(null != tagRes){
-        		log.info("从缓存里取到22");
-        		totalPrice = (Map<String,Object>)tagRes;
-        	}else{
-        		log.info("查的数据库呀22");
-        		if(null != topicIds && topicIds.size() > 0){
-        			totalPrice = topicTagMapper.getTagPriceAndKingdomCount(topicIds);
-        		}
-        		Map<String, Object> cacheObj = new HashMap<String, Object>();
-        		if(null != totalPrice && totalPrice.size() > 0){
-        			cacheObj.putAll(totalPrice);
-        		}
-        		cacheService.cacheJavaObject(cacheKey, cacheObj, 2*60*60);//缓存两小时
-        	}
+           	Map<String,Object> totalPrice = tagTopicMap.get(String.valueOf(info.getTagId()));
         	if(null == totalPrice){
         		totalPrice = new HashMap<String, Object>();
         	}
@@ -4919,7 +4915,7 @@ public class ContentServiceImpl implements ContentService {
             }
             element.setKingdomCount(kingdomCount);
             element.setPersonCount(tagPersons);
-            element.setTagName(label);
+            element.setTagName(info.getTagName());
             element.setTagId(tagId);
             dataList.add(element);
         }
@@ -9039,6 +9035,16 @@ public class ContentServiceImpl implements ContentService {
     	}else{
     		listTags = topicTagMapper.getUserTagListOther(uid,page, pageSize);
     	}
+        List<Long> tagIds  =  new ArrayList<Long>();
+    	   for(Map<String,Object> tag:listTags){
+    		   tagIds.add((Long)tag.get("id"));
+    	   }
+        //一次性查询出所有标签王国信息
+        List<Map<String,Object>> listTagTopicInfo = liveForContentJdbcDao.getTagTopicInfo(tagIds);
+        Map<String,Map<String,Object>> tagTopicMap = new HashMap<String,Map<String,Object>>();
+        for (Map<String, Object> map : listTagTopicInfo) {
+     	   tagTopicMap.put(String.valueOf(map.get("tag_id")), map);
+ 	   }
         for(Map<String,Object> tag:listTags){
         	if(tag==null) continue;
         	TagMgmtQueryDto.KingdomTag element = new TagMgmtQueryDto.KingdomTag();
@@ -9083,7 +9089,7 @@ public class ContentServiceImpl implements ContentService {
             Map<String,Object> totalPrice = null;
         	String cacheKey = "OBJ:TAGPRICEANDKINGDOMCOUNT:"+tagName;
         	Object tagRes = cacheService.getJavaObject(cacheKey);
-        	if(null != tagRes){
+  /*      	if(null != tagRes){
         		totalPrice = (Map<String,Object>)tagRes;
         	}else{
         		if(null != topicIds && topicIds.size() > 0){
@@ -9094,7 +9100,9 @@ public class ContentServiceImpl implements ContentService {
         			cacheObj.putAll(totalPrice);
         		}
         		cacheService.cacheJavaObject(cacheKey, cacheObj, 2*60*60);//缓存两小时
-        	}
+        	}*/
+        	//3.0.5实时取
+          totalPrice = tagTopicMap.get(String.valueOf(tagId));
         	if(null == totalPrice){
         		totalPrice = new HashMap<String, Object>();
         	}
@@ -9116,6 +9124,15 @@ public class ContentServiceImpl implements ContentService {
 		List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
     	Map<String,Object> tag = topicTagMapper.getOtherNormalTag(uid, tagId);
         	if(tag==null) return null;
+        	
+            List<Long> tagIds  =  new ArrayList<Long>();
+     		   tagIds.add(tagId);
+         //一次性查询出所有标签王国信息
+         List<Map<String,Object>> listTagTopicInfo = liveForContentJdbcDao.getTagTopicInfo(tagIds);
+         Map<String,Object> totalPrice = new HashMap<String,Object>();
+         if(listTagTopicInfo.size()>0){
+        	 totalPrice = listTagTopicInfo.get(0);
+         }
         	com.me2me.content.dto.UserLikeDto.KingdomTag element = new com.me2me.content.dto.UserLikeDto.KingdomTag();
         	long newTagId = (Long)tag.get("id");
         	element.setTagId(newTagId);
@@ -9147,7 +9164,7 @@ public class ContentServiceImpl implements ContentService {
             int tagPersons=0;
             int kingdomCount = 0;
             
-            Map<String,Object> totalPrice = null;
+            /*Map<String,Object> totalPrice = null;
         	String cacheKey = "OBJ:TAGPRICEANDKINGDOMCOUNT:"+tagName;
         	Object tagRes = cacheService.getJavaObject(cacheKey);
         	if(null != tagRes){
@@ -9161,7 +9178,7 @@ public class ContentServiceImpl implements ContentService {
         			cacheObj.putAll(totalPrice);
         		}
         		cacheService.cacheJavaObject(cacheKey, cacheObj, 2*60*60);//缓存两小时
-        	}
+        	}*/
         	if(null == totalPrice){
         		totalPrice = new HashMap<String, Object>();
         	}

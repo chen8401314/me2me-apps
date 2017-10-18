@@ -90,7 +90,7 @@ public interface TopicTagSearchMapper {
 	 * @param uid
 	 * @return
 	 */
-	public List<String> getUserFavoriteTags(@Param("uid")long uid,@Param("count")int count);
+	public List<TagInfo> getUserFavoriteTags(@Param("uid")long uid,@Param("count")int count);
 	
 	/**
 	 * 取标签的子系统标签
@@ -129,6 +129,10 @@ public interface TopicTagSearchMapper {
 	@ResultType(String.class)
 	@Select("select tag from topic_tag where is_sys=1 and status=0 order by order_num asc")
 	public List<String> getSysTags();
+	
+	@ResultType(TagInfo.class)
+	@Select("select id as tagId,tag as tagName,cover_img as coverImg  from topic_tag  where is_sys=1 and status=0 order by order_num asc")
+	public List<TagInfo> getSysTagsInfo();
 	
 	@ResultType(String.class)
 	@Select("select tag from topic_tag where  pid =#{0}  and status=0")

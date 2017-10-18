@@ -75,8 +75,8 @@
 	<select id="getUserFavoTags" resultType="string">
 		select tag from user_tag_like  where uid=#{uid} and score > 20 order by score DESC limit #{count}
 	</select>
-	<select id="getUserFavoriteTags" resultType="string">
-		select tt.tag FROM topic_tag tt,user_tag ut WHERE tt.id = ut.tag_id AND ut.type = 0 AND ut.uid = #{uid} AND ut.score>20 ORDER BY ut.score LIMIT #{count}
+	<select id="getUserFavoriteTags" resultType="com.me2me.content.model.TagInfo">
+		select tt.id as tagId,tt.tag as tagName,tt.cover_img as coverImg FROM topic_tag tt,user_tag ut WHERE tt.id = ut.tag_id AND ut.type = 0 AND ut.uid = #{uid} AND ut.score>20 ORDER BY ut.score LIMIT #{count}
 	</select>
 	
 	<select id="getUserLikeTagAndSubTag" resultType="com.me2me.content.model.TagInfo">
@@ -154,7 +154,9 @@
 
 	<select id="getUserLikeTagInfo" resultType="com.me2me.content.model.TagInfo">
 		select t.id as
-		tagId,t.tag as tagName from
+		tagId,t.tag as tagName,
+		t.cover_img as coverImg
+		 from
 		topic_tag t,
 		(SELECT tag_id FROM user_tag WHERE uid=#{uid} and type =1) userlike
 		where t.id=userlike.tag_id
