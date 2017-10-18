@@ -1261,6 +1261,7 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
     <include refid="Base_Column_List" />,
     <include refid="Blob_Column_List" />
     from content where uid = #{uid} AND `status` != 1
+    and type=3
     <if test="flag == 0">
     and type != 6
     </if>
