@@ -1675,7 +1675,7 @@ public class LiveLocalJdbcDao {
 		}
 		StringBuilder delSql = new StringBuilder();
 		delSql.append("update user_tag set type=0  where type=2 and uid = ").append(uid);
-		delSql.append(" and tag_id in");
+		delSql.append(" and tag_id in (");
 		for(int i=0;i<tagIds.size();i++){
 			if(i>0){
 				delSql.append(",");
