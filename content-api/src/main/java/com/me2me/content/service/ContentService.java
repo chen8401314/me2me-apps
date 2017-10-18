@@ -641,7 +641,7 @@ public interface ContentService{
 	 * @param tagId
 	 * @return
 	 */
-	public com.me2me.content.dto.UserLikeDto getOtherNormalTag(long uid,long tagId) ;
+	public com.me2me.content.dto.UserLikeDto getOtherNormalTag(long uid,String tagIds) ;
 	
 	
     /**

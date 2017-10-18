@@ -9042,9 +9042,11 @@ public class ContentServiceImpl implements ContentService {
         //一次性查询出所有标签王国信息
         List<Map<String,Object>> listTagTopicInfo = liveForContentJdbcDao.getTagTopicInfo(tagIds);
         Map<String,Map<String,Object>> tagTopicMap = new HashMap<String,Map<String,Object>>();
+        if(listTagTopicInfo!=null && listTagTopicInfo.size()>0){
         for (Map<String, Object> map : listTagTopicInfo) {
      	   tagTopicMap.put(String.valueOf(map.get("tag_id")), map);
  	   }
+        }
         for(Map<String,Object> tag:listTags){
         	if(tag==null) continue;
         	TagMgmtQueryDto.KingdomTag element = new TagMgmtQueryDto.KingdomTag();
@@ -9119,16 +9121,23 @@ public class ContentServiceImpl implements ContentService {
 		return Response.success(dto);
 	}
 	@Override
-	public com.me2me.content.dto.UserLikeDto getOtherNormalTag(long uid,long tagId) {
+	public com.me2me.content.dto.UserLikeDto getOtherNormalTag(long uid,String tagIds) {
 		com.me2me.content.dto.UserLikeDto dto = new com.me2me.content.dto.UserLikeDto();
 		List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
-    	Map<String,Object> tag = topicTagMapper.getOtherNormalTag(uid, tagId);
+		List<Long> tagIdList  = new ArrayList<Long>();
+		if(!StringUtils.isEmpty(tagIds)){
+		String[] tagIdArr = tagIds.split(",");
+		for (String tagId : tagIdArr) {
+			tagIdList.add(Long.parseLong(tagId));
+		}
+		}
+    	Map<String,Object> tag = topicTagMapper.getOtherNormalTag(uid, tagIdList);
         	if(tag==null) return null;
-        	
-            List<Long> tagIds  =  new ArrayList<Long>();
-     		   tagIds.add(tagId);
+        	long tagId = (Long)tag.get("id");
+            List<Long> tagInfoIds  =  new ArrayList<Long>();
+            tagInfoIds.add(tagId);
          //一次性查询出所有标签王国信息
-         List<Map<String,Object>> listTagTopicInfo = liveForContentJdbcDao.getTagTopicInfo(tagIds);
+         List<Map<String,Object>> listTagTopicInfo = liveForContentJdbcDao.getTagTopicInfo(tagInfoIds);
          Map<String,Object> totalPrice = new HashMap<String,Object>();
          if(listTagTopicInfo.size()>0){
         	 totalPrice = listTagTopicInfo.get(0);

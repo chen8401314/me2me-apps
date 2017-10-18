@@ -214,7 +214,7 @@ public class Home extends BaseController {
     @RequestMapping(value = "/userLike")
     @ResponseBody
     public Response userLike(UserLikeRequest request){
-        return liveService.userLike(request.getUid(), request.getData(), request.getIsLike(), request.getType(),request.getNeedNew());
+        return liveService.userLike(request.getUid(), request.getData(), request.getIsLike(), request.getType(),request.getNeedNew(),request.getTagIds());
     }
     @RequestMapping(value = "/badTag")
     @ResponseBody

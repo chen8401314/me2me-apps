@@ -9942,7 +9942,7 @@ public class LiveServiceImpl implements LiveService {
 	}
 
 	@Override
-	public Response userLike(long uid, long dataId, int isLike, int type,int needNew) {
+	public Response userLike(long uid, long dataId, int isLike, int type,int needNew,String tagIds) {
 	com.me2me.content.dto.UserLikeDto  dto = null;
 		UserDislikeExample example = new UserDislikeExample();
 		example.createCriteria().andUidEqualTo(uid).andDataEqualTo(dataId).andTypeEqualTo(type);
@@ -9982,7 +9982,7 @@ public class LiveServiceImpl implements LiveService {
 				userTag.setScore(0);
 				userTag.setIsTop(0);
 				if(needNew==1){
-					dto = contentService.getOtherNormalTag(uid, dataId);
+					dto = contentService.getOtherNormalTag(uid, tagIds);
 				}
 			}
 			if(dislike.getIsLike()==1){	// 喜欢

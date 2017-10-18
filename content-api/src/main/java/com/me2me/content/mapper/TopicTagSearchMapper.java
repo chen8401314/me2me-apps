@@ -194,7 +194,7 @@ public interface TopicTagSearchMapper {
 	 */
 	public Map<String, Object> getOtherNormalTag(
 			@Param("uid") long uid,
-			@Param("tagId") long tagId
+			@Param("tagIds") List<Long>  tagIds
 			);
 	
 	

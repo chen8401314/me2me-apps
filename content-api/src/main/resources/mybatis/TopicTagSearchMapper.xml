@@ -139,7 +139,12 @@
 	           ON tt.id = ut.tag_id AND ut.uid = #{uid}
 	           WHERE (ut.type IS NULL OR ut.type NOT IN (1,2))
 	           AND tt.status = 0
-             	AND tt.id != #{tagId}
+	         <if test="tagIds and tagIds.size() &gt; 0">
+	      		and tt.id not in
+	      		<foreach open="(" separator="," close=")" collection="tagIds" item="bid">
+	        		#{bid}
+	      		</foreach>
+    		</if>
 	           ORDER BY tt.is_sys DESC,ut.id DESC
 	           LIMIT 1
 	    </select>

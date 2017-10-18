@@ -18,4 +18,8 @@ public class UserLikeRequest extends Request {
 	@Getter
 	@Setter
 	private int needNew;
+	@Getter
+	@Setter
+	private String tagIds;
+	
 }
