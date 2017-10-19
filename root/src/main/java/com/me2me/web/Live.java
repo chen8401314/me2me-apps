@@ -1,12 +1,10 @@
 package com.me2me.web;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -22,17 +20,14 @@ import com.me2me.content.service.ContentService;
 import com.me2me.kafka.service.KafkaService;
 import com.me2me.live.dto.AggregationOptDto;
 import com.me2me.live.dto.CreateKingdomDto;
-import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.CreateVoteDto;
 import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
-import com.me2me.live.dto.GetLiveTimeLineDto2;
 import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.dto.LiveBarrageDto;
 import com.me2me.live.dto.SettingModifyDto;
 import com.me2me.live.dto.SpeakDto;
-import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.model.LotteryInfo;
 import com.me2me.live.service.LiveExtService;
@@ -83,7 +78,6 @@ import com.me2me.web.request.ListTopicRequest;
 import com.me2me.web.request.LiveCoverRequest;
 import com.me2me.web.request.LiveDetailRequest;
 import com.me2me.web.request.LiveQrcodeRequest;
-import com.me2me.web.request.LiveTimeline2Request;
 import com.me2me.web.request.LiveTimelineRequest;
 import com.me2me.web.request.LiveUpdateRequest;
 import com.me2me.web.request.ProhibitLotteryRequest;
@@ -103,7 +97,6 @@ import com.me2me.web.request.SpecialKingdomInfoRequest;
 import com.me2me.web.request.StealKingdomCoinRequest;
 import com.me2me.web.request.TagKingdomsRequest;
 import com.me2me.web.request.TakeoverTopicRequest;
-import com.me2me.web.request.TestLiveRequest;
 import com.me2me.web.request.TopicOptRequest;
 import com.me2me.web.request.TopicRecommRequest;
 import com.me2me.web.request.TopicTagCheckRequest;
@@ -145,17 +138,14 @@ public class Live extends BaseController {
     private LiveExtService liveExtService;
     
     /**
-     * 创建直接
+     * 创建直接<br>
+     * 已废弃，请使用createKingdom接口
      * @return
      */
     @RequestMapping(value = "/createLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response createLive(CreateLiveRequest request){
-        CreateLiveDto createLiveDto = new CreateLiveDto();
-        createLiveDto.setUid(request.getUid());
-        createLiveDto.setTitle(request.getTitle());
-        createLiveDto.setLiveImage(request.getLiveImage());
-        return liveService.createLive(createLiveDto);
+        return Response.failure(500, "请升级新版本进行创建");
     }
     
     @RequestMapping(value = "/createKingdom",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -310,29 +300,6 @@ public class Live extends BaseController {
         return liveService.getLiveUpdate(getLiveUpdateDto);
     }
 
-
-
-
-    /**
-     * 获取消息列表(暂未启用)
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "/liveTimeline2",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public Response liveTimeline2(LiveTimeline2Request request){
-        GetLiveTimeLineDto2 getLiveTimeLineDto = new GetLiveTimeLineDto2();
-        getLiveTimeLineDto.setSinceId(request.getSinceId());
-        getLiveTimeLineDto.setTopicId(request.getTopicId());
-        getLiveTimeLineDto.setUid(request.getUid());
-        getLiveTimeLineDto.setMode(request.getMode());
-        getLiveTimeLineDto.setDirection(request.getDirection());
-        getLiveTimeLineDto.setFirst(request.getFirst());
-        getLiveTimeLineDto.setForms(request.getForms());
-        return liveService.getLiveTimeline2(getLiveTimeLineDto);
-    }
-
-
     /**
      * 获取弹幕息列表
      * @param request
@@ -348,22 +315,6 @@ public class Live extends BaseController {
         liveBarrageDto.setTopId(request.getTopId());
         liveBarrageDto.setBottomId(request.getBottomId());
         return liveService.barrage(liveBarrageDto);
-    }
-
-    /**
-     * 获取消息列表(不用)
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "/timeline",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public Response timeline(LiveTimelineRequest request){
-        GetLiveTimeLineDto getLiveTimeLineDto = new GetLiveTimeLineDto();
-        getLiveTimeLineDto.setSinceId(request.getSinceId());
-        getLiveTimeLineDto.setTopicId(request.getTopicId());
-        getLiveTimeLineDto.setUid(request.getUid());
-        getLiveTimeLineDto.setVersion(request.getVersion());
-        return liveService.liveTimeline(getLiveTimeLineDto);
     }
 
     /**
@@ -388,20 +339,6 @@ public class Live extends BaseController {
         speakDto.setSource(request.getSource());
         speakDto.setExtra(request.getExtra());
 
-//        try {  //埋点
-//            ClientLog clientLog = new ClientLog();
-//
-//            clientLog.setAction(Specification.ClientLogAction.LIVE_LIKES.index);
-//            clientLog.setExt(Specification.ClientLogAction.LIVE_LIKES.name+":"+request.getType());
-//            clientLog.setUserId(request.getUid());
-//            clientLog.setChannel(request.getChannel());
-//            clientLog.setVersion(request.getVersion());
-//            clientLog.setUserAgent(req.getHeader("User-Agent"));
-//
-//            kafkaService.clientLog(clientLog);
-//        }catch(Exception e){
-//            e.printStackTrace();
-//        }
         return liveService.speak(speakDto);
     }
 
@@ -428,7 +365,6 @@ public class Live extends BaseController {
     @ResponseBody
     public Response finishMyLive(FinishMyLiveRequest request){
     	return Response.success(ResponseStatus.USER_FINISH_LIVE_SUCCESS.status, ResponseStatus.USER_FINISH_LIVE_SUCCESS.message);
-//        return liveService.finishMyLive(request.getUid(),request.getTopicId());
     }
 
     /**
@@ -466,8 +402,6 @@ public class Live extends BaseController {
             request.setUpdateTime(calendar.getTimeInMillis());
         }
 
-        //埋点
-//        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_IN_UPDATE);
         return liveService.LivesByUpdateTime(request.getUid(),request.getUpdateTime());
     }
 
@@ -587,8 +521,6 @@ public class Live extends BaseController {
     @RequestMapping(value = "/inactiveLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getInactiveLive(InactiveLiveRequest request){
-        //埋点
-//        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_NOT_UPDATED);
 
         return liveService.getInactiveLive(request.getUid(),request.getUpdateTime());
     }
@@ -646,26 +578,6 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getRedDot",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getRedDot(GetMyLivesRequest request){
         return liveService.getRedDot(request.getUid(),request.getUpdateTime());
-    }
-
-    /**
-     * 测试接口
-     * @param request
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "/testApi",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response testApi(TestLiveRequest request){
-        TestApiDto dto = new TestApiDto();
-        System.out.println("请求了一次");
-        try {
-            BeanUtils.copyProperties(dto,request);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return liveService.testApi(dto);
     }
     
     /**
