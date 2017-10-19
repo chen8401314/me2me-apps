@@ -1411,31 +1411,39 @@ public class LiveForContentJdbcDao {
 	}
     public List<Map<String, Object>> getTagTopicInfo(List<Long> tagIds){
     	if(tagIds.size()==0){
-    		return null;
+    		return new ArrayList<Map<String, Object>>();
     	}
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("select o1.tag_id,SUM(o1.topic_count) kingdomCount,SUM(o1.price_sum) tagPrice,o2.uid_count tagPersons ");
-    	sb.append(" from (select t3.tag_id tag_id, COUNT(distinct t1.id) topic_count,SUM(t1.price) price_sum from topic t1, content t2, topic_tag_detail t3 ");
-    		sb.append(" where t1.id = t2.forward_cid  and t3.tag_id in (");
-    		for(int i=0;i<tagIds.size();i++){
-    			if(i>0){
-    				sb.append(",");
-    			}
-    			sb.append(tagIds.get(i).toString());
-    		}
-    		sb.append(")");
-    	sb.append(" and t2.type = 3 and t1.id = t3.topic_id group by t3.tag_id ) o1, ")	;
-    	sb.append(" (select m.tag_id,COUNT(m.uid)+FLOOR(SUM(m.read_count)/20) uid_count from(select distinct t2.tag_id tag_id,t1.uid,t3.read_count");
-    	sb.append(" from topic_fragment t1, topic_tag_detail t2, content t3 where  t2.tag_id  in (");
+    	StringBuilder tagIdsStr = new StringBuilder();
 		for(int i=0;i<tagIds.size();i++){
 			if(i>0){
-				sb.append(",");
+				tagIdsStr.append(",");
 			}
-			sb.append(tagIds.get(i).toString());
+			tagIdsStr.append(tagIds.get(i).toString());
 		}
-		sb.append(")");
-    	sb.append(" and t1.topic_id = t2.topic_id and t3.type = 3 and t1.topic_id = t3.forward_cid and t2.status=0 ) m  group by tag_id ) o2");
-    	sb.append(" where o1.tag_id = o2.tag_id group by o1. tag_id");
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(" select o1.tag_id,SUM(o1.topic_count) kingdomCount,SUM(o1.price_sum) tagPrice,o2.uid_count tagPersons from ( ");
+    	sb.append(" select t4.tag_id tag_id, COUNT(distinct t1.id) topic_count,SUM(distinct t1.price) price_sum");
+    	sb.append(" from topic t1, content t2, topic_tag_detail t3,(select id,tag,IF(id in (");
+        sb.append(tagIdsStr);
+    	sb.append(")");
+    	sb.append(" ,id,pid) tag_id from topic_tag where id  in (");
+        sb.append(tagIdsStr);
+    	sb.append(" ) or pid in (");
+        sb.append(tagIdsStr);
+    	sb.append(" )) t4");
+    	sb.append(" where t1.id = t2.forward_cid  and t4.id = t3.tag_id and t2.type = 3 and t1.id = t3.topic_id ");
+    	sb.append(" and t1.status = 0 and t3.status = 0 group by t4.tag_id) o1, ");
+    	sb.append(" (select m.tag_id,COUNT(m.uid)+FLOOR(SUM(m.read_count)/20) uid_count from(select distinct t4.tag_id tag_id,t1.uid,t3.read_count");
+    	sb.append("  from topic_fragment t1, topic_tag_detail t2, content t3,(select id,tag,IF(id in (");
+        sb.append(tagIdsStr);
+    	sb.append("),id,pid) tag_id from topic_tag where id  in (");
+        sb.append(tagIdsStr);
+    	sb.append(") or pid in (");
+        sb.append(tagIdsStr);
+    	sb.append(")) t4 ");
+    	sb.append(" where  t4.id = t2.tag_id and t1.topic_id = t2.topic_id");
+    	sb.append(" and t3.type = 3 and t1.topic_id = t3.forward_cid and t2.status=0 ) m group by tag_id ) o2");
+    	sb.append(" where o1.tag_id = o2.tag_id group by  o1. tag_id");
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
     	return list;
     }
