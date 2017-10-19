@@ -2631,7 +2631,7 @@ public class UserServiceImpl implements UserService {
                     	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                     }
                     this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
-                    this.activityH5RegisterUser(userProfile);
+//                    this.activityH5RegisterUser(userProfile);
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }
                 //h5微信登录
