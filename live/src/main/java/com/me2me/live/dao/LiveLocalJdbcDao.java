@@ -446,12 +446,14 @@ public class LiveLocalJdbcDao {
 			sb.append(" and f.uid=").append(currentUid);
 			//其他的
 			sb.append(" union ");
-			sb.append(" select m3.*,m3.long_time as longtime");
+			sb.append(" (select m3.*,m3.long_time as longtime");
 			sb.append(" from topic m3 where m3.uid<>").append(currentUid);
 			sb.append(" and not FIND_IN_SET(").append(currentUid);
 			sb.append(",SUBSTR(m3.core_circle FROM 2 FOR LENGTH(m3.core_circle)-2))");
 			sb.append(" and not EXISTS (select 1 from live_favorite f3 where f3.uid=");
 			sb.append(currentUid).append(" and f3.topic_id=m3.id)");
+			sb.append(" and m3.long_time<").append(searchDTO.getUpdateTime());
+			sb.append(" order by m3.long_time desc limit 21)");
 			sb.append(") t");
 			sb.append(" where t.longtime<").append(searchDTO.getUpdateTime());
 			if(searchDTO.getExceptTopicId() > 0){
