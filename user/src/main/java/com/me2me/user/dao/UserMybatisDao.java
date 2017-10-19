@@ -1155,6 +1155,10 @@ public class UserMybatisDao {
     public void createImConfig(ImConfig imConfig){
         imConfigMapper.insertSelective(imConfig);
     }
+    
+    public void updateImConfig(ImConfig imConfig){
+    	imConfigMapper.updateByPrimaryKeySelective(imConfig);
+    }
 
     public ImConfig getImConfig(long customerId){
         ImConfigExample example = new ImConfigExample();

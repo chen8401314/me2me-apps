@@ -3666,10 +3666,40 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response getIMUsertoken(long customerId) {
         ImUserInfoDto dto = new ImUserInfoDto();
+        dto.setUserId(String.valueOf(customerId));
+        
         ImConfig imConfig = userMybatisDao.getImConfig(customerId);
-        if(imConfig != null){
-            dto.setToken(imConfig.getToken());
-            dto.setUserId(String.valueOf(customerId));
+        if(null == imConfig || StringUtils.isEmpty(imConfig.getToken())
+        		|| imConfig.getToken().contains("测试环境")){
+        	//重新获取
+        	UserProfile u = userMybatisDao.getUserProfileByUid(customerId);
+        	if(null != u){
+        		try{
+        			ImUserInfoDto imDTO = smsService.getIMUsertoken(customerId, u.getNickName(), Constant.QINIU_DOMAIN + "/" + u.getAvatar());
+        			if(null != imDTO){
+        				if(null == imConfig){
+            				imConfig = new ImConfig();
+            				imConfig.setUid(customerId);
+            				imConfig.setToken(imDTO.getToken());
+            				imConfig.setCreateTime(new Date());
+            				userMybatisDao.createImConfig(imConfig);
+            			}else{
+            				imConfig.setToken(imDTO.getToken());
+            				userMybatisDao.updateImConfig(imConfig);
+            			}
+        				dto.setToken(imDTO.getToken());
+        				return Response.success(dto);
+        			}
+        		}catch(Exception e){
+        			log.error("重新获取失败", e);
+        		}
+        	}
+        	if(null != imConfig){
+        		dto.setToken(imConfig.getToken());
+                return Response.success(dto);
+        	}
+        }else{
+        	dto.setToken(imConfig.getToken());
             return Response.success(dto);
         }
         return Response.failure(ResponseStatus.QI_QUERY_FAILURE.message);
