@@ -8,21 +8,17 @@ import com.me2me.common.web.Response;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.live.dto.AggregationOptDto;
 import com.me2me.live.dto.CreateKingdomDto;
-import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.CreateVoteDto;
 import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
-import com.me2me.live.dto.GetLiveTimeLineDto2;
 import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.dto.KingdomSearchDTO;
-import com.me2me.live.dto.Live4H5Dto;
 import com.me2me.live.dto.LiveBarrageDto;
 import com.me2me.live.dto.SearchDropAroundTopicDto;
 import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.SettingModifyDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.dto.StealResultDto;
-import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.model.GiftInfo;
 import com.me2me.live.model.LiveFavorite;
@@ -48,13 +44,6 @@ import com.me2me.user.dto.RechargeToKingdomDto;
  */
 public interface LiveService {
 
-    /**
-     * 创建直播
-     * @return
-     */
-    Response createLive(CreateLiveDto createLiveDto);
-
-    
     /**
      * 创建王国整合（创建+第一次发言）
      * @return
@@ -106,14 +95,6 @@ public interface LiveService {
     Response setLive2(long uid,long topicId,long topId,long bottomId,int action);
 
     Response setLiveFromSnsFollow(long uid, List<Long> topicIds, long topId, long bottomId, int action);
-    
-    /**
-     * 结束自己当前直播
-     * @param uid
-     * @param topicId
-     * @return
-     */
-    Response finishMyLive(long uid, long topicId);
 
     /**
      * 移除自己完结的直播
@@ -131,11 +112,7 @@ public interface LiveService {
      */
     Response signOutLive(long uid, long topicId);
 
-    int countFragment(long topicId,long uid);
-
     Response getFavoriteList(long topicId);
-
-    Response liveTimeline(GetLiveTimeLineDto getLiveTimeLineDto);
 
     Response liveCover(long topicId,long uid,int vflag, int source,Long fromUid);
 
@@ -161,23 +138,11 @@ public interface LiveService {
 
     List<Topic> getMyTopic4Follow(long uid);
 
-    void createFavoriteDelete(long uid,long topicId);
-
-    void deleteFavoriteDelete(long uid,long topicId);
-
     TopicFragmentWithBLOBs getLastTopicFragmentByUid(long topicId, long uid);
-
-    Live4H5Dto getLive4H5(long id);
-
-    Response getLiveTimeline2(GetLiveTimeLineDto2 getLiveTimeLineDto);
 
     Response cleanUpdate(long uid);
 
     Response genQRcode(long topicId);
-
-    Response setLive3(long uid, long topicId);
-    
-    Response setLive3WithBatch(List<Long> uids, long topicId);
 
     Response deleteLiveFragment(long topicId, long fid, long uid);
 
@@ -227,8 +192,6 @@ public interface LiveService {
     Response detailFidPage(long topicId, long fid, int offset);
     
     Response getLiveUpdate(GetLiveUpdateDto getLiveUpdateDto);
-
-    Response testApi(TestApiDto request);
 
     Response kingdomSearch(long currentUid, KingdomSearchDTO searchDTO);
 

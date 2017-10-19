@@ -1,6 +1,5 @@
 package com.me2me.live.dto;
 
-import java.util.Date;
 import java.util.List;
 
 import com.google.common.collect.Lists;

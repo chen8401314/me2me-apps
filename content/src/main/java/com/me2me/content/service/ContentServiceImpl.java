@@ -49,7 +49,6 @@ import com.me2me.common.enums.USER_OPRATE_TYPE;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.utils.CollectionUtils;
 import com.me2me.common.utils.CommonUtils;
-import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.utils.ProbabilityUtils;
 import com.me2me.common.web.Response;
@@ -241,8 +240,6 @@ public class ContentServiceImpl implements ContentService {
     private TopicTagSearchMapper topicTagMapper;
     @Autowired
     private UserVisitLogMapper userVisitLogMapper;
-    
-    
     
     @Override
     public Response recommend(long uid,String emotion) {
@@ -561,7 +558,6 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Response square(int sinceId,long uid) {
         ShowContentListDto showContentListDto = new ShowContentListDto();
-        // SquareDataDto squareDataDto = new SquareDataDto();
         List<Content> list = Lists.newArrayList();
         if(Integer.MAX_VALUE == sinceId) {
             list = contentMybatisDao.loadActivityData(sinceId);
@@ -569,7 +565,6 @@ public class ContentServiceImpl implements ContentService {
         List<Content> contents = contentMybatisDao.loadSquareData(sinceId);
         showContentListDto.getActivityData().addAll(buildData(list,uid));
         showContentListDto.getSquareData().addAll(buildData(contents,uid));
-        //buildDatas(squareDataDto, contents,uid);
         return Response.success(showContentListDto);
     }
 
