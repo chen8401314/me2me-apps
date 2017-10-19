@@ -164,6 +164,6 @@
 		 from
 		topic_tag t,
 		(SELECT tag_id FROM user_tag WHERE uid=#{uid} and type =1) userlike
-		where t.id=userlike.tag_id
+		where t.id=userlike.tag_id and t.status = 0
 	</select>
 </mapper>

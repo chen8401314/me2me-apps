@@ -4809,7 +4809,7 @@ public class ContentServiceImpl implements ContentService {
         	userLikeTagSet.add(info.getTagName());
         	tagMap.put(String.valueOf(info.getTagId()), info);
         	curPos++;
-        	if(curPos>=tagMap.size()){
+        	if(curPos>=tagCount){
         		break;
         	}
         }
@@ -4851,9 +4851,11 @@ public class ContentServiceImpl implements ContentService {
        //一次性查询出所有标签王国信息
        List<Map<String,Object>> listTagTopicInfo = liveForContentJdbcDao.getTagTopicInfo(tagIds);
        Map<String,Map<String,Object>> tagTopicMap = new HashMap<String,Map<String,Object>>();
+       if(listTagTopicInfo!=null){
        for (Map<String, Object> map : listTagTopicInfo) {
     	   tagTopicMap.put(String.valueOf(map.get("tag_id")), map);
 	   }
+       }
        Iterator<Entry<String, TagInfo>> iterator= tagMap.entrySet().iterator();  
        while(iterator.hasNext())  
        {  
@@ -9139,7 +9141,7 @@ public class ContentServiceImpl implements ContentService {
          //一次性查询出所有标签王国信息
          List<Map<String,Object>> listTagTopicInfo = liveForContentJdbcDao.getTagTopicInfo(tagInfoIds);
          Map<String,Object> totalPrice = new HashMap<String,Object>();
-         if(listTagTopicInfo.size()>0){
+         if(listTagTopicInfo!=null && listTagTopicInfo.size()>0){
         	 totalPrice = listTagTopicInfo.get(0);
          }
         	com.me2me.content.dto.UserLikeDto.KingdomTag element = new com.me2me.content.dto.UserLikeDto.KingdomTag();
