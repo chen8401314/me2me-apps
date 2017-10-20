@@ -106,7 +106,8 @@
 	          WHERE
 	          (ut.type IS NULL OR ut.type NOT IN (1,2))
 	          AND tt.status = 0
-	          ORDER BY tt.is_sys DESC,ut.id DESC
+	          and tt.is_sys = 1
+	          ORDER BY tt.id DESC
 	          LIMIT ${(page-1)*pageSize},#{pageSize}
 	    </select>
    <select id="getKingdomsByTagInfo" resultType="map">
