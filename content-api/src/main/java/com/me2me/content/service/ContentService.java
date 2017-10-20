@@ -616,7 +616,7 @@ public interface ContentService{
 	 * @param uid
 	 * @return
 	 */
-	public Response hot(int page, long uid);
+	public Response hot(int page, long uid, String version);
 	
     /**
      * 保存广告点击记录接口

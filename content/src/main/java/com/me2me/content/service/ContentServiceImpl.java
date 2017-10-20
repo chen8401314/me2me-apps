@@ -8367,7 +8367,7 @@ public class ContentServiceImpl implements ContentService {
 	}
 	
 	@Override
-	public Response hot(int page, long uid) {
+	public Response hot(int page, long uid, String version) {
 		HotDto dto = new HotDto();
 		// 其他栏目位置信息
 		Map<String, String> hotPositionMap = new HashMap<String, String>();
@@ -8379,6 +8379,10 @@ public class ContentServiceImpl implements ContentService {
 		if (!StringUtils.isEmpty(isShowTagsStr)) {
 			isShowTags = Integer.parseInt(isShowTagsStr);
 		}
+		if(CommonUtils.isNewVersion(version, "3.0.5")){//305版本以后的为该配置的3倍
+			isShowTags = isShowTags * 3;
+		}
+		
 		if (page < 1) {
 			page = 1;
 		}

@@ -244,7 +244,7 @@ public class Home extends BaseController {
     @RequestMapping(value = "/hot")
     @ResponseBody
     public Response hot(HotRequest request){
-        return contentService.hot(request.getPage(), request.getUid());
+        return contentService.hot(request.getPage(), request.getUid(), request.getVersion());
     }
     @RequestMapping(value = "/adRead")
     @ResponseBody
