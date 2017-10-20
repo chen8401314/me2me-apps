@@ -4787,11 +4787,14 @@ public class ContentServiceImpl implements ContentService {
         }
         return dataList;
     }
-    private List<TagGroupDto.KingdomHotTag> buildHotTagKingdomsNew(long uid, List<Long> blacklistUids,List<String> blackTags){
+    private List<TagGroupDto.KingdomHotTag> buildHotTagKingdomsNew(long uid, List<Long> blacklistUids,List<String> blackTags, String version){
         List<TagGroupDto.KingdomHotTag> dataList = new ArrayList<TagGroupDto.KingdomHotTag>();
         
         //除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
         int tagCount =  userService.getIntegerAppConfigByKey("HOME_HOT_LABELS");
+        if(CommonUtils.isNewVersion(version, "3.0.5")){//305版本以后的为该配置的3倍
+			tagCount = tagCount * 3;
+		}
         
         Map<String,TagInfo> tagMap  =  new LinkedHashMap<String,TagInfo>() ;
         
@@ -8354,7 +8357,7 @@ public class ContentServiceImpl implements ContentService {
 	}
 	
 	@Override
-	public Response tagGroup(long cid, long uid) {
+	public Response tagGroup(long cid, long uid, String version) {
 		TagGroupDto dto = new TagGroupDto();
 		List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
         List<String> blackTagNameList = new ArrayList<>();
@@ -8362,7 +8365,7 @@ public class ContentServiceImpl implements ContentService {
         for(TagInfo info:blackTags){
         	blackTagNameList.add(info.getTagName());
         }
-        dto.setKingdomHotTagList(buildHotTagKingdomsNew(uid, blacklistUids,blackTagNameList));
+        dto.setKingdomHotTagList(buildHotTagKingdomsNew(uid, blacklistUids,blackTagNameList, version));
 		return Response.success(dto);
 	}
 	
@@ -8378,9 +8381,6 @@ public class ContentServiceImpl implements ContentService {
 		int isShowTags = 0;
 		if (!StringUtils.isEmpty(isShowTagsStr)) {
 			isShowTags = Integer.parseInt(isShowTagsStr);
-		}
-		if(CommonUtils.isNewVersion(version, "3.0.5")){//305版本以后的为该配置的3倍
-			isShowTags = isShowTags * 3;
 		}
 		
 		if (page < 1) {
@@ -8722,6 +8722,9 @@ public class ContentServiceImpl implements ContentService {
 							HotDto.TagContentElement tagContentElement = new HotDto.TagContentElement();
 							tagContentElement.setType(53);
 							int tagCount = userService.getIntegerAppConfigByKey("HOME_HOT_LABELS");
+							if(CommonUtils.isNewVersion(version, "3.0.5")){//305版本以后的为该配置的3倍
+								tagCount = tagCount * 3;
+							}
 							tagContentElement.setSize(tagCount);
 							tagContentElement.setTitle("推荐标签在这里");
 							dto.getData().add(tagContentElement);

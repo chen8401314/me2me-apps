@@ -608,7 +608,7 @@ public interface ContentService{
 	 * @param uid
 	 * @return
 	 */
-	public Response tagGroup(long cid, long uid);
+	public Response tagGroup(long cid, long uid, String version);
 	
 	/**
 	 * 首页热点接口
