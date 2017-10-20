@@ -5448,6 +5448,9 @@ public class ActivityServiceImpl implements ActivityService {
     
     @Override
     public Response gameUserInfo(long gameUid,int gameChannel,long uid){
+    	if(gameUid == 100){
+			return Response.failure(500,"获取失败");
+		}
     	//根据uid查找用户信息（昵称跟头像）,确保数据库中存在该用户
     	UserProfile userProfile = userService.getUserProfileByUid(gameUid);
     	if(null == userProfile){
@@ -5542,6 +5545,9 @@ public class ActivityServiceImpl implements ActivityService {
 
 	@Override
 	public Response gameResult(long uid, long gameId, int record) {
+		if(uid == 100){
+			return Response.failure(500,"记录失败");
+		}
 		String GAME_RESULT_LOCK ="GAME_RESULT_LOCK_"+uid+"_"+gameId;
 		try {
 			//拿锁
@@ -5595,6 +5601,9 @@ public class ActivityServiceImpl implements ActivityService {
 
 	@Override
 	public Response gameReceiveCoins(long uid) {
+		if(uid == 100){
+			return Response.failure(500,"获取失败");
+		}
 		String GAME_RECEIVE_COINS_LOCK = "GAME_RECEIVE_COINS_LOCK_"+uid;
 		try {
 			//拿锁
