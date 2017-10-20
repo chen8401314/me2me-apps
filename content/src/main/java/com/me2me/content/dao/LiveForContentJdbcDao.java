@@ -768,7 +768,7 @@ public class LiveForContentJdbcDao {
      */
     public List<BillBoardListDTO> kingdomPriceList(long start, int pageSize, List<Long> blacklistUids){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select t.id from topic t");
+    	sb.append("select t.id from topic t where 1=1");
     	if(null != blacklistUids && blacklistUids.size() > 0){
     		sb.append(" and t.uid not in (");
     		for(int i=0;i<blacklistUids.size();i++){
