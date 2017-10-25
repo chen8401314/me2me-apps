@@ -67,6 +67,10 @@ public class ShowUserProfileDto implements BaseEntity{
     private double  priceRMB;
     // 用户级别图标
     private String levelIcon;
+    
+    private int hasPwd;
+    
+    private int hasInfoCoin;
 
     public Hobby createHobby(){ return new Hobby();}
 

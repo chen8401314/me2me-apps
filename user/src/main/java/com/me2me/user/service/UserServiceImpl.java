@@ -1801,8 +1801,7 @@ public class UserServiceImpl implements UserService {
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
         log.info("getUserProfile getUserData success . uid : " + uid);
         ShowUserProfileDto showUserProfileDto = new ShowUserProfileDto();
-        UserProfile profile = userMybatisDao.getUserProfileByUid(uid);
-        showUserProfileDto.setV_lv(profile.getvLv());
+        showUserProfileDto.setV_lv(userProfile.getvLv());
         showUserProfileDto.setUid(userProfile.getUid());
         showUserProfileDto.setNickName(userProfile.getNickName());
         showUserProfileDto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
@@ -1838,18 +1837,12 @@ public class UserServiceImpl implements UserService {
             }
         }
         UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
-        log.info("get userToken success ");
         showUserProfileDto.setToken(userToken.getToken());
         showUserProfileDto.setMeNumber(userMybatisDao.getUserNoByUid(userProfile.getUid()).getMeNumber().toString());
-        log.info("get meNumber success ");
         showUserProfileDto.setFollowedCount(userMybatisDao.getUserFollowCount(uid));
-        log.info("get followedCount success ");
         showUserProfileDto.setFansCount(userMybatisDao.getUserFansCount(uid));
-        log.info("get fansCount success ");
         showUserProfileDto.setIntroduced(userProfile.getIntroduced());
-        log.info("get introduced success ");
         List<UserHobby> list = userMybatisDao.getHobby(uid);
-        log.info("get userHobby success ");
         for (UserHobby userHobby : list){
             ShowUserProfileDto.Hobby hobby = showUserProfileDto.createHobby();
             hobby.setHobby(userHobby.getHobby());
@@ -1857,7 +1850,6 @@ public class UserServiceImpl implements UserService {
             hobby.setValue(dictionary.getValue());
             showUserProfileDto.getHobbyList().add(hobby);
         }
-        log.info("getUserProfile end ...");
         //米币转换人民币
         String exchangeRate = this.getAppConfigByKey("EXCHANGE_RATE");
         if (StringUtils.isEmpty(exchangeRate)){
@@ -1866,6 +1858,26 @@ public class UserServiceImpl implements UserService {
         Integer  i = showUserProfileDto.getAvailableCoin();
         Double d = i.doubleValue();
         showUserProfileDto.setPriceRMB(d/Integer.parseInt(exchangeRate));
+        
+        //判断是否有密码
+        showUserProfileDto.setHasPwd(1);//默认设置过不需要展示
+        if(!StringUtils.isEmpty(userProfile.getThirdPartBind())){
+        	if(userProfile.getThirdPartBind().contains("mobile")){//只有手机才有可能需要展示设置密码
+        		User user = userMybatisDao.getUserByUid(uid);
+        		if(null != user && "0".equals(user.getEncrypt())){
+        			showUserProfileDto.setHasPwd(0);
+        		}
+        	}
+        }
+        //判断是否领取过补全信息的红包
+        List<Map<String,Object>> rlist = userInitJdbcDao.getRedBag(uid+999999999);
+        if(null != rlist && rlist.size() > 0){
+        	showUserProfileDto.setHasInfoCoin(1);
+        }else{
+        	showUserProfileDto.setHasInfoCoin(0);
+        }
+        
+        log.info("getUserProfile end ...");
         return  Response.success(showUserProfileDto);
     }
 
