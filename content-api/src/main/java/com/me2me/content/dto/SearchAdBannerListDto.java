@@ -33,5 +33,7 @@ public class SearchAdBannerListDto implements BaseEntity {
 		private String bannerPosition;
 		private int status;
 		private Date createTime;
+		private int adBannerHeight;
+		private int adBannerWidth;
 	}
 }

@@ -21,12 +21,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Maps;
-import com.me2me.core.KeysManager;
-import com.me2me.user.dto.*;
-import com.me2me.user.rule.Rules;
-
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +33,9 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
@@ -75,6 +71,7 @@ import com.me2me.content.dto.EmojiPackDetailDto;
 import com.me2me.content.dto.EmojiPackDto;
 import com.me2me.content.dto.HighQualityContentDto;
 import com.me2me.content.dto.HotDto;
+import com.me2me.content.dto.HotDto.HeightWidthContentElement;
 import com.me2me.content.dto.KingTopicDto;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.ListingKingdomGroupDto;
@@ -146,8 +143,14 @@ import com.me2me.content.widget.LikeAdapter;
 import com.me2me.content.widget.PublishContentAdapter;
 import com.me2me.content.widget.ReviewAdapter;
 import com.me2me.content.widget.WriteTagAdapter;
+import com.me2me.core.KeysManager;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.cache.EmotionSummaryModel;
+import com.me2me.user.dto.EmotionInfoDto;
+import com.me2me.user.dto.LastEmotionInfoDto;
+import com.me2me.user.dto.ModifyUserCoinDto;
+import com.me2me.user.dto.UserInfoDto;
+import com.me2me.user.dto.UserInfoDto2;
 import com.me2me.user.model.EmotionInfo;
 import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.JpushToken;
@@ -160,6 +163,7 @@ import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTag;
 import com.me2me.user.model.UserTips;
+import com.me2me.user.rule.Rules;
 import com.me2me.user.service.UserService;
 import com.plusnet.forecast.domain.ForecastContent;
 import com.plusnet.search.content.RecommendRequest;
@@ -8136,6 +8140,8 @@ public class ContentServiceImpl implements ContentService {
         	e.setBannerPosition(adBanner.getBannerPosition());
         	e.setCreateTime(adBanner.getCreateTime());
         	e.setStatus(adBanner.getStatus());
+        	e.setAdBannerHeight(adBanner.getAdBannerHeight());
+        	e.setAdBannerWidth(adBanner.getAdBannerWidth());
             dto.getResult().add(e);
         }
         return Response.success(dto);
@@ -8379,7 +8385,9 @@ public class ContentServiceImpl implements ContentService {
 		// 其他栏目位置信息
 		Map<String, String> hotPositionMap = new HashMap<String, String>();
 		// 广告位位置信息
-		Map<String, String> adPositionMap = new HashMap<String, String>();
+		//Map<String, String> adPositionMap = new HashMap<String, String>();
+		
+		Map<String,List<Map<String,String>>> adPositionMap = new HashMap<String,List<Map<String,String>>>();
 		// 是否显示标签信息
 		String isShowTagsStr = userService.getAppConfigByKey("IS_SHOW_TAGS");
 		int isShowTags = 0;
@@ -8428,14 +8436,21 @@ public class ContentServiceImpl implements ContentService {
 				Random random = new Random();
 				int s = random.nextInt(positionMax) % (positionMax - positionMin + 1) + positionMin;
 				if (adPositionMap.get(String.valueOf(s)) == null) {
-					adPositionMap.put(String.valueOf(s), String.valueOf(adBanner.getId()));
+					List<Map<String,String>> adBHWList = new ArrayList<Map<String,String>>();
+					Map<String,String> adBHWMap = new HashMap<String,String>();
+					adBHWMap.put("ad_banner_id", String.valueOf(adBanner.getId()));
+					adBHWMap.put("ad_banner_height", String.valueOf(adBanner.getAdBannerHeight()));
+					adBHWMap.put("ad_banner_width", String.valueOf(adBanner.getAdBannerWidth()));
+					adBHWList.add(adBHWMap);
+					adPositionMap.put(String.valueOf(s),adBHWList);
 				} else {
-					StringBuffer value = new StringBuffer(adPositionMap.get(String.valueOf(s)).toString());
-					value.append(",").append(String.valueOf(adBanner.getId()));
-					adPositionMap.put(String.valueOf(s), value.toString());
+					Map<String,String> adBHWMap = new HashMap<String,String>();
+					adBHWMap.put("ad_banner_id", String.valueOf(adBanner.getId()));
+					adBHWMap.put("ad_banner_height", String.valueOf(adBanner.getAdBannerHeight()));
+					adBHWMap.put("ad_banner_width", String.valueOf(adBanner.getAdBannerWidth()));
+					adPositionMap.get(String.valueOf(s)).add(adBHWMap);
 				}
 			}
-
 		}
 		List<String> redisIds = cacheService.lrange("HOT_TOP_KEY", 0, -1);
 		List<String> ids = Lists.newArrayList();
@@ -8686,13 +8701,15 @@ public class ContentServiceImpl implements ContentService {
 		for (int i = 0; i < pageSize; i++) {
 			if (page == 1) {
 				if (adPositionMap.get(String.valueOf(i)) != null) {
-					String[] adids = adPositionMap.get(String.valueOf(i)).toString().split(",");
-					for (String adidStr : adids) {
-						HotDto.BaseContentElement baseElement = new HotDto.BaseContentElement();
-						// 广告条type默认12
-						baseElement.setType(12);
-						baseElement.setCid(Long.parseLong(adidStr));
-						dto.getData().add(baseElement);
+					List list = adPositionMap.get(String.valueOf(i));
+					for (int j = 0; j < list.size(); j++) {
+						HeightWidthContentElement heightWidthContentElement = new HeightWidthContentElement();
+						Map map1 = (Map) list.get(j);
+						heightWidthContentElement.setCid(Long.parseLong((String) map1.get("ad_banner_id")));
+						heightWidthContentElement.setH(Integer.valueOf((String) map1.get("ad_banner_height")));
+						heightWidthContentElement.setW(Integer.valueOf((String) map1.get("ad_banner_width")));
+						heightWidthContentElement.setType(12);
+						dto.getData().add(heightWidthContentElement);
 					}
 				}
 				if (hotPositionMap.get(String.valueOf(i)) != null) {

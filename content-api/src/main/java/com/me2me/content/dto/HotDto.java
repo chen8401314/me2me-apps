@@ -36,6 +36,14 @@ public class HotDto implements BaseEntity {
 		private static final long serialVersionUID = 102597088990701416L;
 		private int size;
 	}
+	
+	@Data
+	public static class HeightWidthContentElement extends BaseContentElement{
+		private static final long serialVersionUID = 1L;
+		private int h;
+		private int w;
+		
+	}
 
 	@Data
 	public static class InvitationElement implements BaseEntity {
@@ -106,8 +114,7 @@ public class HotDto implements BaseEntity {
         private List<OutDataElement> audioData = Lists.newArrayList();
         private List<OutDataElement> imageData = Lists.newArrayList();
         private List<OutDataElement> ugcData = Lists.newArrayList();
-		
-		
+
 
 		// 和前端无关的两个字段
 		private Long hid;
