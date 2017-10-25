@@ -44,7 +44,7 @@ public class TransferTask {
     	uploadManager = new UploadManager();
     }
     
-//    @Scheduled(cron="0 53 16 * * ?")
+//    @Scheduled(cron="0 6 18 * * ?")
     public void doTask(){
     	logger.info("任务开始");
     	long s = System.currentTimeMillis();
