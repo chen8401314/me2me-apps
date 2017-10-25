@@ -90,7 +90,7 @@ public interface TopicTagSearchMapper {
 	 * @param uid
 	 * @return
 	 */
-	public List<TagInfo> getUserFavoriteTags(@Param("uid")long uid,@Param("count")int count);
+	public List<TagInfo> getUserFavoriteTags(@Param("uid")long uid,@Param("count")int count,@Param("minKingdomCount") int minKingdomCount,@Param("minKingdomUpdateDays") int minKingdomUpdateDays);
 	
 	/**
 	 * 取标签的子系统标签
@@ -130,9 +130,6 @@ public interface TopicTagSearchMapper {
 	@Select("select tag from topic_tag where is_sys=1 and status=0 order by order_num asc")
 	public List<String> getSysTags();
 	
-	@ResultType(TagInfo.class)
-	@Select("select id as tagId,tag as tagName,cover_img as coverImg  from topic_tag  where is_sys=1 and status=0 order by order_num asc")
-	public List<TagInfo> getSysTagsInfo();
 	
 	@ResultType(String.class)
 	@Select("select tag from topic_tag where  pid =#{0}  and status=0")
@@ -215,5 +212,14 @@ public interface TopicTagSearchMapper {
 	 * @param uid
 	 * @return
 	 */
-	public List<TagInfo> getUserLikeTagInfo(@Param("uid")long uid);
+	public List<TagInfo> getUserLikeTagInfo(@Param("uid")long uid,@Param("minKingdomCount") int minKingdomCount,@Param("minKingdomUpdateDays") int minKingdomUpdateDays);
+
+
+	/**
+	 * 取系统标签
+	 * @param minKingdomCount
+	 * @param minKingdomUpdateDays
+	 * @return
+	 */
+	public List<TagInfo> getSysTagsInfo(@Param("uid")long uid,@Param("minKingdomCount") int minKingdomCount,@Param("minKingdomUpdateDays") int minKingdomUpdateDays);
 }

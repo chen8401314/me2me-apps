@@ -4799,9 +4799,13 @@ public class ContentServiceImpl implements ContentService {
         Map<String,TagInfo> tagMap  =  new LinkedHashMap<String,TagInfo>() ;
         
         int curPos =0;
+        //不推荐王国数量小于x的标签
+        int minKingdomCount =  userService.getIntegerAppConfigByKey("NO_RECOMMEND_KINGDOM_COUNT")==null?0:userService.getIntegerAppConfigByKey("NO_RECOMMEND_KINGDOM_COUNT");
+        //不推荐标签内王国最近更新时间小于x天的标签
+        int minKingdomUpdateDays =  userService.getIntegerAppConfigByKey("NO_RECOMMEND_KINGDOM_UPDATE_DAYS")==null?5: userService.getIntegerAppConfigByKey("NO_RECOMMEND_KINGDOM_UPDATE_DAYS");
         
         //用户在首页的标签上点击了喜欢,注意在喜欢了之后,在推荐和查询的时候,连同下方的子标签也会一起加入展示,除非用户手动对子标签选择了不喜欢
-        List<TagInfo> userLikeTagInfo= topicTagMapper.getUserLikeTagInfo(uid);	// 我明确喜欢和不喜欢的标签
+        List<TagInfo> userLikeTagInfo= topicTagMapper.getUserLikeTagInfo(uid,minKingdomCount,0-minKingdomUpdateDays);	// 我明确喜欢和不喜欢的标签
         Set<String> userLikeTagSet= new HashSet<>();
         for(TagInfo info:userLikeTagInfo){
         	userLikeTagSet.add(info.getTagName());
@@ -4813,7 +4817,7 @@ public class ContentServiceImpl implements ContentService {
         }
         if(ProbabilityUtils.isInProb(40)){		//40%概率出现行为补贴。
 	      //除以上两种标签外,通过用户行为产生的排名最高的前5个"体系标签",且评分必须超过20
-	        List<TagInfo> favoTags = this.topicTagMapper.getUserFavoriteTags(uid,10);
+	        List<TagInfo> favoTags = this.topicTagMapper.getUserFavoriteTags(uid,10,minKingdomCount,0-minKingdomUpdateDays);
 	        int rndSize= RandomUtils.nextInt(1, 3);
 	        int s = 0;
 	        for(TagInfo info:favoTags){		// 填充1~2个行为标签。
@@ -4828,7 +4832,7 @@ public class ContentServiceImpl implements ContentService {
 	        }
         }
         // 取系统标签，老邓说后台指定的标签仅仅是起个数量的作用。
-        List<TagInfo> sysTagList = topicTagMapper.getSysTagsInfo();
+        List<TagInfo> sysTagList = topicTagMapper.getSysTagsInfo(uid,minKingdomCount,0-minKingdomUpdateDays);
         int n=0;
         while(curPos<tagCount && n<sysTagList.size()){		// 	填充剩余空位。
         	TagInfo tagInfo= sysTagList.get(n);
