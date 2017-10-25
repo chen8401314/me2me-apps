@@ -4819,7 +4819,7 @@ public class ContentServiceImpl implements ContentService {
         		break;
         	}
         }
-        if(ProbabilityUtils.isInProb(40)){		//40%概率出现行为补贴。
+        if(ProbabilityUtils.isInProb(40)){		//40%概率出现行为标签。
 	      //除以上两种标签外,通过用户行为产生的排名最高的前5个"体系标签",且评分必须超过20
 	        List<TagInfo> favoTags = this.topicTagMapper.getUserFavoriteTags(uid,10,minKingdomCount,0-minKingdomUpdateDays);
 	        int rndSize= RandomUtils.nextInt(1, 3);
@@ -9155,86 +9155,112 @@ public class ContentServiceImpl implements ContentService {
         }
 		return Response.success(dto);
 	}
+
 	@Override
-	public com.me2me.content.dto.UserLikeDto getOtherNormalTag(long uid,String tagIds) {
+	public com.me2me.content.dto.UserLikeDto getOtherNormalTag(long uid, String tagIds) {
 		com.me2me.content.dto.UserLikeDto dto = new com.me2me.content.dto.UserLikeDto();
 		List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
-		List<Long> tagIdList  = new ArrayList<Long>();
-		if(!StringUtils.isEmpty(tagIds)){
-		String[] tagIdArr = tagIds.split(",");
-		for (String tagId : tagIdArr) {
-			tagIdList.add(Long.parseLong(tagId));
+		List<Long> tagIdList = new ArrayList<Long>();
+		if (!StringUtils.isEmpty(tagIds)) {
+			String[] tagIdArr = tagIds.split(",");
+			for (String tagId : tagIdArr) {
+				tagIdList.add(Long.parseLong(tagId));
+			}
 		}
+		// 不推荐王国数量小于x的标签
+		int minKingdomCount = userService.getIntegerAppConfigByKey("NO_RECOMMEND_KINGDOM_COUNT") == null ? 0
+				: userService.getIntegerAppConfigByKey("NO_RECOMMEND_KINGDOM_COUNT");
+		// 不推荐标签内王国最近更新时间小于x天的标签
+		int minKingdomUpdateDays = userService.getIntegerAppConfigByKey("NO_RECOMMEND_KINGDOM_UPDATE_DAYS") == null ? 5
+				: userService.getIntegerAppConfigByKey("NO_RECOMMEND_KINGDOM_UPDATE_DAYS");
+		TagInfo tagInfo = null;
+		// 先查喜欢的标签
+		List<TagInfo> userLikeTagInfo = topicTagMapper.getUserLikeTagInfo(uid, minKingdomCount,
+				0 - minKingdomUpdateDays);
+		for (TagInfo tagInfo2 : userLikeTagInfo) {
+			if (tagIdList.contains(tagInfo2.getTagId())) {
+				continue;
+			} else {
+				tagInfo = tagInfo2;
+				break;
+			}
 		}
-    	Map<String,Object> tag = topicTagMapper.getOtherNormalTag(uid, tagIdList);
-        	if(tag==null) return null;
-        	long tagId = (Long)tag.get("id");
-            List<Long> tagInfoIds  =  new ArrayList<Long>();
-            tagInfoIds.add(tagId);
-         //一次性查询出所有标签王国信息
-         List<Map<String,Object>> listTagTopicInfo = liveForContentJdbcDao.getTagTopicInfo(tagInfoIds);
-         Map<String,Object> totalPrice = new HashMap<String,Object>();
-         if(listTagTopicInfo!=null && listTagTopicInfo.size()>0){
-        	 totalPrice = listTagTopicInfo.get(0);
-         }
-        	com.me2me.content.dto.UserLikeDto.KingdomTag element = new com.me2me.content.dto.UserLikeDto.KingdomTag();
-        	long newTagId = (Long)tag.get("id");
-        	element.setTagId(newTagId);
-        	String tagName  =tag.get("tag").toString();
-        	element.setTagName(tagName);
-           	if(!StringUtils.isEmpty(tag.get("cover_img")) ){
-           		element.setCoverImage(Constant.QINIU_DOMAIN+"/"+tag.get("cover_img").toString());
-           	}
-           	List<Long> topicIds = topicTagMapper.getTopicIdsByTagAndSubTag(newTagId);
-           	List<Map<String,Object>> topicList = null;
-           	if(null != topicIds && topicIds.size() > 0){
-           		topicList = this.topicTagMapper.getKingdomsByTagInfo(uid,topicIds,"new",1,4, blacklistUids);
-           	}
-            if(topicList!=null && topicList.size()>0){
-        		List<Long> topicIdList = new ArrayList<Long>();
-        		Long tid = null;
-        		for(Map<String,Object> m : topicList){
-        			tid = (Long)m.get("id");
-        			if(!topicIdList.contains(tid)){
-        				topicIdList.add(tid);
-        			}
-        		}
-        		for (Map<String, Object> topic : topicList) {
-        			com.me2me.content.dto.UserLikeDto.ImageData data = new com.me2me.content.dto.UserLikeDto.ImageData();
-        			data.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String) topic.get("live_image"));
-        			element.getImageData().add(data);
-        		}
-            }
-            int tagPersons=0;
-            int kingdomCount = 0;
-            
-            /*Map<String,Object> totalPrice = null;
-        	String cacheKey = "OBJ:TAGPRICEANDKINGDOMCOUNT:"+tagName;
-        	Object tagRes = cacheService.getJavaObject(cacheKey);
-        	if(null != tagRes){
-        		totalPrice = (Map<String,Object>)tagRes;
-        	}else{
-        		if(null != topicIds && topicIds.size() > 0){
-        			totalPrice = topicTagMapper.getTagPriceAndKingdomCount(topicIds);
-        		}
-        		Map<String, Object> cacheObj = new HashMap<String, Object>();
-        		if(null != totalPrice && totalPrice.size() > 0){
-        			cacheObj.putAll(totalPrice);
-        		}
-        		cacheService.cacheJavaObject(cacheKey, cacheObj, 2*60*60);//缓存两小时
-        	}*/
-        	if(null == totalPrice){
-        		totalPrice = new HashMap<String, Object>();
-        	}
-            if(totalPrice.containsKey("tagPersons")){
-                tagPersons=((Number)totalPrice.get("tagPersons")).intValue();
-            }
-            if(totalPrice.containsKey("kingdomCount")){
-                kingdomCount=((Number)totalPrice.get("kingdomCount")).intValue();
-            }
-            element.setKingdomCount(kingdomCount);
-            element.setPersonCount(tagPersons);
-            dto.setNewKingdomTag(element);;
+		// 然后查系统标签
+		if (tagInfo == null) {
+			List<TagInfo> sysTagList = topicTagMapper.getSysTagsInfo(uid, minKingdomCount, 0 - minKingdomUpdateDays);
+			for (TagInfo tagInfo2 : sysTagList) {
+				if (tagIdList.contains(tagInfo2.getTagId())) {
+					continue;
+				} else {
+					tagInfo = tagInfo2;
+					break;
+				}
+			}
+		}
+		// 然后查行为标签
+		if (tagInfo == null) {
+			List<TagInfo> favoTags = this.topicTagMapper.getUserFavoriteTags(uid, 10, minKingdomCount,
+					0 - minKingdomUpdateDays);
+			for (TagInfo tagInfo2 : favoTags) {
+				if (tagIdList.contains(tagInfo2.getTagId())) {
+					continue;
+				} else {
+					tagInfo = tagInfo2;
+					break;
+				}
+			}
+		}
+		if (tagInfo == null)
+			return null;
+		List<Long> tagInfoIds = new ArrayList<Long>();
+		tagInfoIds.add(tagInfo.getTagId());
+		// 一次性查询出所有标签王国信息
+		List<Map<String, Object>> listTagTopicInfo = liveForContentJdbcDao.getTagTopicInfo(tagInfoIds);
+		Map<String, Object> totalPrice = new HashMap<String, Object>();
+		if (listTagTopicInfo != null && listTagTopicInfo.size() > 0) {
+			totalPrice = listTagTopicInfo.get(0);
+		}
+		com.me2me.content.dto.UserLikeDto.KingdomTag element = new com.me2me.content.dto.UserLikeDto.KingdomTag();
+		element.setTagId(tagInfo.getTagId());
+		element.setTagName(tagInfo.getTagName());
+		if (!StringUtils.isEmpty(tagInfo.getCoverImg())) {
+			element.setCoverImage(Constant.QINIU_DOMAIN + "/" + tagInfo.getCoverImg());
+		}
+		List<Long> topicIds = topicTagMapper.getTopicIdsByTagAndSubTag(tagInfo.getTagId());
+		List<Map<String, Object>> topicList = null;
+		if (null != topicIds && topicIds.size() > 0) {
+			topicList = this.topicTagMapper.getKingdomsByTagInfo(uid, topicIds, "new", 1, 4, blacklistUids);
+		}
+		if (topicList != null && topicList.size() > 0) {
+			List<Long> topicIdList = new ArrayList<Long>();
+			Long tid = null;
+			for (Map<String, Object> m : topicList) {
+				tid = (Long) m.get("id");
+				if (!topicIdList.contains(tid)) {
+					topicIdList.add(tid);
+				}
+			}
+			for (Map<String, Object> topic : topicList) {
+				com.me2me.content.dto.UserLikeDto.ImageData data = new com.me2me.content.dto.UserLikeDto.ImageData();
+				data.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String) topic.get("live_image"));
+				element.getImageData().add(data);
+			}
+		}
+		int tagPersons = 0;
+		int kingdomCount = 0;
+		if (null == totalPrice) {
+			totalPrice = new HashMap<String, Object>();
+		}
+		if (totalPrice.containsKey("tagPersons")) {
+			tagPersons = ((Number) totalPrice.get("tagPersons")).intValue();
+		}
+		if (totalPrice.containsKey("kingdomCount")) {
+			kingdomCount = ((Number) totalPrice.get("kingdomCount")).intValue();
+		}
+		element.setKingdomCount(kingdomCount);
+		element.setPersonCount(tagPersons);
+		dto.setNewKingdomTag(element);
+		;
 		return dto;
 	}
 	   @Override
