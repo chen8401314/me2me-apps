@@ -1279,8 +1279,8 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
 	c.status,c.content,c.rights
 	FROM content c,(
 	SELECT distinct t.id,t.long_time
-	FROM topic t,topic_tag_detail td
-	WHERE t.id =td.topic_id AND td.tag_id = #{tagId} AND td.status=0
+	FROM topic t,topic_tag_detail td,topic_tag tt
+	WHERE t.id =td.topic_id AND tt.id = td.tag_id AND td.status=0 and (tt.id = #{tagId} or tt.pid = #{tagId})
 	      <if test="blacklistUids!=null and blacklistUids.size() &gt; 0">
       and t.uid not in
       <foreach close=")" collection="blacklistUids" item="bid" open="(" separator=",">
