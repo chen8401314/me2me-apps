@@ -3270,14 +3270,22 @@ public class LiveServiceImpl implements LiveService {
                     continue;
             	}
             }
-            //送礼物和排版图组和右侧图片
+            //送礼物和右侧图片
             if(getLiveDetailDto.getVersionFlag() < 6){//低于V3.0.3版本
-            	if(topicFragment.getContentType() == 24  || topicFragment.getContentType() == 25 
+            	if(topicFragment.getContentType() == 24
             			|| (topicFragment.getType() == 1 && (topicFragment.getContentType() == 1 || topicFragment.getContentType() == 51))
             			|| (topicFragment.getType() == 51 && topicFragment.getContentType() == 51)){
             		liveElement.setStatus(0);
                     continue;
             	}
+            }
+            
+            //排版图组过滤
+            if(getLiveDetailDto.getVersionFlag() < 7){//低于V3.0.6版本
+            	 if(topicFragment.getContentType() == 25 ){
+            		 liveElement.setStatus(0);
+            		 continue;
+            	 }
             }
             
             //逗一逗自动播放状态
@@ -3503,14 +3511,22 @@ public class LiveServiceImpl implements LiveService {
             	}
             }
             
-            //送礼物和排版图组和右侧图片
+            //送礼物和右侧图片
             if(getLiveDetailDto.getVersionFlag() < 6){//低于V3.0.3版本
-            	if(topicFragment.getContentType() == 24 || topicFragment.getContentType() == 25
+            	if(topicFragment.getContentType() == 24 
             			|| (topicFragment.getType() == 1 && (topicFragment.getContentType() == 1 || topicFragment.getContentType() == 51))
             			|| (topicFragment.getType() == 51 && topicFragment.getContentType() == 51)){
             		liveElement.setStatus(0);
                     continue;
             	}
+            }
+            
+            //排版图组过滤
+            if(getLiveDetailDto.getVersionFlag() < 7){//低于V3.0.6版本
+            	 if(topicFragment.getContentType() == 25 ){
+            		 liveElement.setStatus(0);
+            		 continue;
+            	 }
             }
             
             //逗一逗自动播放状态
@@ -8017,7 +8033,7 @@ public class LiveServiceImpl implements LiveService {
 	}
 
 	@Override
-	public Response saveDaySignInfo(long uid, String image, String extra, String uids, int source, String quotationIds) {
+	public Response saveDaySignInfo(long uid, String image, String extra, String uids, int source, String quotationIds, String version) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String todayStr = sdf.format(new Date());
 		if (StringUtils.isEmpty(uids) || StringUtils.isEmpty(quotationIds)) {
@@ -8057,7 +8073,24 @@ public class LiveServiceImpl implements LiveService {
 		if (topic != null && topic.getId() != null) {
 			SpeakDto speakDto = new SpeakDto();
 			speakDto.setType(0);
-			speakDto.setContentType(1);
+			if(CommonUtils.isNewVersion(version, "3.0.6")){
+				speakDto.setContentType(25);
+				//拼NewExtra
+				JSONObject obj = JSON.parseObject(extra);
+				JSONObject newExtra = new JSONObject();
+				newExtra.put("type", "imageSetDaycard");
+				newExtra.put("hAlign","start");
+				newExtra.put("only", obj.get("only"));
+				JSONArray images = new JSONArray();
+				images.add(Constant.QINIU_DOMAIN + "/" +image);
+				newExtra.put("images", images);
+				JSONArray imageInfo = new JSONArray();
+				imageInfo.add(obj);
+				newExtra.put("imageInfo", imageInfo);
+				extra = newExtra.toJSONString();
+			}else{
+				speakDto.setContentType(1);
+			}
 			speakDto.setUid(uid);
 			speakDto.setTopicId(topic.getId());
 			speakDto.setSource(source);

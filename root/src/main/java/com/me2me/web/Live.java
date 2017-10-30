@@ -213,7 +213,9 @@ public class Live extends BaseController {
         liveDetailDto.setVersionFlag(0);
         
         String version = request.getVersion();
-        if(VersionUtil.isNewVersion(version, "3.0.3")){
+        if(VersionUtil.isNewVersion(version, "3.0.6")){
+        	liveDetailDto.setVersionFlag(7);
+        }else if(VersionUtil.isNewVersion(version, "3.0.3")){
         	liveDetailDto.setVersionFlag(6);
         }else if(VersionUtil.isNewVersion(version, "3.0.2")){
         	liveDetailDto.setVersionFlag(5);
@@ -252,7 +254,9 @@ public class Live extends BaseController {
         liveDetailDto.setVersionFlag(0);
         
         String version = request.getVersion();
-        if(VersionUtil.isNewVersion(version, "3.0.3")){
+        if(VersionUtil.isNewVersion(version, "3.0.6")){
+        	liveDetailDto.setVersionFlag(7);
+        }else if(VersionUtil.isNewVersion(version, "3.0.3")){
         	liveDetailDto.setVersionFlag(6);
         }else if(VersionUtil.isNewVersion(version, "3.0.2")){
         	liveDetailDto.setVersionFlag(5);
@@ -982,7 +986,7 @@ public class Live extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/saveDaySignInfo",method = RequestMethod.POST)
     public Response saveDaySignInfo(SaveDaySignInfoRequest request){
-		return liveService.saveDaySignInfo(request.getUid(), request.getImage(), request.getExtra(), request.getUids(), request.getSource() , request.getQuotationIds());
+		return liveService.saveDaySignInfo(request.getUid(), request.getImage(), request.getExtra(), request.getUids(), request.getSource() , request.getQuotationIds(),request.getVersion());
     }
     /**
      * 保存或分享日签图片记录接口
