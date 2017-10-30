@@ -6775,6 +6775,12 @@ public class ContentServiceImpl implements ContentService {
 //            	
 //            	result = liveForContentJdbcDao.invitationBillboard(startTime, endTime, sinceId, pageSize, blacklistUids);
 //            	break;
+            case 37://优秀的新王国
+            	if(sinceId < 0){
+                    sinceId = 0l;
+                }
+            	result = liveForContentJdbcDao.goodNewKingdomList(sinceId, pageSize, blacklistUids);
+            	break;
             default:
                 break;
         }
@@ -7365,7 +7371,7 @@ public class ContentServiceImpl implements ContentService {
         List<BillBoardRelationDto> result = Lists.newArrayList();
 
         int type = 1;//默认王国
-        if(mode == 1 || mode == 2 || mode == 3 || mode == 8 || mode == 9 || mode == 10 || mode == 11 || mode == 32 || mode == 33){
+        if(mode == 1 || mode == 2 || mode == 3 || mode == 8 || mode == 9 || mode == 10 || mode == 11 || mode == 32 || mode == 33 || mode == 36){
             type = 2;
         }
 

@@ -2125,6 +2125,21 @@ public class LiveMybatisDao {
     	int count = lotteryInfoMapper.countByExample(example);
         return  count;
     }
+    
+    public LotteryInfo getLastNormalLotteryInfo(long topicId){
+    	LotteryInfoExample example = new LotteryInfoExample();
+    	LotteryInfoExample.Criteria criteria = example.createCriteria();
+    	criteria.andTopicIdEqualTo(topicId);
+    	criteria.andStatusEqualTo(0);
+    	criteria.andEndTimeGreaterThan(new Date());
+    	example.setOrderByClause(" id desc limit 1 ");
+    	List<LotteryInfo> list = lotteryInfoMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
     public void saveTopicPriceChangeLog(TopicPriceChangeLog log){
     	topicPriceChangeLogMapper.insertSelective(log);
     }

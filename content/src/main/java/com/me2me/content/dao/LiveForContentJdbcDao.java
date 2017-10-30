@@ -7,9 +7,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.me2me.common.utils.DateUtil;
 import com.me2me.content.dto.BillBoardListDTO;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -841,6 +843,66 @@ public class LiveForContentJdbcDao {
     	}
     	return result;
     }
+    
+    /**
+     * 优秀的新王国(王国榜单)
+     * 1 王国成立时间5天(宽泛的5天,天数相减即可,不需要精确到小时)
+	 * 2 这5天内更新天数超过4天
+	 * 3 第5天(也就是今天)还在更新
+	 * 4 除去语录更新
+	 * 5 排序规则为: 王国价值从大到小
+     * @param start
+     * @param pageSize
+     * @param blacklistUids
+     * @return
+     */
+    public List<BillBoardListDTO> goodNewKingdomList(long start, int pageSize, List<Long> blacklistUids){
+    	Date now = new Date();
+    	String today = DateUtil.date2string(now, "yyyy-MM-dd");
+    	String fiveDay = DateUtil.date2string(DateUtil.addDay(now, -4), "yyyy-MM-dd");
+    	
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select f.topic_id,count(DISTINCT DATE_FORMAT(f.create_time,'%Y%m%d')) as cc,");
+    	sb.append("max(f.create_time) as maxtime,max(t.price) as pp");
+    	sb.append(" from topic t,topic_fragment f where t.id=f.topic_id");
+    	sb.append(" and t.create_time>='").append(fiveDay).append(" 00:00:00'");
+    	sb.append(" and t.create_time<='").append(fiveDay).append(" 23:59:59'");
+    	sb.append(" and f.extra not like '%image_daycard%'");
+    	sb.append(" and f.type in (0,3,11,12,13,15,52,55)");
+    	sb.append(" and f.status=1");
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and t.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
+    	sb.append(" group by f.topic_id");
+    	sb.append(" having maxtime>='").append(today).append(" 00:00:00' and cc>=4");
+    	sb.append(" order by pp desc,f.topic_id ASC");
+    	sb.append(" limit ").append(start).append(",").append(pageSize);
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO bbl = null;
+    		Map<String, Object> m = null;
+    		for(int i=0;i<list.size();i++){
+    			m = list.get(i);
+    			bbl = new BillBoardListDTO();
+    			bbl.setTargetId((Long)m.get("topic_id"));
+    			bbl.setType(1);
+    			bbl.setSinceId(start+i+1);
+    			result.add(bbl);
+    		}
+    	}
+    	return result;
+    }
+    
     
     /**
      * 王国价值上升最快排行榜

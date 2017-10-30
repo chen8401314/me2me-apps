@@ -163,6 +163,9 @@ public class UserMybatisDao {
     @Autowired
     private UserTagMapper userTagMapper;
     
+    @Autowired
+    private UserLastChannelMapper userLastChannelMapper;
+    
     /**
      * 保存用户注册信息
      * @param user
@@ -1562,6 +1565,17 @@ public class UserMybatisDao {
     	criteria.andTagIdEqualTo(tagId);
     	example.setOrderByClause(" id asc limit 1 ");
     	List<UserTag> list = userTagMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public UserLastChannel getUserLastChannelByUid(long uid){
+    	UserLastChannelExample example = new UserLastChannelExample();
+    	UserLastChannelExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	List<UserLastChannel> list = userLastChannelMapper.selectByExample(example);
     	if(null != list && list.size() > 0){
     		return list.get(0);
     	}

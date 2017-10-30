@@ -360,17 +360,22 @@ public class UserServiceImpl implements UserService {
 		            }catch(Exception e){
 		            	log.error("邀请或被邀请的配置错误", e);
 		            }
-		            //保存邀请奖励
+		            
 		            Date now = new Date();
-		            UserInvitationHis invitingHis = new UserInvitationHis();
-		            invitingHis.setCoins(invitingCoins);
-		            invitingHis.setCreateTime(now);
-		            invitingHis.setFromCid(fromTopicId);
-		            invitingHis.setFromUid(currentUid);
-		            invitingHis.setStatus(0);
-		            invitingHis.setType(Specification.UserInvitationType.INVITING.index);
-		            invitingHis.setUid(refereeUid);
-		            userMybatisDao.saveUserInvitationHis(invitingHis);
+		            
+		            //看下邀请人是否为运营推广员，如果是，则没有邀请奖励
+		            if(refereeUserProfile.getExcellent().intValue() == 0){//非运营
+		            	//保存邀请奖励
+			            UserInvitationHis invitingHis = new UserInvitationHis();
+			            invitingHis.setCoins(invitingCoins);
+			            invitingHis.setCreateTime(now);
+			            invitingHis.setFromCid(fromTopicId);
+			            invitingHis.setFromUid(currentUid);
+			            invitingHis.setStatus(0);
+			            invitingHis.setType(Specification.UserInvitationType.INVITING.index);
+			            invitingHis.setUid(refereeUid);
+			            userMybatisDao.saveUserInvitationHis(invitingHis);
+		            }
 		            
 		            //保存被邀请奖励
 		            UserInvitationHis invitedHis = new UserInvitationHis();
@@ -2769,17 +2774,22 @@ public class UserServiceImpl implements UserService {
         }catch(Exception e){
         	log.error("邀请或被邀请的配置错误", e);
         }
-        //保存邀请奖励
+        UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(userProfile.getRefereeUid());
+        
         Date now = new Date();
-        UserInvitationHis invitingHis = new UserInvitationHis();
-        invitingHis.setCoins(invitingCoins);
-        invitingHis.setCreateTime(now);
-        invitingHis.setFromCid(userProfile.getSocialClass());
-        invitingHis.setFromUid(userProfile.getUid());
-        invitingHis.setStatus(0);
-        invitingHis.setType(Specification.UserInvitationType.INVITING.index);
-        invitingHis.setUid(userProfile.getRefereeUid());
-        userMybatisDao.saveUserInvitationHis(invitingHis);
+        //看下邀请人是否为运营推广员，如果是，则没有邀请奖励
+        if(refereeUserProfile.getExcellent().intValue() == 0){//非运营
+        	//保存邀请奖励
+	        UserInvitationHis invitingHis = new UserInvitationHis();
+	        invitingHis.setCoins(invitingCoins);
+	        invitingHis.setCreateTime(now);
+	        invitingHis.setFromCid(userProfile.getSocialClass());
+	        invitingHis.setFromUid(userProfile.getUid());
+	        invitingHis.setStatus(0);
+	        invitingHis.setType(Specification.UserInvitationType.INVITING.index);
+	        invitingHis.setUid(userProfile.getRefereeUid());
+	        userMybatisDao.saveUserInvitationHis(invitingHis);
+        }
         
         //保存被邀请奖励
         UserInvitationHis invitedHis = new UserInvitationHis();

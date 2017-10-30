@@ -9341,6 +9341,42 @@ public class LiveServiceImpl implements LiveService {
 		giftHistory.setFragmentId(speakDto.getFragmentId());
 
 		liveMybatisDao.saveGiftHistory(giftHistory);
+		
+		//这里有个额外逻辑，送了指定单价的礼物的话，参加该王国内的最近一次未开奖的正常抽奖（注：该王国为特定王国）
+		try{
+			//判断是否特定王国
+			String specialTopicIds = userService.getAppConfigByKey("GIFT_TO_LOTTERY_TOPICIDS");
+			if(!StringUtils.isEmpty(specialTopicIds)){
+				String[] tmp = specialTopicIds.split(",");
+				if(null != tmp && tmp.length > 0){
+					boolean isIn = false;
+					for(String t: tmp){
+						if(!StringUtils.isEmpty(t) && String.valueOf(topicId).equals(t)){
+							isIn = true;
+							break;
+						}
+					}
+					if(isIn){
+						//再判断是否是指定单价的礼物
+						String specialGiftPrice = userService.getAppConfigByKey("GIFT_TO_LOTTERY_GIFT_PRICE");
+						if(!StringUtils.isEmpty(specialGiftPrice) && giftInfo.getPrice().toString().equals(specialGiftPrice)){
+							//查找该王国最近的一次为开奖的正常抽奖
+							LotteryInfo lastLotteryInfo = liveMybatisDao.getLastNormalLotteryInfo(topicId);
+							if(null != lastLotteryInfo && uid != lastLotteryInfo.getUid().longValue()){//存在抽奖，并且这个抽奖不是本人发的
+								LotteryContent lotteryContent = new LotteryContent();
+						        lotteryContent.setLotteryId(lastLotteryInfo.getId());
+						        lotteryContent.setUid(uid);
+						        lotteryContent.setContent("[通过送礼物参加抽奖]");
+						    	liveMybatisDao.saveLotteryContent(lotteryContent);
+							}
+						}
+					}
+				}
+			}
+		}catch(Exception e){
+			log.error("特殊逻辑失败", e);
+		}
+		
 		UserProfile newUserProfile = userService.getUserProfileByUid(uid);
         dto.setFragmentId(speakDto.getFragmentId());
         dto.setCount(count);

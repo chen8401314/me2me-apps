@@ -1545,6 +1545,24 @@ public interface Specification {
             this.index = index;
         }
     }
+    
+    /**
+     * 推送类型
+     * @author pc340
+     *
+     */
+    enum PushType{
+    	XIAOMI("小米推送", 1),
+    	HUAWEI("华为推送", 2);
+    	
+    	public final String name;
+        public final int index;
+        
+        PushType(String name,int index){
+        	this.name = name;
+            this.index = index;
+        }
+    }
 }
 
     

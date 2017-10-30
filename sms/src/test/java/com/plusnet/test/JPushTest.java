@@ -39,11 +39,11 @@ public class JPushTest {
                 .setPlatform(Platform.android_ios())
                 .setAudience(Audience.alias(uids))
                 .setNotification(Notification.newBuilder()
-                        .setAlert("ÎÒ¾ÍÊÇ²âÊÔÒ»ÏÂ,Òª²»ÄãµãÒ»ÏÂ")
-                         // android Æ½Ì¨
+                        .setAlert("æˆ‘å°±æ˜¯æµ‹è¯•ä¸€ä¸‹,è¦ä¸ä½ ç‚¹ä¸€ä¸‹")
+                         // android å¹³å°
                         .addPlatformNotification(AndroidNotification.newBuilder()
                                 .addExtras(extraMaps).build())
-                        // ios Æ½Ì¨
+                        // ios å¹³å°
                         .addPlatformNotification(IosNotification.newBuilder()
                                 .incrBadge(1)
                                 .addExtras(extraMaps).build())
@@ -57,7 +57,7 @@ public class JPushTest {
             e.printStackTrace();
         }
         
-        System.out.println("ºÃÁËÑ½£¬²»ÓÃ¿´ÁË");
+        System.out.println("å¥½äº†å‘€ï¼Œä¸ç”¨çœ‹äº†");
 	}
 
 }
