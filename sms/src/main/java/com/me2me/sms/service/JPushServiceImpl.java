@@ -168,4 +168,11 @@ public class JPushServiceImpl implements JPushService{
         }
     }
 
+    /**
+     * 特殊推送
+     */
+    @Override
+    public void specialPush(String uid,String message,Map<String,String> extraMaps, int type){
+    	SpecailPushFactory.getSpecialPushService(type).payloadByIdExtra(uid, message, extraMaps);
+    }
 }

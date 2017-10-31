@@ -16,6 +16,7 @@ import com.me2me.sms.service.JPushService;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.event.BatchFollowEvent;
 import com.me2me.user.model.UserProfile;
+import com.me2me.user.service.UserService;
 
 @Component
 @Slf4j
@@ -24,12 +25,14 @@ public class BatchFollowListener {
 	private final ApplicationEventBus applicationEventBus;
 	private final UserMybatisDao userMybatisDao;
 	private final JPushService jPushService;
+	private final UserService userService;
 	
 	@Autowired
-	public BatchFollowListener(ApplicationEventBus applicationEventBus, UserMybatisDao userMybatisDao, JPushService jPushService){
+	public BatchFollowListener(ApplicationEventBus applicationEventBus, UserMybatisDao userMybatisDao, JPushService jPushService, UserService userService){
 		this.applicationEventBus = applicationEventBus;
 		this.userMybatisDao = userMybatisDao;
 		this.jPushService = jPushService;
+		this.userService = userService;
 	}
 	
 	@PostConstruct
@@ -56,9 +59,9 @@ public class BatchFollowListener {
 			for(Long targetUid : event.getTargetUids()){
 				//关注提醒
 				alias = targetUid.toString();
-				jPushService.payloadByIdExtra(alias, message, JPushUtils.packageExtra(jsonObject));
+				userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
 				//粉丝红点提醒
-				jPushService.payloadByIdForMessage(alias,redDot.toString());
+				userService.pushWithExtra(alias,redDot.toString(), null);
 			}
 		}
 		

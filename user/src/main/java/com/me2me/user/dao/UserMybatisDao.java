@@ -1581,4 +1581,12 @@ public class UserMybatisDao {
     	}
     	return null;
     }
+    
+    public void saveUserLastChannel(UserLastChannel ulc){
+    	userLastChannelMapper.insertSelective(ulc);
+    }
+    
+    public void updateUserLastChannel(UserLastChannel ulc){
+    	userLastChannelMapper.updateByPrimaryKeySelective(ulc);
+    }
 }

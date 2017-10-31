@@ -26,4 +26,6 @@ public interface JPushService {
     void payloadByIdForMessage(String regId,String message);
 
     void payloadByIdsExtra(boolean isAll, String[] uids, String message, Map<String,String> extraMaps);
+    
+    void specialPush(String uid,String message,Map<String,String> extraMaps, int type);
 }

@@ -14,6 +14,7 @@ import com.google.common.eventbus.Subscribe;
 import com.me2me.activity.event.LinkPushEvent;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.sms.service.JPushService;
+import com.me2me.user.service.UserService;
 
 @Component
 @Slf4j
@@ -21,11 +22,13 @@ public class ActivityLinkPushListener {
 
 	private final ApplicationEventBus applicationEventBus;
 	private final JPushService jPushService;
+	private final UserService userService;
 	
 	@Autowired
-	public ActivityLinkPushListener(ApplicationEventBus applicationEventBus, JPushService jPushService){
+	public ActivityLinkPushListener(ApplicationEventBus applicationEventBus, JPushService jPushService, UserService userService){
 		this.applicationEventBus = applicationEventBus;
 		this.jPushService = jPushService;
+		this.userService = userService;
 	}
 	
 	@PostConstruct
@@ -43,7 +46,7 @@ public class ActivityLinkPushListener {
 
         String alias = String.valueOf(event.getUid());
 
-        jPushService.payloadByIdExtra(alias,  event.getMessage(), map);
+        userService.pushWithExtra(alias,  event.getMessage(), map);
 		log.info("link push end...");
 	}
 }

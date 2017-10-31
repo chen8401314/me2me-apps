@@ -72,7 +72,7 @@ public class FollowListener {
         log.info("follow fans add push start");
         jsonObject = new JsonObject();
         jsonObject.addProperty("fansCount","1");
-        jPushService.payloadByIdForMessage(String.valueOf(event.getTargetUid()),jsonObject.toString());
+        userService.pushWithExtra(String.valueOf(event.getTargetUid()),jsonObject.toString(), null);
         log.info("follow fans add push end ");
 
         log.info("follow push end!");

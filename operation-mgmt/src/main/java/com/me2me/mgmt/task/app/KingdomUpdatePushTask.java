@@ -81,7 +81,7 @@ public class KingdomUpdatePushTask {
 
 		        String alias = String.valueOf(ut.getUid());
 
-		        jPushService.payloadByIdExtra(alias,  Specification.LinkPushType.KINGDOM_NOT_UPDATE.message, map);
+		        userService.pushWithExtra(alias,  Specification.LinkPushType.KINGDOM_NOT_UPDATE.message, map);
 			}
 		}
 	}

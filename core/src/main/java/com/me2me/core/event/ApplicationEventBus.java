@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 @Component
 public class ApplicationEventBus {
 
-    private final EventBus eventBus = new AsyncEventBus(Executors.newFixedThreadPool(5));
+    private final EventBus eventBus = new AsyncEventBus(Executors.newFixedThreadPool(10));
 
     public void register(Object object){
         eventBus.register(object);

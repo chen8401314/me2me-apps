@@ -273,10 +273,31 @@ public class UserServiceImpl implements UserService {
         give3Kingdoms(userProfile);
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
 
+        //记录下登录或注册的设备号
+        this.saveUserLoginChannel(user.getUid(), userSignUpDto.getChannel());
+        
         //新用户注册放入cach,机器人自动回复用
         String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+signUpSuccessDto.getUid();
         cacheService.setex(key,signUpSuccessDto.getUid()+"",7*24*60*60);
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
+    }
+    
+    private void saveUserLoginChannel(long uid, String channel){
+    	if(StringUtils.isEmpty(channel)){
+    		return;
+    	}
+    	UserLastChannel ulc = userMybatisDao.getUserLastChannelByUid(uid);
+    	if(null != ulc){//更新
+    		ulc.setChannel(channel);
+    		ulc.setLoginTime(new Date());
+    		userMybatisDao.updateUserLastChannel(ulc);
+    	}else{
+    		ulc = new UserLastChannel();
+    		ulc.setUid(uid);
+    		ulc.setChannel(channel);
+    		ulc.setLoginTime(new Date());
+    		userMybatisDao.saveUserLastChannel(ulc);
+    	}
     }
     
     private void processReferee(String openinstallData, long currentUid, UserProfile userProfile){
@@ -533,6 +554,9 @@ public class UserServiceImpl implements UserService {
         //不管你爽不爽，就是要卖你3个王国
         give3Kingdoms(userProfile);
         
+        //记录下登录或注册的设备号
+        this.saveUserLoginChannel(newUser.getUid(), userSignUpDto.getChannel());
+        
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
         }else{
             log.info("user verify check error");
@@ -689,6 +713,10 @@ public class UserServiceImpl implements UserService {
                     }
                 }
                 log.info("update user device success");
+
+                //记录下登录或注册的设备号
+                this.saveUserLoginChannel(user.getUid(), userLoginDto.getChannel());
+                
                 log.info("login end ...");
                 //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LOGIN.index,0,user.getUid()));
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
@@ -765,6 +793,9 @@ public class UserServiceImpl implements UserService {
                 
                 //保存登录设备信息new
                 this.saveUserDeviceInfo(userProfile.getUid(), userLoginDto.getIp(), 2, userLoginDto.getDeviceData());
+
+                //记录下登录或注册的设备号
+                this.saveUserLoginChannel(user.getUid(), userLoginDto.getChannel());
                 
                 // 保存极光推送
                 if(!StringUtils.isEmpty(userLoginDto.getJPushToken())) {
@@ -2527,7 +2558,7 @@ public class UserServiceImpl implements UserService {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index);
             String alias = String.valueOf(sinceId);
-            jPushService.payloadByIdExtra(alias,"你发布的内容上热点啦!",JPushUtils.packageExtra(jsonObject));
+            this.pushWithExtra(alias,"你发布的内容上热点啦!",JPushUtils.packageExtra(jsonObject));
         }
         log.info("live hottest end");
         return Response.success(dto);
@@ -2621,6 +2652,9 @@ public class UserServiceImpl implements UserService {
                 	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
                 this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
+
+                //记录下登录或注册的设备号
+                this.saveUserLoginChannel(userProfile.getUid(), thirdPartSignUpDto.getChannel());
                 
                 this.activityH5RegisterUser(userProfile);
                 
@@ -2648,6 +2682,9 @@ public class UserServiceImpl implements UserService {
                     	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                     }
                     this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
+
+                    //记录下登录或注册的设备号
+                    this.saveUserLoginChannel(userProfile.getUid(), thirdPartSignUpDto.getChannel());
 //                    this.activityH5RegisterUser(userProfile);
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }
@@ -2674,6 +2711,9 @@ public class UserServiceImpl implements UserService {
                 	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
                 this.saveUserDeviceInfo(users.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
+
+                //记录下登录或注册的设备号
+                this.saveUserLoginChannel(users.getUid(), thirdPartSignUpDto.getChannel());
                 return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
 
             } else if(users !=null && !StringUtils.isEmpty(users.getThirdPartUnionid()) && thirdPartSignUpDto.getThirdPartType() == users.getThirdPartType()){
@@ -2683,6 +2723,9 @@ public class UserServiceImpl implements UserService {
                 	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
                 this.saveUserDeviceInfo(users.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
+
+                //记录下登录或注册的设备号
+                this.saveUserLoginChannel(users.getUid(), thirdPartSignUpDto.getChannel());
                 return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
             }
             else if(users ==null){
@@ -2709,6 +2752,9 @@ public class UserServiceImpl implements UserService {
                     	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                     }
                     this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
+
+                    //记录下登录或注册的设备号
+                    this.saveUserLoginChannel(userProfile.getUid(), thirdPartSignUpDto.getChannel());
                     this.activityH5RegisterUser(userProfile);
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }else{
@@ -2727,6 +2773,9 @@ public class UserServiceImpl implements UserService {
                     	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                     }
                     this.saveUserDeviceInfo(users.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
+
+                    //记录下登录或注册的设备号
+                    this.saveUserLoginChannel(users.getUid(), thirdPartSignUpDto.getChannel());
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 } else {
                     buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
@@ -2958,6 +3007,9 @@ public class UserServiceImpl implements UserService {
 
         //添加设备相关信息new
         this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 1, thirdPartSignUpDto.getDeviceData());
+        
+        //记录下登录或注册的设备号
+        this.saveUserLoginChannel(userProfile.getUid(), thirdPartSignUpDto.getChannel());
         
         // 保存用户token信息
         UserToken userToken1 = new UserToken();
@@ -3518,7 +3570,7 @@ public class UserServiceImpl implements UserService {
 
         String alias = String.valueOf(uid);
 
-        jPushService.payloadByIdExtra(alias,  msg, map);
+        this.pushWithExtra(alias,  msg, map);
 		return Response.success();
 	}
 	

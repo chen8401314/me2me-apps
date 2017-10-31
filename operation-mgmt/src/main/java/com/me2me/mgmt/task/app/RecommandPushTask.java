@@ -98,7 +98,7 @@ public class RecommandPushTask {
 
 		        String alias = String.valueOf(ut.getUid());
 
-		        jPushService.payloadByIdExtra(alias,  Specification.LinkPushType.FORCED_PAIRING.message, map);
+		        userService.pushWithExtra(alias,  Specification.LinkPushType.FORCED_PAIRING.message, map);
 			}
 		}
 	}

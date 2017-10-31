@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.event.NoticeCountPushEvent;
+import com.me2me.user.service.UserService;
 
 @Component
 @Slf4j
@@ -19,11 +20,13 @@ public class NoticeCountPushListener {
 
 	private final ApplicationEventBus applicationEventBus;
 	private final JPushService jPushService;
+	private final UserService userService;
 	
 	@Autowired
-	public NoticeCountPushListener(ApplicationEventBus applicationEventBus, JPushService jPushService){
+	public NoticeCountPushListener(ApplicationEventBus applicationEventBus, JPushService jPushService, UserService userService){
 		this.applicationEventBus = applicationEventBus;
 		this.jPushService = jPushService;
+		this.userService = userService;
 	}
 	
 	@PostConstruct
@@ -37,7 +40,7 @@ public class NoticeCountPushListener {
 		JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("count", "1");
         String alias = String.valueOf(event.getUid());
-        jPushService.payloadByIdForMessage(alias, jsonObject.toString());
+        userService.pushWithExtra(alias, jsonObject.toString(), null);
         log.info("user notice push..end");
 	}
 }

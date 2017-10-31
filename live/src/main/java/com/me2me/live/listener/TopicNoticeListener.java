@@ -27,6 +27,7 @@ import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicUserConfig;
 import com.me2me.sms.service.JPushService;
+import com.me2me.user.service.UserService;
 
 @Component
 @Slf4j
@@ -36,14 +37,16 @@ public class TopicNoticeListener {
     private final CacheService cacheService;
     private final JPushService jPushService;
     private final LiveMybatisDao liveMybatisDao;
+    private final UserService userService;
     
     @Autowired
     public TopicNoticeListener(ApplicationEventBus applicationEventBus, CacheService cacheService,
-    		JPushService jPushService, LiveMybatisDao liveMybatisDao){
+    		JPushService jPushService, LiveMybatisDao liveMybatisDao, UserService userService){
     	this.applicationEventBus = applicationEventBus;
     	this.cacheService = cacheService;
     	this.jPushService = jPushService;
     	this.liveMybatisDao = liveMybatisDao;
+    	this.userService = userService;
     }
     
     @PostConstruct
@@ -109,7 +112,7 @@ public class TopicNoticeListener {
 			                jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, liveFavorite.getUid()));
 			                jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);//主播发言的，都是核心圈
 			                String alias = String.valueOf(liveFavorite.getUid());
-			                jPushService.payloadByIdExtra(alias,  "『"+topic.getTitle() + "』有更新", JPushUtils.packageExtra(jsonObject));
+			                userService.pushWithExtra(alias,  "『"+topic.getTitle() + "』有更新", JPushUtils.packageExtra(jsonObject));
 						}
 					}
 				}
@@ -134,7 +137,7 @@ public class TopicNoticeListener {
 		            jsonObject.addProperty("fromInternalStatus", 0);//评论人相对于王国的身份
 		            String alias = String.valueOf(coreUid);
 		
-		            jPushService.payloadByIdExtra(alias,  "有人评论了『"+topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));
+		            userService.pushWithExtra(alias,  "有人评论了『"+topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));
 	            }
 			}
 		}

@@ -14,6 +14,7 @@ import com.me2me.common.web.Specification;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.event.NoticeMessagePushEvent;
+import com.me2me.user.service.UserService;
 
 @Component
 @Slf4j
@@ -21,11 +22,13 @@ public class NoticeMessagePushListener {
 
 	private final ApplicationEventBus applicationEventBus;
 	private final JPushService jPushService;
+	private final UserService userService;
 	
 	@Autowired
-	public NoticeMessagePushListener(ApplicationEventBus applicationEventBus, JPushService jPushService){
+	public NoticeMessagePushListener(ApplicationEventBus applicationEventBus, JPushService jPushService, UserService userService){
 		this.applicationEventBus = applicationEventBus;
 		this.jPushService = jPushService;
+		this.userService = userService;
 	}
 	
 	@PostConstruct
@@ -40,7 +43,7 @@ public class NoticeMessagePushListener {
         jsonObject.addProperty("type",Specification.PushObjectType.NOTICE.index);
         jsonObject.addProperty("level", event.getLevel());
         String alias = String.valueOf(event.getTargetUid());
-        jPushService.payloadByIdExtra(alias, event.getMessage(), JPushUtils.packageExtra(jsonObject));
+        userService.pushWithExtra(alias, event.getMessage(), JPushUtils.packageExtra(jsonObject));
 		log.info("NoticeMessagePush end...");
 	}
 }

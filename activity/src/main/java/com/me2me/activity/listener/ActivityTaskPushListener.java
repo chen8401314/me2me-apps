@@ -76,7 +76,7 @@ public class ActivityTaskPushListener {
 			for(UserToken ut : tokens){
 				map.put("link_url", event.getLinkUrl()+"?uid="+ut.getUid()+"&token="+ut.getToken());
 		        String alias = String.valueOf(ut.getUid());
-		        jPushService.payloadByIdExtra(alias,  event.getMessage(), map);
+		        userService.pushWithExtra(alias,  event.getMessage(), map);
 			}
 		}
 	}

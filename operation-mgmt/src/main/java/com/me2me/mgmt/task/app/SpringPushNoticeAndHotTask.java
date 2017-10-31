@@ -202,7 +202,7 @@ public class SpringPushNoticeAndHotTask {
 			String message = null;
 			for(int i=3;i<top50KingdomList.size();i++){
 				message = Specification.LinkPushType.LIST_TOP50_PUSH.message.replace("#{1}#", String.valueOf(i+1));
-				jPushService.payloadByIdExtra(String.valueOf(top50KingdomList.get(i).getUid()), message, map);
+				userService.pushWithExtra(String.valueOf(top50KingdomList.get(i).getUid()), message, map);
 			}
 			logger.info("push top 50(not top 3) user end.");
 		}else{
