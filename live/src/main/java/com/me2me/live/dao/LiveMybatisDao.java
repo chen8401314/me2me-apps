@@ -1612,6 +1612,7 @@ public class LiveMybatisDao {
 		TopicNewsExample example = new TopicNewsExample();
 		TopicNewsExample.Criteria criteria = example.createCriteria();
 		criteria.andCreateTimeGreaterThan(date);
+		example.setOrderByClause(" id desc limit 10");//只取10条就够了，，多了页面不好处理
 		List<TopicNews> list = topicNewsMapper.selectByExample(example);
 		return list;
 	}
