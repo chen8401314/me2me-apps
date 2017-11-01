@@ -981,13 +981,20 @@ public class LiveServiceImpl implements LiveService {
             	}
             }
             if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "3.0.3")){
-            	 if(topicFragment.getContentType() == 24 || topicFragment.getContentType() == 25 
+            	 if(topicFragment.getContentType() == 24
             			 || (topicFragment.getType() == 1 && (topicFragment.getContentType() == 1 || topicFragment.getContentType() == 51))
-             			|| (topicFragment.getType() == 51 && topicFragment.getContentType() == 51)){//过滤礼物和排版图组
+             			|| (topicFragment.getType() == 51 && topicFragment.getContentType() == 51)){//过滤礼物
                      liveElement.setStatus(0);
                      continue;
                  }
             }
+            if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "3.0.6")){//过滤排版图组
+            	if(topicFragment.getContentType() == 25){
+            		liveElement.setStatus(0);
+                    continue;
+            	}
+            }
+            
             
             
             //逗一逗自动播放状态
