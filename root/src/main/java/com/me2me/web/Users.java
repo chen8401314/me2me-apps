@@ -999,7 +999,7 @@ public class Users extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getIMUsertoken",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getIMUsertoken(UserInfoRequest request){
-        return userService.getIMUsertoken(request.getCustomerId());
+        return userService.imUsertoken(request.getCustomerId());
     }
 
     /**

@@ -371,7 +371,7 @@ public interface UserService {
 
 	Response click(int type, DaoDaoDto daoDaoDto);
 
-	Response getIMUsertoken(long uid);
+	Response imUsertoken(long uid);
 
 	Response registAllIMtoken();
 

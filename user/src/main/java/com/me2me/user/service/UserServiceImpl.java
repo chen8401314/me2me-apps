@@ -3738,7 +3738,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response getIMUsertoken(long customerId) {
+    public Response imUsertoken(long customerId) {
         ImUserInfoDto dto = new ImUserInfoDto();
         dto.setUserId(String.valueOf(customerId));
         
