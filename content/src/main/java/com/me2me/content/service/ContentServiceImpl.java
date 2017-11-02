@@ -1719,6 +1719,12 @@ public class ContentServiceImpl implements ContentService {
             								continue;
             							}
             						}
+            						if((type == 0 || type == 52) && contentType == 25){
+            							//排版图组需要再3.0.6版本以后才能兼容
+            							if(vFlag < 3){
+            								continue;
+            							}
+            						}
             						outElement = new ShowMyPublishDto.OutDataElement();
                         			outElement.setId((Long)topicOutData.get("id"));
                         			outElement.setType((Integer)topicOutData.get("type"));
@@ -3462,6 +3468,12 @@ public class ContentServiceImpl implements ContentService {
             								continue;
             							}
             						}
+            						if((type == 0 || type == 52) && contentType == 25){
+            							//排版图组需要再3.0.6版本以后才能兼容
+            							if(vFlag < 3){
+            								continue;
+            							}
+            						}
             						outElement = new ShowNewestDto.OutDataElement();
                         			outElement.setId((Long)topicOutData.get("id"));
                         			outElement.setType((Integer)topicOutData.get("type"));
@@ -3853,6 +3865,12 @@ public class ContentServiceImpl implements ContentService {
             								continue;
             							}
             						}
+									if ((type == 0 || type == 52) && contentType == 25) {
+										// 排版图组需要再3.0.6版本以后才能兼容
+										if (vFlag < 3) {
+											continue;
+										}
+									}
             						outElement = new ShowAttentionDto.OutDataElement();
                         			outElement.setId((Long)topicOutData.get("id"));
                         			outElement.setType((Integer)topicOutData.get("type"));
@@ -8932,6 +8950,18 @@ public class ContentServiceImpl implements ContentService {
 									}
 								} else {// 图片区展示部分
 									if (contentElement.getImageData().size() < 3) {
+										if ((t == 51 || t == 52) && contentType == 18) {
+											// 大表情需要再3.0.4版本以后才能兼容
+											if (!CommonUtils.isNewVersion(version, "3.0.4")) {
+												continue;
+											}
+										}
+										if ((t == 0 || t == 52) && contentType == 25) {
+											// 排版图组需要再3.0.6版本以后才能兼容
+											if (!CommonUtils.isNewVersion(version, "3.0.6")) {
+												continue;
+											}
+										}
 										outElement = new HotDto.OutDataElement();
 										outElement.setId((Long) topicOutData.get("id"));
 										outElement.setType((Integer) topicOutData.get("type"));
@@ -9270,7 +9300,7 @@ public class ContentServiceImpl implements ContentService {
 		return dto;
 	}
 	   @Override
-	    public Response tagDetail(long uid, long tagId, String tagName,int page) {
+	    public Response tagDetail(long uid, long tagId, String tagName,int page,String version) {
 		   if(page<1){
 			   page = 1;
 		   }
@@ -9738,6 +9768,18 @@ public class ContentServiceImpl implements ContentService {
 	            					}
 	            				}else{//图片区展示部分
 	            					if(contentElement.getImageData().size() < 3){
+										if ((t == 51 || t == 52) && contentType == 18) {
+											// 大表情需要再3.0.4版本以后才能兼容
+											if (!CommonUtils.isNewVersion(version, "3.0.4")) {
+												continue;
+											}
+										}
+										if ((t == 0 || t == 52) && contentType == 25) {
+											// 排版图组需要再3.0.6版本以后才能兼容
+											if (!CommonUtils.isNewVersion(version, "3.0.6")) {
+												continue;
+											}
+										}
 	            						outElement = new TagDetailDto.OutDataElement();
 	                        			outElement.setId((Long)topicOutData.get("id"));
 	                        			outElement.setType((Integer)topicOutData.get("type"));

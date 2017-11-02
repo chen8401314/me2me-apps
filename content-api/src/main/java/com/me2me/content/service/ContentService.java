@@ -652,5 +652,5 @@ public interface ContentService{
      * @param page
      * @return
      */
-    public Response tagDetail(long uid, long tagId, String tagName,int page);
+    public Response tagDetail(long uid, long tagId, String tagName,int page,String version);
 }

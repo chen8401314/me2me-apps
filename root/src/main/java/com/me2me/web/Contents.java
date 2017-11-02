@@ -338,7 +338,9 @@ public class Contents extends BaseController {
         	request.setUpdateTime(Long.MAX_VALUE);
         }
         int vflag = 0;
-        if(VersionUtil.isNewVersion(request.getVersion(), "3.0.4")){
+        if(VersionUtil.isNewVersion(request.getVersion(), "3.0.6")){
+        	vflag = 3;
+        }else if(VersionUtil.isNewVersion(request.getVersion(), "3.0.4")){
         	vflag = 2;
         }else if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
         	vflag = 1;
@@ -372,7 +374,7 @@ public class Contents extends BaseController {
     @RequestMapping(value = "/tagDetail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response tagDetail(TagDetailRequest request){
-    	return contentService.tagDetail(request.getUid(), request.getTagId(), request.getTagName(), request.getPage());
+    	return contentService.tagDetail(request.getUid(), request.getTagId(), request.getTagName(), request.getPage(),request.getVersion());
     }
     
 }

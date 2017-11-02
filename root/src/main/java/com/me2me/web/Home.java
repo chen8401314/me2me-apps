@@ -107,7 +107,9 @@ public class Home extends BaseController {
             request.setSinceId(Long.MAX_VALUE);
         }
         int vflag = 0;
-        if(VersionUtil.isNewVersion(request.getVersion(), "3.0.4")){
+        if(VersionUtil.isNewVersion(request.getVersion(), "3.0.6")){
+        	vflag = 3;
+        }else if(VersionUtil.isNewVersion(request.getVersion(), "3.0.4")){
         	vflag = 2;
         }else if(VersionUtil.isNewVersion(request.getVersion(), "3.0.0")){
         	vflag = 1;
@@ -127,7 +129,9 @@ public class Home extends BaseController {
             request.setSinceId(Integer.MAX_VALUE);
         }
         int vflag = 0;
-        if(VersionUtil.isNewVersion(request.getVersion(), "3.0.4")){
+        if(VersionUtil.isNewVersion(request.getVersion(), "3.0.6")){
+        	vflag = 3;
+        }else if(VersionUtil.isNewVersion(request.getVersion(), "3.0.4")){
         	vflag = 2;
         }else if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
         	vflag = 1;
