@@ -320,7 +320,7 @@ public class Contents extends BaseController {
     @RequestMapping(value = "/getArticleComments",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getArticleComments(ArticleCommentsRequest request){
-        return contentService.getArticleComments(request.getUid(),request.getId());
+        return Response.success();
     }
 
     /**
