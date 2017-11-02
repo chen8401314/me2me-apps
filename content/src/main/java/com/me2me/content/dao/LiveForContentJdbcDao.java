@@ -1461,7 +1461,12 @@ public class LiveForContentJdbcDao {
 	}
 	public Map<String, Object> getTopiciTagByTag(String tag){
 		String sql  ="select * from topic_tag where tag = ? and status =0";
-		return jdbcTemplate.queryForMap(sql,tag);
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql,tag);
+		if(list!=null && list.size()>0){
+			return list.get(0);
+		}else{
+			return null;
+		}
 	}
 	public List<Map<String, Object>> getAdBannerByTagId(long tagId){
 		StringBuilder sb = new StringBuilder();
