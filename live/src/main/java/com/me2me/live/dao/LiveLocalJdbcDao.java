@@ -1647,7 +1647,7 @@ public class LiveLocalJdbcDao {
 
 	public List<String> getUserLikeTags(long uid) {
         List<String> retList = new ArrayList<>();
-        String sql ="select tag from topic_tag where id in(select data from user_dislike where uid=? and is_like=1 and type=2)";
+        String sql ="select tag from topic_tag where id in(select tag_id from user_tag where uid=? and type=1)";
         List<Map<String,Object>> ret =jdbcTemplate.queryForList(sql,uid);
         for(Map<String,Object> item:ret){
         	retList.add((String)item.get("tag"));
