@@ -30,13 +30,18 @@ public class XiaomiPushServiceImpl implements SpecialPushService {
 		Constants.useOfficial();
 		
 		Sender sender = new Sender(APP_SECRET_KEY);
+		
+		
 		Message.Builder builder = new Message.Builder().title(TITLE)
 				.description(content).payload(content)
 				.restrictedPackageName(MY_PACKAGE_NAME).notifyType(1);
 		if(null != extraMaps && extraMaps.size() > 0){
+			builder.passThrough(0);//通知栏消息
 			for(Map.Entry<String, String> entry : extraMaps.entrySet()){
 				builder.extra(entry.getKey(), entry.getValue());
 			}
+		}else{
+			builder.passThrough(1);//透传
 		}
 		try{
 			sender.sendToAlias(builder.build(), uid, 1);
