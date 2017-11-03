@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
+import com.me2me.content.service.ContentService;
 import com.me2me.user.model.User;
 
 import lombok.Data;
@@ -96,5 +97,16 @@ public class LiveServiceTest {
 	public void  gameReceiveCoins(){
 		long uid = 0;
 		activityService.gameReceiveCoins(uid);
+	}
+	
+	@Autowired
+	ContentService contentService;
+	
+	@Test
+	public void testHot(){
+		long uid = 298;
+		int page = 1;
+		String version = "3.0.5";
+		contentService.hot(page, uid, version);
 	}
 }

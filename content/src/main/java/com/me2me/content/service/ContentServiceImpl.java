@@ -8409,8 +8409,6 @@ public class ContentServiceImpl implements ContentService {
 		// 其他栏目位置信息
 		Map<String, String> hotPositionMap = new HashMap<String, String>();
 		// 广告位位置信息
-		//Map<String, String> adPositionMap = new HashMap<String, String>();
-		
 		Map<String,List<Map<String,String>>> adPositionMap = new HashMap<String,List<Map<String,String>>>();
 		// 是否显示标签信息
 		String isShowTagsStr = userService.getAppConfigByKey("IS_SHOW_TAGS");
@@ -9318,23 +9316,29 @@ public class ContentServiceImpl implements ContentService {
 		   tagId = (long)topicTag.get("id");
 		   tagName = topicTag.get("tag").toString();
 			// 广告位位置信息
-			Map<String, String> adPositionMap = new HashMap<String, String>();
+		   	Map<String,List<Map<String,String>>> adPositionMap = new HashMap<String,List<Map<String,String>>>();
 			if (page == 1) {
 				List<Map<String,Object>> listAdBanner = liveForContentJdbcDao.getAdBannerByTagId(tagId);
 				for (int i = 0; i < listAdBanner.size(); i++) {
 					Map<String,Object> adBanner = listAdBanner.get(i);
 					int s = (Integer)adBanner.get("position");
 					if (adPositionMap.get(String.valueOf(s)) == null) {
-						adPositionMap.put(String.valueOf(s), String.valueOf(adBanner.get("banner_id")));
+						List<Map<String,String>> adBHWList = new ArrayList<Map<String,String>>();
+						Map<String,String> adBHWMap = new HashMap<String,String>();
+						adBHWMap.put("ad_banner_id", String.valueOf(adBanner.get("banner_id")));
+						adBHWMap.put("ad_banner_height", String.valueOf(adBanner.get("ad_banner_height")));
+						adBHWMap.put("ad_banner_width", String.valueOf(adBanner.get("ad_banner_width")));
+						adBHWList.add(adBHWMap);
+						adPositionMap.put(String.valueOf(s),adBHWList);
 					} else {
-						StringBuffer value = new StringBuffer(adPositionMap.get(String.valueOf(s)).toString());
-						value.append(",").append(String.valueOf(adBanner.get("banner_id")));
-						adPositionMap.put(String.valueOf(s), value.toString());
+						Map<String,String> adBHWMap = new HashMap<String,String>();
+						adBHWMap.put("ad_banner_id", String.valueOf(adBanner.get("banner_id")));
+						adBHWMap.put("ad_banner_height", String.valueOf(adBanner.get("ad_banner_height")));
+						adBHWMap.put("ad_banner_width", String.valueOf(adBanner.get("ad_banner_width")));
+						adPositionMap.get(String.valueOf(s)).add(adBHWMap);
 					}
 				}
-
 			}
-		   
 		   dto.setTagId(tagId);
 		   dto.setTagName(tagName);
 		   UserTag userTag = userService.getUserTagByUidAndTagid(uid, tagId);
@@ -9526,12 +9530,14 @@ public class ContentServiceImpl implements ContentService {
 	        for (int j=0;j<contents.size();j++){
 				if (page == 1) {
 					if (adPositionMap.get(String.valueOf(j)) != null) {
-						String[] bannerids = adPositionMap.get(String.valueOf(j)).toString().split(",");
-						for (String banerIdStr : bannerids) {
+						List list = adPositionMap.get(String.valueOf(j));
+						for (int k = 0; k < list.size(); k++) {
 							TagDetailDto.AdElement adElement = new TagDetailDto.AdElement();
-							// 广告条type默认12
+							Map map1 = (Map) list.get(k);
+							adElement.setCid(Long.parseLong((String) map1.get("ad_banner_id")));
+							adElement.setH(Integer.valueOf((String) map1.get("ad_banner_height")));
+							adElement.setW(Integer.valueOf((String) map1.get("ad_banner_width")));
 							adElement.setType(12);
-							adElement.setCid(Long.parseLong(banerIdStr));
 							dto.getTagKingdomList().add(adElement);
 						}
 					}

@@ -58,7 +58,7 @@ public class TagDetailDto  implements BaseEntity {
 
         }
     }
-
+    
 
 
 
@@ -82,6 +82,8 @@ public class TagDetailDto  implements BaseEntity {
 		private static final long serialVersionUID = -6240068377784693096L;
 		private long cid;
 		private int type;
+		private int h;
+		private int w;
     }
     
 }

@@ -88,6 +88,14 @@
 						<label for="exampleInput">广告位随机位置("-"隔开     例：3-5)</label>
                         <input type="text" id="bannerPosition" name="bannerPosition" class="form-control" />
 					</div>
+					<div class="form-group">
+						<label for="exampleInput">广告位高度(请输入数字)</label>
+                        <input type="text" id="adBannerHeight" name="adBannerHeight" class="form-control" />
+					</div>
+					<div class="form-group">
+						<label for="exampleInput">广告位宽度(请输入数字)</label>
+                        <input type="text" id="adBannerWidth" name="adBannerWidth" class="form-control" />
+					</div>
 				</div>
 				<div class="modal-footer">
 					<button class="btn btn-primary" data-dismiss="modal" aria-hidden="true" onclick="addAdBanner();">保存</button>
@@ -230,6 +238,16 @@
 	        		return data;
 	        	}
 	        }},
+	        {data: "adBannerHeight",width:50,orderable:false,title: "广告位高度",render:function(data,type,row,meta){
+	        	if(data!=null){
+	        		return data;
+	        	}
+	        }},
+	        {data: "adBannerWidth",width:50,orderable:false,title: "广告位宽度",render:function(data,type,row,meta){
+	        	if(data!=null){
+	        		return data;
+	        	}
+	        }},
 	        {data: "createTime",width:150,orderable:false,title: "创建时间",render:function(data,type,row,meta){
 	        	if(data!=null){
 	        		return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
@@ -309,7 +327,7 @@
 		$('#modal').modal('show');
 	}
 	   function addAdBanner(){
-				 var param = {id:$("#id").val(),adBannerName:$("#adBannerName").val(),bannerPosition:$("#bannerPosition").val()};
+				 var param = {id:$("#id").val(),adBannerName:$("#adBannerName").val(),bannerPosition:$("#bannerPosition").val(),adBannerHeight:$("#adBannerHeight").val(),adBannerWidth:$("#adBannerWidth").val()};
 				  	$.ajax({
 			            cache: true,
 			            type: "POST",
@@ -349,6 +367,8 @@
 			            		  $("#id").val(data.id);
 			            		  $("#adBannerName").val(data.adBannerName);
 			            		  $("#bannerPosition").val(data.bannerPosition);
+			            		  $("#adBannerHeight").val(data.adBannerHeight);
+			            		  $("#adBannerWidth").val(data.adBannerWidth);
 			            		  $('#modal').modal('show');
 			            	  }else{
 			                    	alert("获取失败");
@@ -360,6 +380,8 @@
 		  $("#id").val(0);
 		  $("#adBannerName").val('');
 		  $("#bannerPosition").val('');
+		  $("#adBannerHeight").attr("value",0);
+		  $("#adBannerWidth").attr("value",0);
    });
 	
 	

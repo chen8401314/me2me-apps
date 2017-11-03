@@ -1470,7 +1470,7 @@ public class LiveForContentJdbcDao {
 	}
 	public List<Map<String, Object>> getAdBannerByTagId(long tagId){
 		StringBuilder sb = new StringBuilder();
-		sb.append("select DISTINCT a.banner_id,a.position FROM ad_tag a,ad_banner b LEFT JOIN (");
+		sb.append("select DISTINCT a.banner_id,b.ad_banner_height,b.ad_banner_width,a.position FROM ad_tag a,ad_banner b LEFT JOIN (");
 		sb.append("select i.banner_id,1 as has from ad_info i where i.status=0 and i.effective_time>now()");
 		sb.append(" group by i.banner_id) m on b.id=m.banner_id WHERE a.banner_id=b.id AND b.type IN (0,2)");
 		sb.append(" AND  tag_id=? and m.has is not null");
