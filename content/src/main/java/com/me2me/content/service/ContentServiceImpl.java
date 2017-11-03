@@ -9645,7 +9645,7 @@ public class ContentServiceImpl implements ContentService {
 	                    	}
 	                    }
 	                	
-	                	contentElement.setLastUpdateTime((Long)topic.get("out_time"));
+	                	contentElement.setLastUpdateTime(((Date)topic.get("out_time")).getTime());
 	                    int internalStatust = this.getInternalStatus(topic, uid);
 	                    if(internalStatust==Specification.SnsCircle.OUT.index){
 	                    	if(null != liveFavouriteMap.get(content.getForwardCid().toString())){
