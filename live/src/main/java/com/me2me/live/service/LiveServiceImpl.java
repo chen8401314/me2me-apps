@@ -1119,7 +1119,7 @@ public class LiveServiceImpl implements LiveService {
                 int cacheRepeatCount=strCacheRepeatCount==null?0:Integer.parseInt(strCacheRepeatCount);
                 if(cacheContent!=null && cacheContent.equals(speakDto.getFragment())){
                     if(cacheRepeatCount==maxRepeakCountCfg){   // 重复发言
-                        return Response.failure(-2,"重复发言");
+                        return Response.failure(50034,"重复发言");
                     }else{
                         cacheRepeatCount++;
                     }
@@ -2467,7 +2467,7 @@ public class LiveServiceImpl implements LiveService {
         boolean isAdmin = userService.isAdmin(uid);
         if(tf.getContentType().intValue() == 24){//礼物除了管理员都不可删除
         	if(!isAdmin){
-        		return Response.success(500, "无法删除");
+        		return Response.success(ResponseStatus.TOPIC_FRAGMENT_CAN_NOT_DELETE.status, "无法删除");
         	}
         }
         
@@ -7182,7 +7182,7 @@ public class LiveServiceImpl implements LiveService {
 					}
 				}
 			}catch(Exception e){
-				return Response.failure(500,e.getMessage());
+				return Response.failure(ResponseStatus.KINGDOM_STEAL_FAILURE.status,e.getMessage());
 			}
 			if(isBigRedPack==0){
 				// 	修改王国可被偷数
@@ -7211,8 +7211,8 @@ public class LiveServiceImpl implements LiveService {
 			dto.setCurrentLevel(modifyDetail.getCurrentLevel());
 			return Response.success(dto);
 		} catch (Exception e) {
-			e.printStackTrace();
-			return Response.failure(500,e.getMessage());
+			log.error("偷取失败", e);
+			return Response.failure(ResponseStatus.KINGDOM_STEAL_FAILURE.status,"偷取失败");
 		} finally {
 			if(lock != null)
 				lock.unlock();
@@ -8795,7 +8795,7 @@ public class LiveServiceImpl implements LiveService {
     	}
     	Topic topic  = liveMybatisDao.getTopicById(lotteryInfo.getTopicId());
     	if(topic==null){
-    		return Response.failure(500, "抽奖王国查找不到");
+    		return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
     	}
         LotteryContent lotteryContent = new LotteryContent();
         lotteryContent.setLotteryId(lotteryId);

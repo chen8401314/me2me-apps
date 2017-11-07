@@ -395,6 +395,8 @@ public enum  ResponseStatus {
     TOPIC_FRAGMENT_DELETE_FAILURE("王国发言内容删除失败","topic fragment delete failure",50032),
 
     TOPIC_FRAGMENT_CAN_NOT_DELETE("你不能删除王国里的发言","you can not delete the fragment of the kingdom",50033),
+    
+    TOPIC_SPEAK_FAILURE("发言失败","speak error",50034),
 
     GET_REDDOT_FAILURE("获取红点失败没有更新","get reddot failure",50035),
 
@@ -467,9 +469,19 @@ public enum  ResponseStatus {
     ERR_STEAL_SELF("不能偷取自己的王国","cannot steal your self's kingdom",50068),
     
 	ERR_STEAL_MAX_LIMIT("该王国已经达到偷取上限","cannot steal this kingdom.",50069),
-    
+	
     //完善个人资料领取红包
     ERR_RED_BAG("不能重复领取","Cannot receive again.",50070),
+    
+    KINGDOM_ALL_FORBID("此王国处于全体禁言模式","kingdom all forbid", 50071),
+    
+    KINGDOM_USER_FORBID("你已被王国禁言","user forbid",50072),
+    
+    JOIN_LOTTER_FAILURE("参与抽奖失败","join lotter failure",50073),
+    
+    KINGDOM_STEAL_FAILURE("王国偷取失败","kingdom steal failure",50074),
+    
+    
     
     ILLEGAL_REQUEST("非法的请求参数","illegal request",50099),
 	
