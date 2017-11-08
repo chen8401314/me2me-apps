@@ -1524,4 +1524,28 @@ public class LiveForContentJdbcDao {
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
     	return list;
     }
+    /**
+     * 查询子标签信息
+     * @param pid
+     * @return
+     */
+    public List<Map<String,Object>> getTopicTagByPid(long pid){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(" select * from topic_tag where pid  =? and status = 0 ");
+    	return jdbcTemplate.queryForList(sb.toString(),pid);
+    }
+    
+    /**
+     * 查询标签下王国信息（按王国价值增长量倒序）
+     * @param tagId
+     * @param pageSize
+     * @return
+     */
+    public List<Map<String,Object>> getTopicByTagId(long tagId,int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(" select distinct c.id,c.content,c.forward_cid as topic_id,c.conver_image,td.last_price_incr from topic_tag_detail tt,content c,topic_data td ");
+    	sb.append("   where c.type = 3 and c.status = 0 and  tt.status = 0 and tt.topic_id  = c.forward_cid  ");
+    	sb.append(" and c.forward_cid   = td.topic_id and tt.tag_id = ?  order by td.last_price_incr desc limit ? ");
+    	return jdbcTemplate.queryForList(sb.toString(),tagId,pageSize);
+    }
 }
