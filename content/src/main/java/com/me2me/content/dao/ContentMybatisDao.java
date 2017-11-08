@@ -977,8 +977,8 @@ public class ContentMybatisDao {
 	 * 查询所有有广告的广告位列表
 	 * @return
 	 */
-	public List<AdBanner> getAllNormalBannerList(){
-		return adBannerMapper.getNormalBanners();
+	public List<AdBanner> getAllNormalBannerList(long uid){
+		return adBannerMapper.getNormalBanners(uid);
 	}
 	/**
 	 * 保存广告位

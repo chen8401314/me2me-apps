@@ -8449,7 +8449,7 @@ public class ContentServiceImpl implements ContentService {
 			// 广告位位置信息
 			// List<AdBanner> listAdBanner =
 			// contentMybatisDao.getAllAdBannerList(0);
-			List<AdBanner> listAdBanner = contentMybatisDao.getAllNormalBannerList();
+			List<AdBanner> listAdBanner = contentMybatisDao.getAllNormalBannerList(uid);
 			for (int i = 0; i < listAdBanner.size(); i++) {
 				AdBanner adBanner = listAdBanner.get(i);
 				String[] adPosition = adBanner.getBannerPosition().split("-");

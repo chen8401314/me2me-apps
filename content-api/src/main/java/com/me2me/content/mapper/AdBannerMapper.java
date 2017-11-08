@@ -98,5 +98,5 @@ public interface AdBannerMapper {
      * 获取有正常广告的广告位
      * @return
      */
-    List<AdBanner> getNormalBanners();
+    List<AdBanner> getNormalBanners(@Param("uid") long uid);
 }
