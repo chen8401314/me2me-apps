@@ -9598,6 +9598,11 @@ public class LiveServiceImpl implements LiveService {
 				return Response.failure(50066, "你无权操作！");
 			}
 		}
+		//判断被禁言用户是否存在
+		UserProfile userProfile = liveMybatisDao.getUserProfileByUid(forbidUid);
+		if(userProfile==null){
+			return Response.failure(50066, "你无权操作！");
+		}
 		//判断topic_user_forbid是否已经存在该用户的禁言信息
 		TopicUserForbid topicUserForbid = liveMybatisDao.findTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid,topicId,action);
 		if(action==1){//针对某一用户进行单禁
@@ -9622,13 +9627,7 @@ public class LiveServiceImpl implements LiveService {
 		    		userService.pushWithExtra(String.valueOf(forbidUid), message, JPushUtils.packageExtra(jsonObject));
 		    		
 		    		//系统消息
-		    		UserProfile userProfile = liveMybatisDao.getUserProfileByUid(forbidUid);
-		    		String fragment = "在【"+ topic.getTitle() + "】中被禁言！";
-		    		if(userProfile!=null){
-		    			fragment = userProfile.getNickName() + fragment;
-		    		}else{
-		    			return Response.failure(50066, "你无权操作！");
-		    		}
+		    		String fragment = userProfile.getNickName() + "在【"+ topic.getTitle() + "】中被禁言！";
 		    		TopicFragmentWithBLOBs topicFragmentWithBLOBs = new TopicFragmentWithBLOBs();
 		    		topicFragmentWithBLOBs.setUid(uid);
 		    		topicFragmentWithBLOBs.setTopicId(topicId);
