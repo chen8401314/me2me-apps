@@ -93,4 +93,8 @@ public class ThirdPartRequest extends Request {
     @Getter
     @Setter
     private long fromTopicId;
+    
+    @Getter
+    @Setter
+    private String hwToken;
 }

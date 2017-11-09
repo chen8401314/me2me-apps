@@ -11,6 +11,11 @@
 
     <artifactId>sms</artifactId>
     <dependencies>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.5</version>
+		</dependency>
         <dependency>
             <groupId>com.me2me</groupId>
             <artifactId>core</artifactId>

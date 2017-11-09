@@ -74,4 +74,8 @@ public class SignUpRequest extends Request{
     @Getter
     @Setter
     private String deviceData;
+    
+    @Getter
+    @Setter
+    private String hwToken;
 }

@@ -33,4 +33,6 @@ public class UserLoginDto implements BaseEntity {
     private String deviceData;
     
     private String ip;
+    
+    private String hwToken;
 }

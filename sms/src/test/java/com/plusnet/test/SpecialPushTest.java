@@ -9,11 +9,16 @@ public class SpecialPushTest {
 
 	public static void main(String[] args){
 		try{
-			xiaomiPush();
+//			xiaomiPush();
+			huaweiPush();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		System.out.println("===完成了");
+	}
+	
+	public static void huaweiPush(){
+		
 	}
 	
 	public static void xiaomiPush() throws Exception{

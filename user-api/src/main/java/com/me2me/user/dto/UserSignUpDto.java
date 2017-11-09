@@ -45,4 +45,6 @@ public class UserSignUpDto implements BaseEntity {
     private String deviceData;
     
     private String ip;
+    
+    private String hwToken;
 }

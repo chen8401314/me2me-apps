@@ -274,7 +274,7 @@ public class UserServiceImpl implements UserService {
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
 
         //记录下登录或注册的设备号
-        this.saveUserLoginChannel(user.getUid(), userSignUpDto.getChannel());
+        this.saveUserLoginChannel(user.getUid(), userSignUpDto.getChannel(), userSignUpDto.getHwToken());
         
         //新用户注册放入cach,机器人自动回复用
         String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+signUpSuccessDto.getUid();
@@ -282,7 +282,7 @@ public class UserServiceImpl implements UserService {
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
     
-    private void saveUserLoginChannel(long uid, String channel){
+    private void saveUserLoginChannel(long uid, String channel, String hwToken){
     	if(StringUtils.isEmpty(channel)){
     		return;
     	}
@@ -290,11 +290,13 @@ public class UserServiceImpl implements UserService {
     	if(null != ulc){//更新
     		ulc.setChannel(channel);
     		ulc.setLoginTime(new Date());
+    		ulc.setDeviceToken(hwToken);
     		userMybatisDao.updateUserLastChannel(ulc);
     	}else{
     		ulc = new UserLastChannel();
     		ulc.setUid(uid);
     		ulc.setChannel(channel);
+    		ulc.setDeviceToken(hwToken);
     		ulc.setLoginTime(new Date());
     		userMybatisDao.saveUserLastChannel(ulc);
     	}
@@ -555,7 +557,7 @@ public class UserServiceImpl implements UserService {
         give3Kingdoms(userProfile);
         
         //记录下登录或注册的设备号
-        this.saveUserLoginChannel(newUser.getUid(), userSignUpDto.getChannel());
+        this.saveUserLoginChannel(newUser.getUid(), userSignUpDto.getChannel(), userSignUpDto.getHwToken());
         
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
         }else{
@@ -715,7 +717,7 @@ public class UserServiceImpl implements UserService {
                 log.info("update user device success");
 
                 //记录下登录或注册的设备号
-                this.saveUserLoginChannel(user.getUid(), userLoginDto.getChannel());
+                this.saveUserLoginChannel(user.getUid(), userLoginDto.getChannel(), userLoginDto.getHwToken());
                 
                 log.info("login end ...");
                 //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LOGIN.index,0,user.getUid()));
@@ -795,7 +797,7 @@ public class UserServiceImpl implements UserService {
                 this.saveUserDeviceInfo(userProfile.getUid(), userLoginDto.getIp(), 2, userLoginDto.getDeviceData());
 
                 //记录下登录或注册的设备号
-                this.saveUserLoginChannel(user.getUid(), userLoginDto.getChannel());
+                this.saveUserLoginChannel(user.getUid(), userLoginDto.getChannel(), userLoginDto.getHwToken());
                 
                 // 保存极光推送
                 if(!StringUtils.isEmpty(userLoginDto.getJPushToken())) {
@@ -2653,8 +2655,10 @@ public class UserServiceImpl implements UserService {
                 }
                 this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
 
-                //记录下登录或注册的设备号
-                this.saveUserLoginChannel(userProfile.getUid(), thirdPartSignUpDto.getChannel());
+                if(thirdPartSignUpDto.getH5type() != 1){
+	                //记录下登录或注册的设备号
+	                this.saveUserLoginChannel(userProfile.getUid(), thirdPartSignUpDto.getChannel(), thirdPartSignUpDto.getHwToken());
+                }
                 
                 this.activityH5RegisterUser(userProfile);
                 
@@ -2683,8 +2687,10 @@ public class UserServiceImpl implements UserService {
                     }
                     this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
 
-                    //记录下登录或注册的设备号
-                    this.saveUserLoginChannel(userProfile.getUid(), thirdPartSignUpDto.getChannel());
+                    if(thirdPartSignUpDto.getH5type() != 1){
+	                    //记录下登录或注册的设备号
+	                    this.saveUserLoginChannel(userProfile.getUid(), thirdPartSignUpDto.getChannel(), thirdPartSignUpDto.getHwToken());
+                    }
 //                    this.activityH5RegisterUser(userProfile);
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }
@@ -2712,8 +2718,10 @@ public class UserServiceImpl implements UserService {
                 }
                 this.saveUserDeviceInfo(users.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
 
-                //记录下登录或注册的设备号
-                this.saveUserLoginChannel(users.getUid(), thirdPartSignUpDto.getChannel());
+                if(thirdPartSignUpDto.getH5type() != 1){
+	                //记录下登录或注册的设备号
+	                this.saveUserLoginChannel(users.getUid(), thirdPartSignUpDto.getChannel(), thirdPartSignUpDto.getHwToken());
+                }
                 return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
 
             } else if(users !=null && !StringUtils.isEmpty(users.getThirdPartUnionid()) && thirdPartSignUpDto.getThirdPartType() == users.getThirdPartType()){
@@ -2724,8 +2732,10 @@ public class UserServiceImpl implements UserService {
                 }
                 this.saveUserDeviceInfo(users.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
 
-                //记录下登录或注册的设备号
-                this.saveUserLoginChannel(users.getUid(), thirdPartSignUpDto.getChannel());
+                if(thirdPartSignUpDto.getH5type() != 1){
+	                //记录下登录或注册的设备号
+	                this.saveUserLoginChannel(users.getUid(), thirdPartSignUpDto.getChannel(), thirdPartSignUpDto.getHwToken());
+                }
                 return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
             }
             else if(users ==null){
@@ -2753,8 +2763,10 @@ public class UserServiceImpl implements UserService {
                     }
                     this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
 
-                    //记录下登录或注册的设备号
-                    this.saveUserLoginChannel(userProfile.getUid(), thirdPartSignUpDto.getChannel());
+                    if(thirdPartSignUpDto.getH5type() != 1){
+	                    //记录下登录或注册的设备号
+	                    this.saveUserLoginChannel(userProfile.getUid(), thirdPartSignUpDto.getChannel(), thirdPartSignUpDto.getHwToken());
+                    }
                     this.activityH5RegisterUser(userProfile);
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }else{
@@ -2774,8 +2786,10 @@ public class UserServiceImpl implements UserService {
                     }
                     this.saveUserDeviceInfo(users.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
 
-                    //记录下登录或注册的设备号
-                    this.saveUserLoginChannel(users.getUid(), thirdPartSignUpDto.getChannel());
+                    if(thirdPartSignUpDto.getH5type() != 1){
+	                    //记录下登录或注册的设备号
+	                    this.saveUserLoginChannel(users.getUid(), thirdPartSignUpDto.getChannel(), thirdPartSignUpDto.getHwToken());
+                    }
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 } else {
                     buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
@@ -3013,8 +3027,10 @@ public class UserServiceImpl implements UserService {
         //添加设备相关信息new
         this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 1, thirdPartSignUpDto.getDeviceData());
         
-        //记录下登录或注册的设备号
-        this.saveUserLoginChannel(userProfile.getUid(), thirdPartSignUpDto.getChannel());
+        if(thirdPartSignUpDto.getH5type() != 1){
+	        //记录下登录或注册的设备号
+	        this.saveUserLoginChannel(userProfile.getUid(), thirdPartSignUpDto.getChannel(), thirdPartSignUpDto.getHwToken());
+        }
         
         // 保存用户token信息
         UserToken userToken1 = new UserToken();

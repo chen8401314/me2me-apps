@@ -82,6 +82,7 @@ public class Users extends BaseController {
         userSignUpDto.setParams(request.getParams());
         userSignUpDto.setOpeninstallData(request.getOpeninstallData());
         userSignUpDto.setDeviceData(request.getDeviceData());
+        userSignUpDto.setHwToken(request.getHwToken());
 
         //获取ipaddress信息
         String ip = rq.getHeader("X-Forwarded-For");
@@ -144,6 +145,7 @@ public class Users extends BaseController {
         userSignUpDto.setVerifyCode(request.getVerifyCode());
         userSignUpDto.setOpeninstallData(request.getOpeninstallData());
         userSignUpDto.setDeviceData(request.getDeviceData());
+        userSignUpDto.setHwToken(request.getHwToken());
 
         //获取ipaddress信息
         String ip = rq.getHeader("X-Forwarded-For");
@@ -200,6 +202,7 @@ public class Users extends BaseController {
         userLoginDto.setChannel(request.getChannel());
         userLoginDto.setRegisterVersion(request.getVersion());
         userLoginDto.setDeviceData(request.getDeviceData());
+        userLoginDto.setHwToken(request.getHwToken());
 
         //获取ipaddress信息
         String ip = rq.getHeader("X-Forwarded-For");
@@ -249,6 +252,7 @@ public class Users extends BaseController {
         userLoginDto.setChannel(request.getChannel());
         userLoginDto.setRegisterVersion(request.getVersion());
         userLoginDto.setDeviceData(request.getDeviceData());
+        userLoginDto.setHwToken(request.getHwToken());
 
         //获取ipaddress信息
         String ip = rq.getHeader("X-Forwarded-For");
@@ -824,6 +828,7 @@ public class Users extends BaseController {
         dto.setDeviceData(request.getDeviceData());
         dto.setFromUid(request.getFromUid());
         dto.setFromTopicId(request.getFromTopicId());
+        dto.setHwToken(request.getHwToken());
 
         //获取ipaddress信息
         String ip = rq.getHeader("X-Forwarded-For");

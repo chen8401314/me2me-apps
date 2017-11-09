@@ -60,5 +60,7 @@ public class ThirdPartSignUpDto extends UserSignUpDto {
     private long fromUid;//H5登录专用，传递分享来源用户ID
     
     private long fromTopicId;//H5登录专用，传递分享的来源王国ID
+    
+    private String hwToken;
 
 }
