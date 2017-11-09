@@ -9627,7 +9627,7 @@ public class LiveServiceImpl implements LiveService {
 		    		if(userProfile!=null){
 		    			fragment = userProfile.getNickName() + fragment;
 		    		}else{
-		    			fragment = forbidUid + fragment;
+		    			return Response.failure(50066, "你无权操作！");
 		    		}
 		    		TopicFragmentWithBLOBs topicFragmentWithBLOBs = new TopicFragmentWithBLOBs();
 		    		topicFragmentWithBLOBs.setUid(uid);
