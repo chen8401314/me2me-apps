@@ -97,6 +97,7 @@ public class RecommendListDto implements BaseEntity {
 		private String nickName;
 		private long createTime;
 		private long  topicId;
+		private long forwardCid;
 		private long updateTime;
 		private int isFollowed;
 		private int isFollowMe;

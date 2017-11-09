@@ -8449,7 +8449,7 @@ public class ContentServiceImpl implements ContentService {
 			// 广告位位置信息
 			// List<AdBanner> listAdBanner =
 			// contentMybatisDao.getAllAdBannerList(0);
-			List<AdBanner> listAdBanner = contentMybatisDao.getAllNormalBannerList();
+			List<AdBanner> listAdBanner = contentMybatisDao.getAllNormalBannerList(uid);
 			for (int i = 0; i < listAdBanner.size(); i++) {
 				AdBanner adBanner = listAdBanner.get(i);
 				String[] adPosition = adBanner.getBannerPosition().split("-");
@@ -9318,6 +9318,51 @@ public class ContentServiceImpl implements ContentService {
 			// 广告位位置信息
 		   	Map<String,List<Map<String,String>>> adPositionMap = new HashMap<String,List<Map<String,String>>>();
 			if (page == 1) {
+				//处理标签详情页头部
+				List<Map<String,Object>> stagList = liveForContentJdbcDao.getTopicTagByPid(tagId);
+			    for (Map<String, Object> stag : stagList) {
+			    	TagDetailDto.CoverElement cover = new TagDetailDto.CoverElement();
+			    	cover.setType(15);
+			    	cover.setTitle(stag.get("tag")==null?"":stag.get("tag").toString());
+			    	cover.setCid((Long)stag.get("id"));
+			    	List<Map<String, Object>> listTagTopic = liveForContentJdbcDao.getTopicByTagId((Long)stag.get("id"), 1);
+			    	if(stag.get("cover_img")!=null){
+			    		cover.setCoverImage(Constant.QINIU_DOMAIN + "/" + stag.get("cover_img").toString());
+			    	}else{
+			    		if(listTagTopic.size()>0){
+			    			Map<String, Object> tagTopicMap = listTagTopic.get(0);
+			    			cover.setCoverImage(Constant.QINIU_DOMAIN + "/" + tagTopicMap.get("conver_image").toString());
+			    			cover.setTopicId((Long)tagTopicMap.get("topic_id"));
+			    		}else{
+			    			continue;
+			    		}
+			    	}
+			    	dto.getCoverList().add(cover);
+			    	if(dto.getCoverList().size()==5){
+			    		break;
+			    	}
+				}
+			    //如果没填满5个标签查王国
+			    if(dto.getCoverList().size()<5){
+			    	List<Map<String, Object>> listTagTopic = liveForContentJdbcDao.getTopicByTagId(tagId, 5);
+			    	for (Map<String, Object> tagTopic : listTagTopic) {
+			    		TagDetailDto.CoverElement cover = new TagDetailDto.CoverElement();
+			    		cover.setType(3);
+			    		cover.setTitle(tagTopic.get("content")==null?"":tagTopic.get("content").toString());
+			    		cover.setCid((Long)tagTopic.get("id"));
+			    		cover.setTopicId((Long)tagTopic.get("topic_id"));
+			    		cover.setCoverImage(Constant.QINIU_DOMAIN + "/" + tagTopic.get("conver_image").toString());
+			    		dto.getCoverList().add(cover);
+				    	if(dto.getCoverList().size()==5){
+				    		break;
+				    	}
+					}
+			    }
+			    if(dto.getCoverList().size()<3){
+			    	dto.getCoverList().clear();
+			    }
+			    
+				//处理广告位
 				List<Map<String,Object>> listAdBanner = liveForContentJdbcDao.getAdBannerByTagId(tagId);
 				for (int i = 0; i < listAdBanner.size(); i++) {
 					Map<String,Object> adBanner = listAdBanner.get(i);

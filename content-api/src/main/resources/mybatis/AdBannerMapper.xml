@@ -332,7 +332,7 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
   
-  <select id="getNormalBanners" resultMap="BaseResultMap">
+  <select id="getNormalBanners" resultMap="BaseResultMap"  parameterType="java.util.Map" >
     select b.* 
     from ad_banner b LEFT JOIN (
       select i.banner_id,1 as has
@@ -343,5 +343,8 @@
     ) m on b.id=m.banner_id
     where b.status=0 and b.type in (0,1) 
     and m.has is not NULL
+    and b.id not in
+    (select distinct d.banner_id from  user_tag u,ad_tag d 
+    where d.tag_id = u.tag_id and u.type = 2 and u.uid = #{uid})
   </select>
 </mapper>

@@ -26,6 +26,8 @@ public class TagDetailDto  implements BaseEntity {
     
     private int isLike;
 	
+    
+    private List<CoverElement> coverList = Lists.newArrayList();
     //内容
     @Data
     public static class MyPublishElement extends BaseContentDto implements BaseEntity{
@@ -85,5 +87,13 @@ public class TagDetailDto  implements BaseEntity {
 		private int h;
 		private int w;
     }
-    
+    @Data
+    public static class CoverElement implements BaseEntity {
+		private static final long serialVersionUID = 2901955620229846018L;
+		private long cid;
+		private long topicId;
+		private String coverImage;
+		private String title;
+		private int type;
+    }
 }
