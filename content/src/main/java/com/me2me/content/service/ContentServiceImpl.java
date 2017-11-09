@@ -9326,7 +9326,7 @@ public class ContentServiceImpl implements ContentService {
 			    	cover.setTitle(stag.get("tag")==null?"":stag.get("tag").toString());
 			    	cover.setCid((Long)stag.get("id"));
 			    	List<Map<String, Object>> listTagTopic = liveForContentJdbcDao.getTopicByTagId((Long)stag.get("id"), 1);
-			    	if(stag.get("cover_img")!=null){
+			    	if(!StringUtils.isEmpty(stag.get("cover_img"))){
 			    		cover.setCoverImage(Constant.QINIU_DOMAIN + "/" + stag.get("cover_img").toString());
 			    	}else{
 			    		if(listTagTopic.size()>0){
