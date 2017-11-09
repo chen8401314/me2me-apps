@@ -1037,6 +1037,7 @@ public class SearchServiceImpl implements SearchService {
 					kingdomElement.setIsFollowed(userService.isFollow(meAdmin.getUid(), uid));
 					kingdomElement.setIsFollowMe(userService.isFollow(uid, meAdmin.getUid()));
 					kingdomElement.setTopicId((Long)meTopic.get("id"));
+					kingdomElement.setForwardCid((Long)meTopic.get("id"));
 					kingdomElement.setTitle((String)meTopic.get("title"));
 					kingdomElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)meTopic.get("live_image"));
 					kingdomElement.setType(3);
@@ -1768,6 +1769,7 @@ public class SearchServiceImpl implements SearchService {
 				kingdomElement.setIsFollowMe(0);
 			}
 			kingdomElement.setTopicId((Long)topic.get("id"));
+			kingdomElement.setForwardCid((Long)topic.get("id"));
 			kingdomElement.setTitle((String)topic.get("title"));
 			kingdomElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
 			kingdomElement.setType(3);

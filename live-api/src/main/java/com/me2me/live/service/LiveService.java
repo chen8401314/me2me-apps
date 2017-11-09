@@ -35,6 +35,7 @@ import com.me2me.live.model.TopicPriceSubsidyConfig;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
 import com.me2me.live.model.TopicUserConfig;
+import com.me2me.live.model.TopicUserForbid;
 import com.me2me.user.dto.RechargeToKingdomDto;
 
 /**
@@ -720,6 +721,22 @@ public interface LiveService {
     Response harvestKingdomCoin(long uid, long topicId);
     
 	Response getCreateKingdomInfo(long uid);
+
+	int countForbidMembersByTopicId(long topicId);
+	
+	/**
+     * 王国禁言接口
+     * @param request
+     * @return
+     */
+	Response forbidTalk(int action, long forbidUid, long topicId, long uid);
+	
+	/**
+     * 获取禁言列表接口
+     * @param request
+     * @return
+     */
+	List<TopicUserForbid> getForbidListByTopicId(long topicId);
 
 
 }

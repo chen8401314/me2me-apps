@@ -95,6 +95,10 @@ public class ShowLiveDto implements BaseEntity {
     private String kcIcon;
     private String kcName;
     
+    private int isForbid;//是否被禁言  0 否 1 是
+    
+    private int isAllForbid;//是否全禁言 0 否 1 是
+    
     @Data
     public static class TopicElement implements BaseEntity{
 		private static final long serialVersionUID = 986248317266706695L;

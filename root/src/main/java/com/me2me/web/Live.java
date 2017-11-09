@@ -54,6 +54,7 @@ import com.me2me.web.request.EditLotteryRequest;
 import com.me2me.web.request.EditSpeakRequest;
 import com.me2me.web.request.FavoriteListRequest;
 import com.me2me.web.request.FinishMyLiveRequest;
+import com.me2me.web.request.ForbidTalkRequest;
 import com.me2me.web.request.FragmentForwardRequest;
 import com.me2me.web.request.GetCreateKingdomInfoRequest;
 import com.me2me.web.request.GetGiftInfoListRequest;
@@ -869,7 +870,7 @@ public class Live extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/kingdomImgDB",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response recQuery(ImgDBRequest request){
+    public Response kingdomImgDB(ImgDBRequest request){
     	Response resp= liveService.kingdomImgDB(request.getTopicId(), request.getDirection(), request.getFid(),request.getType());
     	return resp;
     }
@@ -1245,4 +1246,17 @@ public class Live extends BaseController {
     public Response kingdomByCategory(KingdomByCategoryRequest request){
     	return liveExtService.kingdomByCategory(request.getUid(),request.getKcid(),request.getPage());
     }
+    
+    
+    /**
+     * 王国禁言接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/forbidTalk",method = RequestMethod.POST)
+    public Response forbidTalk(ForbidTalkRequest request){
+    	return liveService.forbidTalk(request.getAction(),request.getForbidUid(),request.getTopicId(),request.getUid());
+    }
+    
 }
