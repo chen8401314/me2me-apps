@@ -45,11 +45,13 @@ public class PushListener {
 		}else{
 			jPushService.payloadByIdForMessage(event.getUid(), event.getMessage());
 		}
-		//如果是小米的有特殊推送
+		//特殊推送
 		UserLastChannel ulc = userMybatisDao.getUserLastChannelByUid(Long.valueOf(event.getUid()));
 		if(null != ulc && !StringUtils.isEmpty(ulc.getChannel())){
 			if("xiaomi".equals(ulc.getChannel())){//小米的推送
 				jPushService.specialPush(event.getUid(), event.getMessage(), event.getExtraMaps(), Specification.PushType.XIAOMI.index);
+			}else if("huawei".equals(ulc.getChannel()) && !StringUtils.isEmpty(ulc.getDeviceToken())){//华为的推送
+				jPushService.specialPush(ulc.getDeviceToken(), event.getMessage(), event.getExtraMaps(), Specification.PushType.HUAWEI.index);
 			}
 		}
 		

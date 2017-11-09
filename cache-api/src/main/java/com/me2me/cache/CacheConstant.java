@@ -52,4 +52,6 @@ public class CacheConstant {
 	public static final String USER_REC_DATE_KEY = "USER_REC_DATE";
 	
 	public static final String CACHE_LOCK_PRE = "LOCK:";
+	
+	public static final String HUAWEI_ACCESSTOKEN_KEY = "HUAWEI_ACCESSTOKEN";
 }
