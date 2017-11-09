@@ -1,5 +1,15 @@
 package com.me2me.sns.service;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -14,11 +24,16 @@ import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragmentWithBLOBs;
 import com.me2me.live.model.TopicUserConfig;
+import com.me2me.live.model.TopicUserForbid;
 import com.me2me.live.service.LiveService;
 import com.me2me.sms.service.JPushService;
 import com.me2me.sns.dao.LiveJdbcDao;
 import com.me2me.sns.dao.SnsMybatisDao;
-import com.me2me.sns.dto.*;
+import com.me2me.sns.dto.GetSnsCircleDto;
+import com.me2me.sns.dto.ShowMemberConsoleDto;
+import com.me2me.sns.dto.ShowMembersDto;
+import com.me2me.sns.dto.ShowSnsCircleDto;
+import com.me2me.sns.dto.SnsCircleDto;
 import com.me2me.user.dto.FollowDto;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserNotice;
@@ -28,16 +43,6 @@ import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -199,6 +204,13 @@ public class SnsServiceImpl implements SnsService {
     		}
     	}else if(getSnsCircleDto.getType() == Specification.SnsCircle.IN.index){//圈内
     		
+    	}else if(getSnsCircleDto.getType() == Specification.SnsCircle.FORBID.index){//禁言用户
+    		List<TopicUserForbid> topicUserForbidList = liveService.getForbidListByTopicId(getSnsCircleDto.getTopicId());
+    		if(topicUserForbidList != null && topicUserForbidList.size() > 0){
+    			for (TopicUserForbid topicUserForbid : topicUserForbidList) {
+					resultUidList.add(topicUserForbid.getUid());
+				}
+    		}
     	}else{
     		return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
     	}
@@ -246,7 +258,10 @@ public class SnsServiceImpl implements SnsService {
         showSnsCircleDto.setCoreCircleMembers(coreCount);
         showSnsCircleDto.setInCircleMembers(0);//暂时先没有圈内
         showSnsCircleDto.setOutCircleMembers(outCount);
-    	log.info("circleByTypeNew end ...");
+        //计算禁言用户数
+        int forbidMembers = liveService.countForbidMembersByTopicId(getSnsCircleDto.getTopicId());
+    	showSnsCircleDto.setForbidMembers(forbidMembers);
+        log.info("circleByTypeNew end ...");
     	return Response.success(showSnsCircleDto);
     }
 

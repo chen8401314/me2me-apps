@@ -69,6 +69,7 @@ import com.me2me.live.mapper.TopicTagDetailMapper;
 import com.me2me.live.mapper.TopicTagMapper;
 import com.me2me.live.mapper.TopicTransferRecordMapper;
 import com.me2me.live.mapper.TopicUserConfigMapper;
+import com.me2me.live.mapper.TopicUserForbidMapper;
 import com.me2me.live.mapper.UserStealLogMapper;
 import com.me2me.live.mapper.VoteInfoMapper;
 import com.me2me.live.mapper.VoteOptionMapper;
@@ -153,6 +154,8 @@ import com.me2me.live.model.TopicTransferRecord;
 import com.me2me.live.model.TopicTransferRecordExample;
 import com.me2me.live.model.TopicUserConfig;
 import com.me2me.live.model.TopicUserConfigExample;
+import com.me2me.live.model.TopicUserForbid;
+import com.me2me.live.model.TopicUserForbidExample;
 import com.me2me.live.model.UserStealLog;
 import com.me2me.live.model.VoteInfo;
 import com.me2me.live.model.VoteInfoExample;
@@ -315,6 +318,9 @@ public class LiveMybatisDao {
     
     @Autowired
     private LotteryAppointMapper lotteryAppointMapper;
+    
+	@Autowired
+	private TopicUserForbidMapper topicUserForbidMapper;
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -2202,4 +2208,88 @@ public class LiveMybatisDao {
 		example.setOrderByClause(" id asc ");
 		return lotteryAppointMapper.selectByExample(example);
 	}
+
+	public int countForbidMembersByTopicId(long topicId) {
+		TopicUserForbidExample example = new TopicUserForbidExample();
+		TopicUserForbidExample.Criteria criteria = example.createCriteria();
+		criteria.andTopicIdEqualTo(topicId);
+		criteria.andForbidPatternEqualTo(1);
+		return topicUserForbidMapper.countByExample(example);
+	}
+
+	public TopicUserForbid findTopicUserForbidByForbidUidAndTopicIdAndAction(long forbidUid, long topicId, int action) {
+		TopicUserForbidExample example = new TopicUserForbidExample();
+		TopicUserForbidExample.Criteria criteria = example.createCriteria();
+		if(action==1||action==2){
+			criteria.andUidEqualTo(forbidUid);
+		}
+		criteria.andTopicIdEqualTo(topicId);
+		if(action==2){
+			action=1;
+		}else if(action==4){
+			action=3;
+		}
+		criteria.andForbidPatternEqualTo(action);
+		List<TopicUserForbid> list = topicUserForbidMapper.selectByExample(example);
+		if(list!=null&&list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	public void insertTopicUserForbid(TopicUserForbid newTopicUserForbid) {
+		topicUserForbidMapper.insertSelective(newTopicUserForbid);
+	}
+
+	public void deleteTopicUserForbidByForbidUidAndTopicIdAndAction(long forbidUid, long topicId,int action) {
+		TopicUserForbidExample example = new TopicUserForbidExample();
+		TopicUserForbidExample.Criteria criteria = example.createCriteria();
+		if(action==1||action==2){
+			criteria.andUidEqualTo(forbidUid);
+		}
+		criteria.andTopicIdEqualTo(topicId);
+		if(action==2){
+			action=1;
+		}else if(action==4){
+			action=3;
+		}
+		criteria.andForbidPatternEqualTo(action);
+		criteria.andForbidPatternEqualTo(action);
+		topicUserForbidMapper.deleteByExample(example);
+	}
+
+	public TopicUserForbid findTopicUserForbidByTopicId(long topicId) {
+		TopicUserForbidExample example = new TopicUserForbidExample();
+		TopicUserForbidExample.Criteria criteria = example.createCriteria();
+		criteria.andTopicIdEqualTo(topicId);
+		criteria.andForbidPatternEqualTo(3);
+		List<TopicUserForbid> list = topicUserForbidMapper.selectByExample(example);
+		if(list!=null&&list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	public TopicUserForbid findTopicUserForbidByTopicIdAndUid(long topicId, long uid) {
+		TopicUserForbidExample example = new TopicUserForbidExample();
+		TopicUserForbidExample.Criteria criteria = example.createCriteria();
+		criteria.andTopicIdEqualTo(topicId);
+		criteria.andUidEqualTo(uid);
+		criteria.andForbidPatternEqualTo(1);
+		List<TopicUserForbid> list = topicUserForbidMapper.selectByExample(example);
+		if(list!=null&&list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	public List<TopicUserForbid> getForbidListByTopicId(long topicId) {
+		TopicUserForbidExample example = new TopicUserForbidExample();
+		TopicUserForbidExample.Criteria criteria = example.createCriteria();
+		criteria.andTopicIdEqualTo(topicId);
+		criteria.andForbidPatternEqualTo(1);
+		return topicUserForbidMapper.selectByExample(example);
+	}
+
+
 }

@@ -651,6 +651,7 @@ public interface Specification {
 
 
     public enum SnsCircle{
+    	FORBID("禁言用户",3),
 
         CORE("核心圈",2),
 
