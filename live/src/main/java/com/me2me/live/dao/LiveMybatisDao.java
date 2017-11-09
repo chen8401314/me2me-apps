@@ -166,6 +166,9 @@ import com.me2me.live.model.VoteRecordExample;
 import com.me2me.sns.mapper.SnsCircleMapper;
 import com.me2me.sns.model.SnsCircle;
 import com.me2me.sns.model.SnsCircleExample;
+import com.me2me.user.mapper.UserProfileMapper;
+import com.me2me.user.model.UserProfile;
+import com.me2me.user.model.UserProfileExample;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -321,6 +324,9 @@ public class LiveMybatisDao {
     
 	@Autowired
 	private TopicUserForbidMapper topicUserForbidMapper;
+	
+	@Autowired
+	private UserProfileMapper userProfileMapper;
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -2289,6 +2295,17 @@ public class LiveMybatisDao {
 		criteria.andTopicIdEqualTo(topicId);
 		criteria.andForbidPatternEqualTo(1);
 		return topicUserForbidMapper.selectByExample(example);
+	}
+
+	public UserProfile getUserProfileByUid(long forbidUid) {
+		UserProfileExample example = new UserProfileExample();
+		UserProfileExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(forbidUid);
+		List<UserProfile> list = userProfileMapper.selectByExample(example);
+		if(list!=null&&list.size()>0){
+			return list.get(0);
+		}
+		return null;
 	}
 
 

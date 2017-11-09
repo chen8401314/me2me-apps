@@ -9610,7 +9610,7 @@ public class LiveServiceImpl implements LiveService {
 					newTopicUserForbid.setUid(forbidUid);
 					liveMybatisDao.insertTopicUserForbid(newTopicUserForbid);
 					
-					String message = forbidUid + "在【" + topic.getTitle() + "】中被禁言！";
+					String message ="你在【" + topic.getTitle() + "】中被禁言！";
 		    		//推送
 					JsonObject jsonObject = new JsonObject();
 	                jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
@@ -9622,17 +9622,24 @@ public class LiveServiceImpl implements LiveService {
 		    		userService.pushWithExtra(String.valueOf(forbidUid), message, JPushUtils.packageExtra(jsonObject));
 		    		
 		    		//系统消息
+		    		UserProfile userProfile = liveMybatisDao.getUserProfileByUid(forbidUid);
+		    		String fragment = "在【"+ topic.getTitle() + "】中被禁言！";
+		    		if(userProfile!=null){
+		    			fragment = userProfile.getNickName() + fragment;
+		    		}else{
+		    			fragment = forbidUid + fragment;
+		    		}
 		    		TopicFragmentWithBLOBs topicFragmentWithBLOBs = new TopicFragmentWithBLOBs();
 		    		topicFragmentWithBLOBs.setUid(uid);
 		    		topicFragmentWithBLOBs.setTopicId(topicId);
-		    		topicFragmentWithBLOBs.setFragment(message);
+		    		topicFragmentWithBLOBs.setFragment(fragment);
 		            topicFragmentWithBLOBs.setType(Specification.LiveSpeakType.SYSTEM.index);
 		            topicFragmentWithBLOBs.setContentType(0);
 		            //组装extra
 		            JSONObject obj = new JSONObject();
 		            obj.put("type", "system");
 		            obj.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
-		            obj.put("content", message);
+		            obj.put("content", fragment);
 		            topicFragmentWithBLOBs.setExtra(obj.toJSONString());
 		            liveMybatisDao.createTopicFragment(topicFragmentWithBLOBs);
 				}else{
