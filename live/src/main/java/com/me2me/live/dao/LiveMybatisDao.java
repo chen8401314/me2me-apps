@@ -129,23 +129,23 @@ import com.me2me.live.model.TopicDroparoundExample;
 import com.me2me.live.model.TopicDroparoundTrail;
 import com.me2me.live.model.TopicExample;
 import com.me2me.live.model.TopicFragmentExample;
-import com.me2me.live.model.TopicFragmentWithBLOBs;
-import com.me2me.live.model.TopicPriceChangeLog;
-import com.me2me.live.model.TopicReadHisExample;
 import com.me2me.live.model.TopicFragmentExample.Criteria;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentTemplateExample;
+import com.me2me.live.model.TopicFragmentWithBLOBs;
 import com.me2me.live.model.TopicGiven;
 import com.me2me.live.model.TopicGivenExample;
 import com.me2me.live.model.TopicListed;
 import com.me2me.live.model.TopicListedExample;
 import com.me2me.live.model.TopicNews;
 import com.me2me.live.model.TopicNewsExample;
+import com.me2me.live.model.TopicPriceChangeLog;
 import com.me2me.live.model.TopicPriceHis;
 import com.me2me.live.model.TopicPriceHisExample;
 import com.me2me.live.model.TopicPriceSubsidyConfig;
 import com.me2me.live.model.TopicPriceSubsidyConfigExample;
 import com.me2me.live.model.TopicReadHis;
+import com.me2me.live.model.TopicReadHisExample;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
 import com.me2me.live.model.TopicTagDetailExample;
@@ -167,8 +167,6 @@ import com.me2me.sns.mapper.SnsCircleMapper;
 import com.me2me.sns.model.SnsCircle;
 import com.me2me.sns.model.SnsCircleExample;
 import com.me2me.user.mapper.UserProfileMapper;
-import com.me2me.user.model.UserProfile;
-import com.me2me.user.model.UserProfileExample;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -324,9 +322,6 @@ public class LiveMybatisDao {
     
 	@Autowired
 	private TopicUserForbidMapper topicUserForbidMapper;
-	
-	@Autowired
-	private UserProfileMapper userProfileMapper;
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -2260,7 +2255,6 @@ public class LiveMybatisDao {
 			action=3;
 		}
 		criteria.andForbidPatternEqualTo(action);
-		criteria.andForbidPatternEqualTo(action);
 		topicUserForbidMapper.deleteByExample(example);
 	}
 
@@ -2296,17 +2290,4 @@ public class LiveMybatisDao {
 		criteria.andForbidPatternEqualTo(1);
 		return topicUserForbidMapper.selectByExample(example);
 	}
-
-	public UserProfile getUserProfileByUid(long forbidUid) {
-		UserProfileExample example = new UserProfileExample();
-		UserProfileExample.Criteria criteria = example.createCriteria();
-		criteria.andUidEqualTo(forbidUid);
-		List<UserProfile> list = userProfileMapper.selectByExample(example);
-		if(list!=null&&list.size()>0){
-			return list.get(0);
-		}
-		return null;
-	}
-
-
 }

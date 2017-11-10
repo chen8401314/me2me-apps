@@ -689,6 +689,10 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response getLiveByCid(long cid, long uid,int vflag) {
         ShowLiveDto showLiveDto = new ShowLiveDto();
+        Topic topic = liveMybatisDao.getTopicById(cid);
+        if(topic==null){
+        	return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
+        }
         //根据cid以及uid判断是否全禁言以及单禁言
         TopicUserForbid topicUserForbid1 = liveMybatisDao.findTopicUserForbidByTopicId(cid);
         TopicUserForbid topicUserForbid2 = liveMybatisDao.findTopicUserForbidByTopicIdAndUid(cid, uid);
@@ -703,10 +707,6 @@ public class LiveServiceImpl implements LiveService {
         	showLiveDto.setIsForbid(0);
         }
         
-        Topic topic = liveMybatisDao.getTopicById(cid);
-        if(topic==null){
-            return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
-        }
         String KINGDOM_VIEW_KEY = "USER_VIEW_KINGDOM_"+uid+"_"+topic.getId();
         String visited =  cacheService.get(KINGDOM_VIEW_KEY);
         showLiveDto.setIsFirstView(visited==null?1:0);
@@ -1138,7 +1138,7 @@ public class LiveServiceImpl implements LiveService {
     	if(topicUserForbid1!=null&&coreStatus!=2&&speakDto.getContentType()!=24){//不是送礼物，不是核心圈成员
     		return Response.failure(50071, "此王国处于全体禁言模式");
     	}
-    	if(topicUserForbid2!=null&&coreStatus!=2&&speakDto.getContentType()!=24){
+    	if(topicUserForbid2!=null&&speakDto.getContentType()!=24){
     		return Response.failure(50072, "你已被此王国禁言");
     	}
         if (speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
@@ -9599,7 +9599,7 @@ public class LiveServiceImpl implements LiveService {
 			}
 		}
 		//判断被禁言用户是否存在
-		UserProfile userProfile = liveMybatisDao.getUserProfileByUid(forbidUid);
+		UserProfile userProfile = userService.getUserProfileByUid(forbidUid);
 		if(userProfile==null){
 			return Response.failure(50066, "你无权操作！");
 		}
