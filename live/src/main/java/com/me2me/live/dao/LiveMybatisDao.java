@@ -58,6 +58,7 @@ import com.me2me.live.mapper.TopicDroparoundTrailMapper;
 import com.me2me.live.mapper.TopicFragmentMapper;
 import com.me2me.live.mapper.TopicFragmentTemplateMapper;
 import com.me2me.live.mapper.TopicGivenMapper;
+import com.me2me.live.mapper.TopicImageMapper;
 import com.me2me.live.mapper.TopicListedMapper;
 import com.me2me.live.mapper.TopicMapper;
 import com.me2me.live.mapper.TopicNewsMapper;
@@ -135,6 +136,8 @@ import com.me2me.live.model.TopicFragmentTemplateExample;
 import com.me2me.live.model.TopicFragmentWithBLOBs;
 import com.me2me.live.model.TopicGiven;
 import com.me2me.live.model.TopicGivenExample;
+import com.me2me.live.model.TopicImage;
+import com.me2me.live.model.TopicImageExample;
 import com.me2me.live.model.TopicListed;
 import com.me2me.live.model.TopicListedExample;
 import com.me2me.live.model.TopicNews;
@@ -322,6 +325,9 @@ public class LiveMybatisDao {
     
 	@Autowired
 	private TopicUserForbidMapper topicUserForbidMapper;
+	
+	@Autowired
+	private TopicImageMapper topicImageMapper;
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -2289,5 +2295,32 @@ public class LiveMybatisDao {
 		criteria.andTopicIdEqualTo(topicId);
 		criteria.andForbidPatternEqualTo(1);
 		return topicUserForbidMapper.selectByExample(example);
+	}
+	
+	public void saveTopicImage(TopicImage ti){
+		topicImageMapper.insertSelective(ti);
+	}
+	
+	public void updateTopicImage(TopicImage ti){
+		topicImageMapper.updateByPrimaryKeyWithBLOBs(ti);
+	}
+	
+	public TopicImage getTopicCoverFromTopicImage(long topicId){
+		TopicImageExample example = new TopicImageExample();
+		TopicImageExample.Criteria criteria = example.createCriteria();
+		criteria.andTopicIdEqualTo(topicId);
+		criteria.andFidEqualTo(0l);
+		List<TopicImage> list =  topicImageMapper.selectByExampleWithBLOBs(example);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	public void deleteTopicImageByFid(long fid){
+		TopicImageExample example = new TopicImageExample();
+		TopicImageExample.Criteria criteria = example.createCriteria();
+		criteria.andFidEqualTo(fid);
+		topicImageMapper.deleteByExample(example);
 	}
 }

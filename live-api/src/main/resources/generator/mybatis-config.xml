@@ -73,5 +73,6 @@
         <!-- <table tableName="topic_category" domainObjectName="TopicCategory" /> -->
         <!-- <table tableName="lottery_appoint" domainObjectName="LotteryAppoint" /> -->
         <!-- <table tableName="topic_user_forbid" domainObjectName="TopicUserForbid" /> -->
+        <!-- <table tableName="topic_image" domainObjectName="TopicImage" /> -->
     </context>
 </generatorConfiguration>
