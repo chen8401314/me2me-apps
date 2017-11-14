@@ -255,7 +255,7 @@ public class Live extends BaseController {
         liveDetailDto.setSinceId(request.getSinceId());
         liveDetailDto.setDirection(request.getDirection());
         liveDetailDto.setVersionFlag(0);
-        
+        liveDetailDto.setReqType(request.getReqType());
         String version = request.getVersion();
         if(VersionUtil.isNewVersion(version, "3.0.6")){
         	liveDetailDto.setVersionFlag(7);

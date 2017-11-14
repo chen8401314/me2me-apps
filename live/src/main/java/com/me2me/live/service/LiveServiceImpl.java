@@ -3077,7 +3077,7 @@ public class LiveServiceImpl implements LiveService {
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveDetailDto.getUid(), getLiveDetailDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
 
-        int totalRecords = liveMybatisDao.countFragmentByTopicId(getLiveDetailDto.getTopicId());
+        int totalRecords = liveMybatisDao.countFragmentByTopicIdAndReqType(getLiveDetailDto.getTopicId(),getLiveDetailDto.getReqType());
 
         LiveDetailPageDto liveDetailDto = new LiveDetailPageDto();
         liveDetailDto.setTotalRecords(totalRecords);
