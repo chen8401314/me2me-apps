@@ -31,4 +31,6 @@ public interface LiveExtService {
 	
 	void updateCategory(TopicCategory category);
 	TopicCategory getCategoryById(int id);
+	
+	Response getKingdomImage(long uid,long topicId,long fid,String imageName,int type);
 }
