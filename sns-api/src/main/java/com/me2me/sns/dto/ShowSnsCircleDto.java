@@ -24,6 +24,8 @@ public class ShowSnsCircleDto implements BaseEntity{
     private int outCircleMembers;
     
     private int forbidMembers;
+    
+    private int internalStatus;
 
     private List<SnsCircleElement> circleElements = Lists.newArrayList();
 

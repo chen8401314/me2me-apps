@@ -261,6 +261,12 @@ public class SnsServiceImpl implements SnsService {
         //计算禁言用户数
         int forbidMembers = liveService.countForbidMembersByTopicId(getSnsCircleDto.getTopicId());
     	showSnsCircleDto.setForbidMembers(forbidMembers);
+    	//判断当前用户对于该王国的身份
+    	int internalStatus = getInternalStatus(topic, getSnsCircleDto.getUid());
+    	if(internalStatus < 2 && liveService.hasLiveFavorite(getSnsCircleDto.getUid(), getSnsCircleDto.getTopicId())){
+    		internalStatus = 1;
+    	}
+    	showSnsCircleDto.setInternalStatus(internalStatus);
         log.info("circleByTypeNew end ...");
     	return Response.success(showSnsCircleDto);
     }

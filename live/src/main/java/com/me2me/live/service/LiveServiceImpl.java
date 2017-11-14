@@ -5204,6 +5204,15 @@ public class LiveServiceImpl implements LiveService {
     public List<LiveFavorite> getLiveFavoriteByTopicId(long topicId, List<Long> exceptUids, int start, int pageSize){
         return liveMybatisDao.getLiveFavoritePageByTopicIdAndExceptUids(topicId, exceptUids, start, pageSize);
     }
+    
+    @Override
+    public boolean hasLiveFavorite(long uid, long topicId){
+    	LiveFavorite lf = liveMybatisDao.getLiveFavorite(uid, topicId);
+    	if(null != lf){
+    		return true;
+    	}
+    	return false;
+    }
 
     @Override
     public int countLiveFavoriteByTopicId(long topicId, List<Long> exceptUids){
