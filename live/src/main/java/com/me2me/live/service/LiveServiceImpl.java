@@ -9642,7 +9642,7 @@ public class LiveServiceImpl implements LiveService {
 		            topicFragmentWithBLOBs.setExtra(obj.toJSONString());
 		            liveMybatisDao.createTopicFragment(topicFragmentWithBLOBs);
 				}else{
-					return Response.failure(50066, "你无权操作！");
+					return Response.failure(200, "操作成功！");
 				}
 		}else if(action==2){//针对某一用户进行解禁
 				if(topicUserForbid!=null){
@@ -9660,7 +9660,7 @@ public class LiveServiceImpl implements LiveService {
 					newTopicUserForbid.setForbidPattern(action);
 					liveMybatisDao.insertTopicUserForbid(newTopicUserForbid);
 				}else{
-					return Response.failure(50066, "你无权操作！");
+					return Response.failure(200, "操作成功！");
 				}
 		}else if(action==4){//针对王国解除全部禁言
 				if(topicUserForbid!=null){
