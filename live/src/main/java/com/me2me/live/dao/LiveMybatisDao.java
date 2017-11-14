@@ -58,6 +58,7 @@ import com.me2me.live.mapper.TopicDroparoundTrailMapper;
 import com.me2me.live.mapper.TopicFragmentMapper;
 import com.me2me.live.mapper.TopicFragmentTemplateMapper;
 import com.me2me.live.mapper.TopicGivenMapper;
+import com.me2me.live.mapper.TopicImageMapper;
 import com.me2me.live.mapper.TopicListedMapper;
 import com.me2me.live.mapper.TopicMapper;
 import com.me2me.live.mapper.TopicNewsMapper;
@@ -135,6 +136,8 @@ import com.me2me.live.model.TopicFragmentTemplateExample;
 import com.me2me.live.model.TopicFragmentWithBLOBs;
 import com.me2me.live.model.TopicGiven;
 import com.me2me.live.model.TopicGivenExample;
+import com.me2me.live.model.TopicImage;
+import com.me2me.live.model.TopicImageExample;
 import com.me2me.live.model.TopicListed;
 import com.me2me.live.model.TopicListedExample;
 import com.me2me.live.model.TopicNews;
@@ -322,6 +325,9 @@ public class LiveMybatisDao {
     
 	@Autowired
 	private TopicUserForbidMapper topicUserForbidMapper;
+	
+	@Autowired
+	private TopicImageMapper topicImageMapper;
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -2316,11 +2322,78 @@ public class LiveMybatisDao {
 		return null;
 	}
 
-	public List<TopicUserForbid> getForbidListByTopicId(long topicId) {
+	public List<TopicUserForbid> getForbidListByTopicId(long topicId,int start,int pageSize) {
 		TopicUserForbidExample example = new TopicUserForbidExample();
 		TopicUserForbidExample.Criteria criteria = example.createCriteria();
 		criteria.andTopicIdEqualTo(topicId);
 		criteria.andForbidPatternEqualTo(1);
+		example.setOrderByClause(" id asc limit "+start+","+pageSize);
 		return topicUserForbidMapper.selectByExample(example);
+	}
+	
+	public void saveTopicImage(TopicImage ti){
+		topicImageMapper.insertSelective(ti);
+	}
+	
+	public void updateTopicImage(TopicImage ti){
+		topicImageMapper.updateByPrimaryKeyWithBLOBs(ti);
+	}
+	
+	public TopicImage getTopicCoverFromTopicImage(long topicId){
+		TopicImageExample example = new TopicImageExample();
+		TopicImageExample.Criteria criteria = example.createCriteria();
+		criteria.andTopicIdEqualTo(topicId);
+		criteria.andFidEqualTo(0l);
+		List<TopicImage> list =  topicImageMapper.selectByExampleWithBLOBs(example);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	public void deleteTopicImageByFid(long fid){
+		TopicImageExample example = new TopicImageExample();
+		TopicImageExample.Criteria criteria = example.createCriteria();
+		criteria.andFidEqualTo(fid);
+		topicImageMapper.deleteByExample(example);
+	}
+	
+	public List<TopicImage> getTopicImageByTopicIdAndFid(long topicId, long fid){
+		TopicImageExample example = new TopicImageExample();
+		TopicImageExample.Criteria criteria = example.createCriteria();
+		criteria.andFidEqualTo(fid);
+		criteria.andTopicIdEqualTo(topicId);
+		return  topicImageMapper.selectByExampleWithBLOBs(example);
+	}
+	
+	public int getTotalTopicImageByTopic(long topicId){
+		TopicImageExample example = new TopicImageExample();
+		TopicImageExample.Criteria criteria = example.createCriteria();
+		criteria.andTopicIdEqualTo(topicId);
+		return topicImageMapper.countByExample(example);
+	}
+	
+	public int countTopicImageBefore(long topicId, long fid){
+		TopicImageExample example = new TopicImageExample();
+		TopicImageExample.Criteria criteria = example.createCriteria();
+		criteria.andTopicIdEqualTo(topicId);
+		criteria.andFidLessThan(fid);
+		return topicImageMapper.countByExample(example);
+	}
+	
+	//searchType  0向后查，其他向前查
+	public List<TopicImage> searchTopicImage(long topicId, long fid, int searchType, int limit){
+		TopicImageExample example = new TopicImageExample();
+		TopicImageExample.Criteria criteria = example.createCriteria();
+		criteria.andTopicIdEqualTo(topicId);
+		if(searchType == 0){//向后查
+			criteria.andFidGreaterThan(fid);
+			example.setOrderByClause(" fid,id limit " + limit);
+		}else{//向前查
+			criteria.andFidLessThan(fid);
+			example.setOrderByClause(" fid desc,id desc limit " + limit);
+		}
+		
+		return topicImageMapper.selectByExampleWithBLOBs(example);
 	}
 }

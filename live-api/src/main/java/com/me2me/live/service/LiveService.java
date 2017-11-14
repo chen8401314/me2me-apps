@@ -733,10 +733,12 @@ public interface LiveService {
 	
 	/**
      * 获取禁言列表接口
+	 * @param pageSize 
+	 * @param start 
      * @param request
      * @return
      */
-	List<TopicUserForbid> getForbidListByTopicId(long topicId);
+	List<TopicUserForbid> getForbidListByTopicId(long topicId, int start, int pageSize);
 
 
 }

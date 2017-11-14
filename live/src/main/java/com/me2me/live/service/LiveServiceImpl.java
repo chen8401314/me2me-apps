@@ -162,6 +162,7 @@ import com.me2me.live.model.TopicDroparoundTrail;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentWithBLOBs;
 import com.me2me.live.model.TopicGiven;
+import com.me2me.live.model.TopicImage;
 import com.me2me.live.model.TopicListed;
 import com.me2me.live.model.TopicNews;
 import com.me2me.live.model.TopicPriceChangeLog;
@@ -1246,6 +1247,45 @@ public class LiveServiceImpl implements LiveService {
             }
             liveMybatisDao.createTopicFragment(topicFragment);
 
+            //当保存的为图片相关的内容时（左侧图片，右侧图片，图组，日签，情绪周总结），需要保存到王国图库
+            if((speakDto.getType() == 0 && speakDto.getContentType() == 1)
+            		|| (speakDto.getType() == 51 && speakDto.getContentType() == 51)
+            		|| (speakDto.getType() == 1 && speakDto.getContentType() == 51)
+            		|| (speakDto.getType() == 0 && speakDto.getContentType() == 25)){//左侧图片 or 右侧图片 or 日签
+            	TopicImage topicImage = new TopicImage();
+            	topicImage.setCreateTime(new Date());
+            	topicImage.setExtra(topicFragment.getExtra());
+            	topicImage.setFid(topicFragment.getId());
+            	topicImage.setImage(topicFragment.getFragmentImage());
+            	topicImage.setTopicId(topicFragment.getTopicId());
+            	liveMybatisDao.saveTopicImage(topicImage);
+            }else if((speakDto.getType() == 0 && speakDto.getContentType() == 25)
+            		|| (speakDto.getType() == 52 && speakDto.getContentType() == 25)){//图组
+            	JSONObject extra = JSON.parseObject(topicFragment.getExtra());
+            	if(null != extra.get("images")){
+            		JSONArray imagesArray = extra.getJSONArray("images");
+            		JSONArray imageInfoArray = null;
+            		if(null != extra.get("imageInfo")){
+            			imageInfoArray = extra.getJSONArray("imageInfo");
+            		}else{
+            			imageInfoArray = new JSONArray();
+            		}
+            		for(int i=0;i<imagesArray.size();i++){
+            			TopicImage topicImage = new TopicImage();
+            			topicImage.setCreateTime(new Date());
+            			if(imageInfoArray.size() > i){
+            				topicImage.setExtra(imageInfoArray.getJSONObject(i).toJSONString());
+            			}else{
+            				topicImage.setExtra("");
+            			}
+            			topicImage.setFid(topicFragment.getId());
+            			topicImage.setImage(imagesArray.getString(i));
+            			topicImage.setTopicId(topicFragment.getTopicId());
+            			liveMybatisDao.saveTopicImage(topicImage);
+            		}
+            	}
+            }
+            
             //由于系统消息和足迹不参与王国更新排序计算，故这里不需要更新时间
             if(speakDto.getType() != Specification.LiveSpeakType.SYSTEM.index
                     && (speakDto.getType() != 51 || speakDto.getContentType() != 16)){
@@ -2548,6 +2588,9 @@ public class LiveServiceImpl implements LiveService {
 
                 liveMybatisDao.createDeleteLog(deleteLog);
             }
+            
+            //从王国图库里删除相关图片
+            liveMybatisDao.deleteTopicImageByFid(fid);
 
             //从topicBarrage中删除
             TopicBarrage barrage = liveMybatisDao.getTopicBarrageByFId(fid);
@@ -3870,6 +3913,14 @@ public class LiveServiceImpl implements LiveService {
         td.setUpdateVoteCount(0);
         liveMybatisDao.saveTopicData(td);
         
+        //将封面插入王国图库
+        TopicImage topicImage = new TopicImage();
+        topicImage.setCreateTime(now);
+        topicImage.setExtra("");
+        topicImage.setFid(0l);//0表示封面
+        topicImage.setImage(createKingdomDto.getLiveImage());
+        topicImage.setTopicId(topic.getId());
+        liveMybatisDao.saveTopicImage(topicImage);
         
         SpeakDto speakDto2 = new SpeakDto();
         speakDto2.setTopicId(topic.getId());
@@ -4193,6 +4244,22 @@ public class LiveServiceImpl implements LiveService {
 				topic.setLiveImage(dto.getParams());
 				liveMybatisDao.updateTopic(topic);
 				liveLocalJdbcDao.updateTopicContentCover(topic.getId(), dto.getParams());
+				
+				//换完需要将王国图库里的封面也换掉
+				TopicImage cover = liveMybatisDao.getTopicCoverFromTopicImage(topic.getId());
+				if(null != cover){
+					cover.setImage(dto.getParams());
+					liveMybatisDao.updateTopicImage(cover);
+				}else{
+					cover = new TopicImage();
+					cover.setCreateTime(topic.getCreateTime());
+					cover.setExtra("");
+					cover.setFid(0l);
+					cover.setImage(dto.getParams());
+					cover.setTopicId(topic.getId());
+					liveMybatisDao.saveTopicImage(cover);
+				}
+				
 				log.info("update cover success");
                 LiveParamsDto paramsDto = new LiveParamsDto();
                 paramsDto.setCoverImage(Constant.QINIU_DOMAIN+"/"+dto.getParams());
@@ -5201,6 +5268,17 @@ public class LiveServiceImpl implements LiveService {
         newtf.setExtra(obj.toJSONString());
         liveMybatisDao.createTopicFragment(newtf);
 
+        //如果转发的是图片，则需要保存到对应的王国图库里面去
+        if(newtf.getContentType() == 51){
+        	TopicImage topicImage = new TopicImage();
+        	topicImage.setCreateTime(new Date());
+        	topicImage.setExtra(newtf.getExtra());
+        	topicImage.setFid(newtf.getId());
+        	topicImage.setImage(newtf.getFragmentImage());
+        	topicImage.setTopicId(newtf.getTopicId());
+        	liveMybatisDao.saveTopicImage(topicImage);
+        }
+        
         Calendar calendar = Calendar.getInstance();
         targetTopic.setUpdateTime(calendar.getTime());
         targetTopic.setLongTime(calendar.getTimeInMillis());
@@ -8262,6 +8340,14 @@ public class LiveServiceImpl implements LiveService {
         td.setUpdateVoteCount(0);
         liveMybatisDao.saveTopicData(td);
         
+        //将封面插入王国图库
+        TopicImage topicImage = new TopicImage();
+        topicImage.setCreateTime(now);
+        topicImage.setExtra("");
+        topicImage.setFid(0l);//0表示封面
+        topicImage.setImage(createKingdomDto.getLiveImage());
+        topicImage.setTopicId(topic.getId());
+        liveMybatisDao.saveTopicImage(topicImage);
         
         SpeakDto speakDto2 = new SpeakDto();
         speakDto2.setTopicId(topic.getId());
@@ -8798,6 +8884,22 @@ public class LiveServiceImpl implements LiveService {
         fragment.setExtra(obj.toJSONString());
         liveMybatisDao.createTopicFragment(fragment);
 
+        if(images.size() > 0){//有图片的保存王国图库
+        	for(int i=0;i<images.size();i++){
+        		TopicImage topicImage = new TopicImage();
+            	topicImage.setCreateTime(new Date());
+            	if(imageInfo.size() > i){
+            		topicImage.setExtra(imageInfo.getJSONObject(i).toJSONString());
+            	}else{
+            		topicImage.setExtra("");
+            	}
+            	topicImage.setFid(fragment.getId());
+            	topicImage.setImage(images.getString(i));
+            	topicImage.setTopicId(fragment.getTopicId());
+            	liveMybatisDao.saveTopicImage(topicImage);
+        	}
+        }
+        
         Topic updateTopic = new Topic();
         updateTopic.setId(targetTopic.getId());
     	Calendar calendar = Calendar.getInstance();
@@ -9585,9 +9687,10 @@ public class LiveServiceImpl implements LiveService {
 		if(topic == null){
 			return Response.failure(50037, "来晚一步！这个王国已经被删除了......");
 		}
+
 		//核心圈成员有禁言权限，判断操作者是否是核心圈成员
 		int internalStatus1 = getInternalStatus(topic, uid);
-		if(internalStatus1!=2){
+		if(internalStatus1!=2&&!userService.isAdmin(uid)){
 			return Response.failure(50066, "你无权操作！");
 		}
 		//判断被禁言用户是否是核心圈成员
@@ -9642,7 +9745,7 @@ public class LiveServiceImpl implements LiveService {
 		            topicFragmentWithBLOBs.setExtra(obj.toJSONString());
 		            liveMybatisDao.createTopicFragment(topicFragmentWithBLOBs);
 				}else{
-					return Response.failure(50066, "你无权操作！");
+					return Response.failure(200, "操作成功！");
 				}
 		}else if(action==2){//针对某一用户进行解禁
 				if(topicUserForbid!=null){
@@ -9660,7 +9763,7 @@ public class LiveServiceImpl implements LiveService {
 					newTopicUserForbid.setForbidPattern(action);
 					liveMybatisDao.insertTopicUserForbid(newTopicUserForbid);
 				}else{
-					return Response.failure(50066, "你无权操作！");
+					return Response.failure(200, "操作成功！");
 				}
 		}else if(action==4){//针对王国解除全部禁言
 				if(topicUserForbid!=null){
@@ -9676,7 +9779,7 @@ public class LiveServiceImpl implements LiveService {
 	}
 
 	@Override
-	public List<TopicUserForbid> getForbidListByTopicId(long topicId) {
-		return liveMybatisDao.getForbidListByTopicId(topicId);
+	public List<TopicUserForbid> getForbidListByTopicId(long topicId,int start,int pageSize) {
+		return liveMybatisDao.getForbidListByTopicId(topicId,start,pageSize);
 	}
 }

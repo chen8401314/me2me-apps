@@ -59,6 +59,7 @@ import com.me2me.web.request.FragmentForwardRequest;
 import com.me2me.web.request.GetCreateKingdomInfoRequest;
 import com.me2me.web.request.GetGiftInfoListRequest;
 import com.me2me.web.request.GetJoinLotteryUsersRequest;
+import com.me2me.web.request.GetKingdomImageRequest;
 import com.me2me.web.request.GetKingdomPriceRequest;
 import com.me2me.web.request.GetKingdomTransferRecordRequest;
 import com.me2me.web.request.GetLiveByCidRequest;
@@ -1260,4 +1261,14 @@ public class Live extends BaseController {
     	return liveService.forbidTalk(request.getAction(),request.getForbidUid(),request.getTopicId(),request.getUid());
     }
     
+    /**
+     * 王国大图左右滑动接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getKingdomImage",method = RequestMethod.POST)
+    public Response getKingdomImage(GetKingdomImageRequest request){
+    	return liveExtService.getKingdomImage(request.getUid(), request.getTopicId(), request.getFid(), request.getImageName(), request.getType());
+    }
 }
