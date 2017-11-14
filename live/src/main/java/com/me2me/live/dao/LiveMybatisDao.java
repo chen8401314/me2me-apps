@@ -2289,11 +2289,12 @@ public class LiveMybatisDao {
 		return null;
 	}
 
-	public List<TopicUserForbid> getForbidListByTopicId(long topicId) {
+	public List<TopicUserForbid> getForbidListByTopicId(long topicId,int start,int pageSize) {
 		TopicUserForbidExample example = new TopicUserForbidExample();
 		TopicUserForbidExample.Criteria criteria = example.createCriteria();
 		criteria.andTopicIdEqualTo(topicId);
 		criteria.andForbidPatternEqualTo(1);
+		example.setOrderByClause(" id asc limit "+start+","+pageSize);
 		return topicUserForbidMapper.selectByExample(example);
 	}
 	

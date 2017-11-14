@@ -9778,7 +9778,7 @@ public class LiveServiceImpl implements LiveService {
 	}
 
 	@Override
-	public List<TopicUserForbid> getForbidListByTopicId(long topicId) {
-		return liveMybatisDao.getForbidListByTopicId(topicId);
+	public List<TopicUserForbid> getForbidListByTopicId(long topicId,int start,int pageSize) {
+		return liveMybatisDao.getForbidListByTopicId(topicId,start,pageSize);
 	}
 }

@@ -205,7 +205,7 @@ public class SnsServiceImpl implements SnsService {
     	}else if(getSnsCircleDto.getType() == Specification.SnsCircle.IN.index){//圈内
     		
     	}else if(getSnsCircleDto.getType() == Specification.SnsCircle.FORBID.index){//禁言用户
-    		List<TopicUserForbid> topicUserForbidList = liveService.getForbidListByTopicId(getSnsCircleDto.getTopicId());
+    		List<TopicUserForbid> topicUserForbidList = liveService.getForbidListByTopicId(getSnsCircleDto.getTopicId(), (int)getSnsCircleDto.getSinceId(), pageSize);
     		if(topicUserForbidList != null && topicUserForbidList.size() > 0){
     			for (TopicUserForbid topicUserForbid : topicUserForbidList) {
 					resultUidList.add(topicUserForbid.getUid());
