@@ -2323,4 +2323,43 @@ public class LiveMybatisDao {
 		criteria.andFidEqualTo(fid);
 		topicImageMapper.deleteByExample(example);
 	}
+	
+	public List<TopicImage> getTopicImageByTopicIdAndFid(long topicId, long fid){
+		TopicImageExample example = new TopicImageExample();
+		TopicImageExample.Criteria criteria = example.createCriteria();
+		criteria.andFidEqualTo(fid);
+		criteria.andTopicIdEqualTo(topicId);
+		return  topicImageMapper.selectByExampleWithBLOBs(example);
+	}
+	
+	public int getTotalTopicImageByTopic(long topicId){
+		TopicImageExample example = new TopicImageExample();
+		TopicImageExample.Criteria criteria = example.createCriteria();
+		criteria.andTopicIdEqualTo(topicId);
+		return topicImageMapper.countByExample(example);
+	}
+	
+	public int countTopicImageBefore(long topicId, long fid){
+		TopicImageExample example = new TopicImageExample();
+		TopicImageExample.Criteria criteria = example.createCriteria();
+		criteria.andTopicIdEqualTo(topicId);
+		criteria.andFidLessThan(fid);
+		return topicImageMapper.countByExample(example);
+	}
+	
+	//searchType  0向后查，其他向前查
+	public List<TopicImage> searchTopicImage(long topicId, long fid, int searchType, int limit){
+		TopicImageExample example = new TopicImageExample();
+		TopicImageExample.Criteria criteria = example.createCriteria();
+		criteria.andTopicIdEqualTo(topicId);
+		if(searchType == 0){//向后查
+			criteria.andFidGreaterThan(fid);
+			example.setOrderByClause(" fid,id limit " + limit);
+		}else{//向前查
+			criteria.andFidLessThan(fid);
+			example.setOrderByClause(" fid desc,id desc limit " + limit);
+		}
+		
+		return topicImageMapper.selectByExampleWithBLOBs(example);
+	}
 }
