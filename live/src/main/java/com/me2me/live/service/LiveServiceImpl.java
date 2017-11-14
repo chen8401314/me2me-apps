@@ -9744,15 +9744,11 @@ public class LiveServiceImpl implements LiveService {
 		            obj.put("content", fragment);
 		            topicFragmentWithBLOBs.setExtra(obj.toJSONString());
 		            liveMybatisDao.createTopicFragment(topicFragmentWithBLOBs);
-				}else{
-					return Response.failure(200, "操作成功！");
 				}
 		}else if(action==2){//针对某一用户进行解禁
 				if(topicUserForbid!=null){
 					//删除topic_user_forbid表中的数据
 					liveMybatisDao.deleteTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid,topicId,action);
-				}else{
-					return Response.failure(50066, "你无权操作！");
 				}
 		}else if(action==3){//针对王国采取全部禁言
 				if(topicUserForbid==null){
@@ -9762,15 +9758,11 @@ public class LiveServiceImpl implements LiveService {
 					newTopicUserForbid.setTopicId(topicId);
 					newTopicUserForbid.setForbidPattern(action);
 					liveMybatisDao.insertTopicUserForbid(newTopicUserForbid);
-				}else{
-					return Response.failure(200, "操作成功！");
 				}
 		}else if(action==4){//针对王国解除全部禁言
 				if(topicUserForbid!=null){
 					//删除topic_user_forbid表中的数据
 					liveMybatisDao.deleteTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid,topicId,action);
-				}else{
-					return Response.failure(50066, "你无权操作！");
 				}
 		}else{
     		return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
