@@ -184,6 +184,7 @@ public class Live extends BaseController {
         getLiveTimeLineDto.setTopicId(request.getTopicId());
         getLiveTimeLineDto.setUid(request.getUid());
         getLiveTimeLineDto.setVersion(request.getVersion());
+        getLiveTimeLineDto.setReqType(request.getReqType());
         if(request.getPageSize() <= 0){
         	getLiveTimeLineDto.setPageSize(50);
         }else{
@@ -212,7 +213,7 @@ public class Live extends BaseController {
         liveDetailDto.setSinceId(request.getSinceId());
         liveDetailDto.setDirection(request.getDirection());
         liveDetailDto.setVersionFlag(0);
-        
+        liveDetailDto.setReqType(request.getReqType());
         String version = request.getVersion();
         if(VersionUtil.isNewVersion(version, "3.0.6")){
         	liveDetailDto.setVersionFlag(7);

@@ -283,7 +283,7 @@ public class LiveServiceImpl implements LiveService {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveTimeLineDto.getUid(), getLiveTimeLineDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-        List<TopicFragmentWithBLOBs> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), getLiveTimeLineDto.getPageSize());
+        List<TopicFragmentWithBLOBs> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), getLiveTimeLineDto.getPageSize(),getLiveTimeLineDto.getReqType());
         log.info("get timeLine data");
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
         log.info("buildLiveTimeLine success");
@@ -2965,7 +2965,7 @@ public class LiveServiceImpl implements LiveService {
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveDetailDto.getUid(), getLiveDetailDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
 
-        int totalRecords = liveMybatisDao.countFragmentByTopicId(getLiveDetailDto.getTopicId());
+        int totalRecords = liveMybatisDao.countFragmentByTopicIdAndReqType(getLiveDetailDto.getTopicId(),getLiveDetailDto.getReqType());
 
         LiveDetailDto liveDetailDto = new LiveDetailDto();
         liveDetailDto.setTotalRecords(totalRecords);
