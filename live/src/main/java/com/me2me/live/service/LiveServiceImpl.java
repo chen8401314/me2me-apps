@@ -9687,9 +9687,10 @@ public class LiveServiceImpl implements LiveService {
 		if(topic == null){
 			return Response.failure(50037, "来晚一步！这个王国已经被删除了......");
 		}
+
 		//核心圈成员有禁言权限，判断操作者是否是核心圈成员
 		int internalStatus1 = getInternalStatus(topic, uid);
-		if(internalStatus1!=2){
+		if(internalStatus1!=2&&!userService.isAdmin(uid)){
 			return Response.failure(50066, "你无权操作！");
 		}
 		//判断被禁言用户是否是核心圈成员
