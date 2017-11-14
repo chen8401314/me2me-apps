@@ -1,6 +1,7 @@
 package com.me2me.live.listener;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -11,31 +12,25 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.eventbus.Subscribe;
-import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
-import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Specification;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
 import com.me2me.core.event.ApplicationEventBus;
-import com.me2me.live.cache.LiveLastUpdate;
-import com.me2me.live.cache.MyLivesStatusModel;
-import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveLocalJdbcDao;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.event.AggregationPublishEvent;
 import com.me2me.live.event.SpeakNewEvent;
-import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicAggregation;
 import com.me2me.live.model.TopicFragmentWithBLOBs;
+import com.me2me.live.model.TopicImage;
 import com.me2me.live.model.TopicUserConfig;
 import com.me2me.live.service.LiveServiceImpl;
 import com.me2me.sms.service.JPushService;
@@ -121,6 +116,17 @@ public class AggregationPublishListener {
 						newtf.setId(null);
 						liveMybatisDao.createTopicFragment(newtf);
 						
+						if(newtf.getContentType().intValue() == 51){//如果下发的是图片，则要入王国图库
+							TopicImage topicImage = new TopicImage();
+							topicImage.setCreateTime(new Date());
+							topicImage.setExtra(obj.toJSONString());
+							topicImage.setFid(newtf.getId());
+							topicImage.setImage(newtf.getFragmentImage());
+							topicImage.setTopicId(subTopic.getId());
+							liveMybatisDao.saveTopicImage(topicImage);
+						}
+						
+						
 //						if(this.isInCore(event.getUid(), subTopic.getCoreCircle())){
 							//核心圈的，相当于核心圈发言，需要更新更新时间
 							Calendar calendar = Calendar.getInstance();
@@ -168,27 +174,6 @@ public class AggregationPublishListener {
 		}
 		return result;
 	}
-	
-	private boolean checkTopicPush(long topicId, long uid){
-    	TopicUserConfig tuc = liveMybatisDao.getTopicUserConfig(uid, topicId);
-    	if(null != tuc && tuc.getPushType().intValue() == 1){
-    		return false;
-    	}
-    	return true;
-    }
-    
-    private int getInternalStatus(Topic topic, long uid) {
-        String coreCircle = topic.getCoreCircle();
-        JSONArray array = JSON.parseArray(coreCircle);
-        int internalStatus = 0;
-        for (int i = 0; i < array.size(); i++) {
-            if (array.getLong(i) == uid) {
-                internalStatus = Specification.SnsCircle.CORE.index;
-                break;
-            }
-        }
-        return internalStatus;
-    }
 	
 	private int genContentType(int oldType, int oldContentType){
 		if(oldType == Specification.LiveSpeakType.ANCHOR.index){//主播发言
