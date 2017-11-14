@@ -581,7 +581,11 @@
     ,
     <include refid="Blob_Column_List" />
     from topic_fragment f
-    where f.topic_id=#{topicId,jdbcType=BIGINT} order by id asc limit #{startIndex,jdbcType=INTEGER},#{offset,jdbcType=INTEGER}
+    where f.topic_id=#{topicId,jdbcType=BIGINT} 
+    <if test="reqType==1">
+      and f.type in(0,3,11,12,13,52,54,55,57,58) 
+      </if>
+    order by id asc limit #{startIndex,jdbcType=INTEGER},#{offset,jdbcType=INTEGER}
     <if test="sinceId&gt;0">
       )a where a.id&gt;#{sinceId,jdbcType=BIGINT}
     </if>
