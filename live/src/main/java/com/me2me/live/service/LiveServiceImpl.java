@@ -1139,7 +1139,7 @@ public class LiveServiceImpl implements LiveService {
     	if(topicUserForbid1!=null&&coreStatus!=2&&speakDto.getContentType()!=24&&!userService.isAdmin(speakDto.getUid())){//不是送礼物，不是核心圈成员，不是管理员
     		return Response.failure(50071, "此王国处于全体禁言模式");
     	}
-    	if(topicUserForbid2!=null&&speakDto.getContentType()!=24&&!userService.isAdmin(speakDto.getUid())){
+    	if(topicUserForbid2!=null&&speakDto.getContentType()!=24){
     		return Response.failure(50072, "你已被此王国禁言");
     	}
         if (speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
@@ -8953,7 +8953,7 @@ public class LiveServiceImpl implements LiveService {
     	if(topicUserForbid1!=null&&coreStatus!=2&&!userService.isAdmin(uid)){
     		return Response.failure(50071, "此王国处于全体禁言模式");
     	}
-    	if(topicUserForbid2!=null&&!userService.isAdmin(uid)){
+    	if(topicUserForbid2!=null){
     		return Response.failure(50072, "你已被此王国禁言");
     	}
     	if(lotteryInfo==null){
