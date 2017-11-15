@@ -1136,10 +1136,10 @@ public class LiveServiceImpl implements LiveService {
     	TopicUserForbid topicUserForbid2 = liveMybatisDao.findTopicUserForbidByTopicIdAndUid(speakDto.getTopicId(),speakDto.getUid());
     	//判断该用户是否是核心圈成员
         int coreStatus = getInternalStatus(topic, speakDto.getUid());
-    	if(topicUserForbid1!=null&&coreStatus!=2&&speakDto.getContentType()!=24){//不是送礼物，不是核心圈成员
+    	if(topicUserForbid1!=null&&coreStatus!=2&&speakDto.getContentType()!=24&&!userService.isAdmin(speakDto.getUid())){//不是送礼物，不是核心圈成员，不是管理员
     		return Response.failure(50071, "此王国处于全体禁言模式");
     	}
-    	if(topicUserForbid2!=null&&speakDto.getContentType()!=24){
+    	if(topicUserForbid2!=null&&speakDto.getContentType()!=24&&!userService.isAdmin(speakDto.getUid())){
     		return Response.failure(50072, "你已被此王国禁言");
     	}
         if (speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
@@ -7251,15 +7251,8 @@ public class LiveServiceImpl implements LiveService {
     	if(topic==null){
     		return Response.failure(50037, "来晚一步！这个王国已经被删除了......");
     	}
-    	//先判断王国是否处于全体禁言
-    	TopicUserForbid topicUserForbid1 = liveMybatisDao.findTopicUserForbidByTopicId(topicId);
     	//判断该用户是否被单禁言
     	TopicUserForbid topicUserForbid2 = liveMybatisDao.findTopicUserForbidByTopicIdAndUid(topicId,uid);
-    	//判断该用户是否是核心圈成员
-        int coreStatus = getInternalStatus(topic, uid);
-    	if(topicUserForbid1!=null&&coreStatus!=2){
-    		return Response.failure(50071, "此王国处于全体禁言模式");
-    	}
     	if(topicUserForbid2!=null){
     		return Response.failure(50072, "你已被此王国禁言");
     	}
@@ -8957,10 +8950,10 @@ public class LiveServiceImpl implements LiveService {
     	TopicUserForbid topicUserForbid2 = liveMybatisDao.findTopicUserForbidByTopicIdAndUid(topicId,uid);
     	//判断该用户是否是核心圈成员
         int coreStatus = getInternalStatus(topic, uid);
-    	if(topicUserForbid1!=null&&coreStatus!=2){
+    	if(topicUserForbid1!=null&&coreStatus!=2&&!userService.isAdmin(uid)){
     		return Response.failure(50071, "此王国处于全体禁言模式");
     	}
-    	if(topicUserForbid2!=null){
+    	if(topicUserForbid2!=null&&!userService.isAdmin(uid)){
     		return Response.failure(50072, "你已被此王国禁言");
     	}
     	if(lotteryInfo==null){
@@ -9760,7 +9753,11 @@ public class LiveServiceImpl implements LiveService {
 					liveMybatisDao.deleteTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid,topicId,action);
 				}
 		}else if(action==3){//针对王国采取全部禁言
-				if(topicUserForbid==null){
+			if(uid!=topic.getUid()){
+				return Response.failure(50066, "你无权操作！");
+			}	
+			
+			if(topicUserForbid==null){
 					//向topic_user_forbid表中插入数据
 					TopicUserForbid newTopicUserForbid = new TopicUserForbid();
 					newTopicUserForbid.setOptUid(uid);
@@ -9769,10 +9766,14 @@ public class LiveServiceImpl implements LiveService {
 					liveMybatisDao.insertTopicUserForbid(newTopicUserForbid);
 				}
 		}else if(action==4){//针对王国解除全部禁言
-				if(topicUserForbid!=null){
-					//删除topic_user_forbid表中的数据
-					liveMybatisDao.deleteTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid,topicId,action);
-				}
+			if(uid!=topic.getUid()){
+				return Response.failure(50066, "你无权操作！");
+			}
+			
+			if(topicUserForbid!=null){
+				//删除topic_user_forbid表中的数据
+				liveMybatisDao.deleteTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid,topicId,action);
+			}
 		}else{
     		return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
     	}
