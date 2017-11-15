@@ -30,4 +30,6 @@ public class GetLiveDetailDto implements BaseEntity {
     
     
     private int currentCount = 0;
+    
+    private int reqType;
 }

@@ -284,7 +284,7 @@ public class LiveServiceImpl implements LiveService {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveTimeLineDto.getUid(), getLiveTimeLineDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-        List<TopicFragmentWithBLOBs> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), getLiveTimeLineDto.getPageSize());
+        List<TopicFragmentWithBLOBs> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), getLiveTimeLineDto.getPageSize(),getLiveTimeLineDto.getReqType());
         log.info("get timeLine data");
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
         log.info("buildLiveTimeLine success");
@@ -1136,7 +1136,7 @@ public class LiveServiceImpl implements LiveService {
     	TopicUserForbid topicUserForbid2 = liveMybatisDao.findTopicUserForbidByTopicIdAndUid(speakDto.getTopicId(),speakDto.getUid());
     	//判断该用户是否是核心圈成员
         int coreStatus = getInternalStatus(topic, speakDto.getUid());
-    	if(topicUserForbid1!=null&&coreStatus!=2&&speakDto.getContentType()!=24){//不是送礼物，不是核心圈成员
+    	if(topicUserForbid1!=null&&coreStatus!=2&&speakDto.getContentType()!=24&&!userService.isAdmin(speakDto.getUid())){//不是送礼物，不是核心圈成员，不是管理员
     		return Response.failure(50071, "此王国处于全体禁言模式");
     	}
     	if(topicUserForbid2!=null&&speakDto.getContentType()!=24){
@@ -3008,7 +3008,7 @@ public class LiveServiceImpl implements LiveService {
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveDetailDto.getUid(), getLiveDetailDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
 
-        int totalRecords = liveMybatisDao.countFragmentByTopicId(getLiveDetailDto.getTopicId());
+        int totalRecords = liveMybatisDao.countFragmentByTopicIdAndReqType(getLiveDetailDto.getTopicId(),getLiveDetailDto.getReqType());
 
         LiveDetailDto liveDetailDto = new LiveDetailDto();
         liveDetailDto.setTotalRecords(totalRecords);
@@ -3077,7 +3077,7 @@ public class LiveServiceImpl implements LiveService {
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveDetailDto.getUid(), getLiveDetailDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
 
-        int totalRecords = liveMybatisDao.countFragmentByTopicId(getLiveDetailDto.getTopicId());
+        int totalRecords = liveMybatisDao.countFragmentByTopicIdAndReqType(getLiveDetailDto.getTopicId(),getLiveDetailDto.getReqType());
 
         LiveDetailPageDto liveDetailDto = new LiveDetailPageDto();
         liveDetailDto.setTotalRecords(totalRecords);
@@ -5204,6 +5204,15 @@ public class LiveServiceImpl implements LiveService {
     public List<LiveFavorite> getLiveFavoriteByTopicId(long topicId, List<Long> exceptUids, int start, int pageSize){
         return liveMybatisDao.getLiveFavoritePageByTopicIdAndExceptUids(topicId, exceptUids, start, pageSize);
     }
+    
+    @Override
+    public boolean hasLiveFavorite(long uid, long topicId){
+    	LiveFavorite lf = liveMybatisDao.getLiveFavorite(uid, topicId);
+    	if(null != lf){
+    		return true;
+    	}
+    	return false;
+    }
 
     @Override
     public int countLiveFavoriteByTopicId(long topicId, List<Long> exceptUids){
@@ -7242,15 +7251,8 @@ public class LiveServiceImpl implements LiveService {
     	if(topic==null){
     		return Response.failure(50037, "来晚一步！这个王国已经被删除了......");
     	}
-    	//先判断王国是否处于全体禁言
-    	TopicUserForbid topicUserForbid1 = liveMybatisDao.findTopicUserForbidByTopicId(topicId);
     	//判断该用户是否被单禁言
     	TopicUserForbid topicUserForbid2 = liveMybatisDao.findTopicUserForbidByTopicIdAndUid(topicId,uid);
-    	//判断该用户是否是核心圈成员
-        int coreStatus = getInternalStatus(topic, uid);
-    	if(topicUserForbid1!=null&&coreStatus!=2){
-    		return Response.failure(50071, "此王国处于全体禁言模式");
-    	}
     	if(topicUserForbid2!=null){
     		return Response.failure(50072, "你已被此王国禁言");
     	}
@@ -8948,7 +8950,7 @@ public class LiveServiceImpl implements LiveService {
     	TopicUserForbid topicUserForbid2 = liveMybatisDao.findTopicUserForbidByTopicIdAndUid(topicId,uid);
     	//判断该用户是否是核心圈成员
         int coreStatus = getInternalStatus(topic, uid);
-    	if(topicUserForbid1!=null&&coreStatus!=2){
+    	if(topicUserForbid1!=null&&coreStatus!=2&&!userService.isAdmin(uid)){
     		return Response.failure(50071, "此王国处于全体禁言模式");
     	}
     	if(topicUserForbid2!=null){
@@ -9687,9 +9689,10 @@ public class LiveServiceImpl implements LiveService {
 		if(topic == null){
 			return Response.failure(50037, "来晚一步！这个王国已经被删除了......");
 		}
+
 		//核心圈成员有禁言权限，判断操作者是否是核心圈成员
 		int internalStatus1 = getInternalStatus(topic, uid);
-		if(internalStatus1!=2){
+		if(internalStatus1!=2&&!userService.isAdmin(uid)){
 			return Response.failure(50066, "你无权操作！");
 		}
 		//判断被禁言用户是否是核心圈成员
@@ -9743,34 +9746,34 @@ public class LiveServiceImpl implements LiveService {
 		            obj.put("content", fragment);
 		            topicFragmentWithBLOBs.setExtra(obj.toJSONString());
 		            liveMybatisDao.createTopicFragment(topicFragmentWithBLOBs);
-				}else{
-					return Response.failure(200, "操作成功！");
 				}
 		}else if(action==2){//针对某一用户进行解禁
 				if(topicUserForbid!=null){
 					//删除topic_user_forbid表中的数据
 					liveMybatisDao.deleteTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid,topicId,action);
-				}else{
-					return Response.failure(50066, "你无权操作！");
 				}
 		}else if(action==3){//针对王国采取全部禁言
-				if(topicUserForbid==null){
+			if(uid!=topic.getUid()){
+				return Response.failure(50066, "你无权操作！");
+			}	
+			
+			if(topicUserForbid==null){
 					//向topic_user_forbid表中插入数据
 					TopicUserForbid newTopicUserForbid = new TopicUserForbid();
 					newTopicUserForbid.setOptUid(uid);
 					newTopicUserForbid.setTopicId(topicId);
 					newTopicUserForbid.setForbidPattern(action);
 					liveMybatisDao.insertTopicUserForbid(newTopicUserForbid);
-				}else{
-					return Response.failure(200, "操作成功！");
 				}
 		}else if(action==4){//针对王国解除全部禁言
-				if(topicUserForbid!=null){
-					//删除topic_user_forbid表中的数据
-					liveMybatisDao.deleteTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid,topicId,action);
-				}else{
-					return Response.failure(50066, "你无权操作！");
-				}
+			if(uid!=topic.getUid()){
+				return Response.failure(50066, "你无权操作！");
+			}
+			
+			if(topicUserForbid!=null){
+				//删除topic_user_forbid表中的数据
+				liveMybatisDao.deleteTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid,topicId,action);
+			}
 		}else{
     		return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
     	}

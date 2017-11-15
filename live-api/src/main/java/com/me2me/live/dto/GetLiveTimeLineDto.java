@@ -24,4 +24,5 @@ public class GetLiveTimeLineDto implements BaseEntity {
     
     private int pageSize;
 
+    private int reqType;
 }

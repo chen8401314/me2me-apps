@@ -27,4 +27,8 @@ public class LiveDetailRequest extends Request{
     @Getter
     @Setter
     private int direction;
+    
+    @Getter
+    @Setter
+    private int reqType;
 }
