@@ -17,6 +17,8 @@ import com.me2me.live.dao.LiveExtDao;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.CategoryKingdomsDto;
 import com.me2me.live.dto.GetKingdomImageDTO;
+import com.me2me.live.dto.KingdomImageListDTO;
+import com.me2me.live.dto.KingdomImageMonthDTO;
 import com.me2me.live.dto.TopicCategoryDto;
 import com.me2me.live.dto.TopicCategoryDto.Category;
 import com.me2me.live.mapper.TopicCategoryMapper;
@@ -261,6 +263,62 @@ public class LiveExtServiceImpl implements LiveExtService {
 			}
 		}else{
 			return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
+		}
+		
+		return Response.success(result);
+	}
+	
+	@Override
+	public Response kingdomImageMonth(long uid, long topicId, long fid){
+		KingdomImageMonthDTO result = new KingdomImageMonthDTO();
+		
+		int monthCount = 0;
+		String showMonth = null;
+		List<Map<String, Object>> list = extDao.getKingdomImageMonth(topicId);
+		if(null != list && list.size() > 0){
+			monthCount = list.size();
+			Map<String, Object> m = null;
+			KingdomImageMonthDTO.MonthElement e = null;
+			for(int i=0;i<list.size();i++){
+				m = list.get(i);
+				if(i == 0){
+					showMonth = (String)m.get("mm");
+				}else{
+					long minFid = (Long)m.get("minfid");
+					long maxFid = (Long)m.get("maxfid");
+					if(fid>=minFid && fid<=maxFid){
+						showMonth = (String)m.get("mm");
+					}
+				}
+				
+				e = new KingdomImageMonthDTO.MonthElement();
+				e.setMonth((String)m.get("mm"));
+				e.setImageCount(((Long)m.get("cc")).intValue());
+				result.getMonthData().add(e);
+			}
+		}
+		
+		result.setMonthCount(monthCount);
+		result.setShowMonth(showMonth);
+		
+		return Response.success(result);
+	}
+	
+	@Override
+	public Response kingdomImageList(long uid, long topicId, String month){
+		KingdomImageListDTO result = new KingdomImageListDTO();
+		
+		List<Map<String, Object>> list = extDao.getKingdomImageList(topicId, month);
+		if(null != list && list.size() > 0){
+			KingdomImageListDTO.ImageElement e = null;
+			for(Map<String, Object> m : list){
+				e = new KingdomImageListDTO.ImageElement();
+				e.setFid((Long)m.get("fid"));
+				e.setImageName((String)m.get("image"));
+				e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+(String)m.get("image"));
+				e.setExtra((String)m.get("extra"));
+				result.getImageDatas().add(e);
+			}
 		}
 		
 		return Response.success(result);

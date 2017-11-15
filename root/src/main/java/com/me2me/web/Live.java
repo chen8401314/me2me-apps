@@ -74,6 +74,8 @@ import com.me2me.web.request.ImgDBRequest;
 import com.me2me.web.request.InactiveLiveRequest;
 import com.me2me.web.request.JoinLotteryRequest;
 import com.me2me.web.request.KingdomByCategoryRequest;
+import com.me2me.web.request.KingdomImageListRequest;
+import com.me2me.web.request.KingdomImageMonthRequest;
 import com.me2me.web.request.KingdomSearchRequest;
 import com.me2me.web.request.ListTopicListedRequest;
 import com.me2me.web.request.ListTopicRequest;
@@ -1269,5 +1271,27 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getKingdomImage",method = RequestMethod.POST)
     public Response getKingdomImage(GetKingdomImageRequest request){
     	return liveExtService.getKingdomImage(request.getUid(), request.getTopicId(), request.getFid(), request.getImageName(), request.getType());
+    }
+    
+    /**
+     * 王国图库月份列表接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/kingdomImageMonth",method = RequestMethod.POST)
+    public Response kingdomImageMonth(KingdomImageMonthRequest request){
+    	return liveExtService.kingdomImageMonth(request.getUid(), request.getTopicId(), request.getFid());
+    }
+    
+    /**
+     * 王国图库按月份查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/kingdomImageList",method = RequestMethod.POST)
+    public Response kingdomImageList(KingdomImageListRequest request){
+    	return liveExtService.kingdomImageList(request.getUid(), request.getTopicId(), request.getMonth());
     }
 }

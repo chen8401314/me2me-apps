@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.me2me.live.mapper.TopicCategoryMapper;
-import com.me2me.live.mapper.TopicMapper;
 import com.me2me.live.model.TopicCategory;
 import com.me2me.live.model.TopicCategoryExample;
 
@@ -61,5 +60,15 @@ public class LiveExtDao {
 		}catch(Exception e){
 			return null;
 		}
+	}
+	
+	public List<Map<String, Object>> getKingdomImageMonth(long topicId){
+		String sql = "select DATE_FORMAT(t.create_time,'%Y-%m') as mm,count(1) as cc,max(t.fid) as maxfid,min(t.fid) as minfid from topic_image t where t.topic_id=? group by mm order by mm";
+		return jdbcTemplate.queryForList(sql, topicId);
+	}
+	
+	public List<Map<String, Object>> getKingdomImageList(long topicId, String month){
+		String sql = "select t.fid,t.image,t.extra from topic_image t where t.topic_id=? and DATE_FORMAT(t.create_time,'%Y-%m')=? order by t.fid,t.id";
+		return jdbcTemplate.queryForList(sql, topicId, month);
 	}
 }

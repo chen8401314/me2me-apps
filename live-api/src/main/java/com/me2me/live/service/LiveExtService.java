@@ -32,5 +32,32 @@ public interface LiveExtService {
 	void updateCategory(TopicCategory category);
 	TopicCategory getCategoryById(int id);
 	
+	/**
+	 * 王国图库左右滑动图片获取接口
+	 * @param uid
+	 * @param topicId
+	 * @param fid
+	 * @param imageName
+	 * @param type
+	 * @return
+	 */
 	Response getKingdomImage(long uid,long topicId,long fid,String imageName,int type);
+	
+	/**
+	 * 王国图库月份列表接口
+	 * @param uid
+	 * @param topicId
+	 * @param fid
+	 * @return
+	 */
+	Response kingdomImageMonth(long uid, long topicId, long fid);
+	
+	/**
+	 * 王国图库按月份查询接口
+	 * @param uid
+	 * @param topicId
+	 * @param month
+	 * @return
+	 */
+	Response kingdomImageList(long uid, long topicId, String month);
 }
