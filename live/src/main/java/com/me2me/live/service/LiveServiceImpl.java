@@ -9697,7 +9697,7 @@ public class LiveServiceImpl implements LiveService {
 		}
 		//判断被禁言用户是否是核心圈成员
 		int internalStatus = 0;
-		if(action==1||action==2){
+		if(action==1){
 			internalStatus = getInternalStatus(topic, forbidUid);
 			if(internalStatus==2){
 				return Response.failure(50066, "你无权操作！");
