@@ -307,6 +307,7 @@ public class Live extends BaseController {
         getLiveUpdateDto.setOffset(offset);
         getLiveUpdateDto.setTopicId(request.getTopicId());
         getLiveUpdateDto.setSinceId(request.getSinceId());
+        getLiveUpdateDto.setUid(request.getUid());
         return liveService.getLiveUpdate(getLiveUpdateDto);
     }
 

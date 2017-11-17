@@ -21,4 +21,8 @@ public class LiveUpdateDto implements BaseEntity{
     private long lastFragmentId;
     
     private int firstPage;
+    
+    private int isForbid;//是否被禁言  0 否 1 是
+    
+    private int isAllForbid;//是否全禁言 0 否 1 是
 }
