@@ -9787,7 +9787,7 @@ public class LiveServiceImpl implements LiveService {
 	}
 
 	@Override
-	public Response userForbidInfo(long uid, long topicId) {
+	public Response userForbidInfo(long forbidUid, long topicId) {
 		UserForbidInfoDto dto = new UserForbidInfoDto();
 		//判断王国是否存在
 		Topic topic = liveMybatisDao.getTopicById(topicId);
@@ -9795,12 +9795,12 @@ public class LiveServiceImpl implements LiveService {
 			return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
 		}
 		//根据uid判断用户是否是国王，核心圈，管理员
-		int internalStatus = getInternalStatus(topic, uid);
-		if(internalStatus==2||uid==topic.getUid()||userService.isAdmin(uid)){
+		int internalStatus = getInternalStatus(topic, forbidUid);
+		if(internalStatus==2||forbidUid==topic.getUid()||userService.isAdmin(forbidUid)){
 			dto.setForbidStatus(0);
 		}else{
 			//判断topic_user_forbid是否已经存在该用户的禁言信息
-			TopicUserForbid topicUserForbid = liveMybatisDao.findTopicUserForbidByForbidUidAndTopicIdAndAction(uid,topicId,1);
+			TopicUserForbid topicUserForbid = liveMybatisDao.findTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid,topicId,1);
 			if(topicUserForbid==null){
 				dto.setForbidStatus(2);
 			}else{

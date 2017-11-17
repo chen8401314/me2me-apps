@@ -1272,7 +1272,7 @@ public class Live extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/userForbidInfo",method = RequestMethod.POST)
     public Response userForbidInfo(UserForbidInfoRequest request){
-    	return liveService.userForbidInfo(request.getUid(),request.getTopicId());
+    	return liveService.userForbidInfo(request.getForbidUid(),request.getTopicId());
     }
     
     /**

@@ -10,4 +10,8 @@ public class UserForbidInfoRequest extends Request {
 	@Getter
 	@Setter
 	private long topicId;
+	
+	@Getter
+	@Setter
+	private long forbidUid;
 }
