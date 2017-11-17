@@ -7254,7 +7254,7 @@ public class LiveServiceImpl implements LiveService {
     	//判断该用户是否被单禁言
     	TopicUserForbid topicUserForbid2 = liveMybatisDao.findTopicUserForbidByTopicIdAndUid(topicId,uid);
     	if(topicUserForbid2!=null){
-    		return Response.failure(50072, "你已被此王国禁言");
+    		return Response.failure(50072, "你已被此王国禁言，无法偷取");
     	}
 		String addr= zkAddr.replace("zookeeper://", "");
 		final int NEW_USER_ZHONGJIANG_COUNT=3;		// 新用户3次必中。
