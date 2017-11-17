@@ -121,6 +121,7 @@ import com.me2me.live.dto.SubscribedTopicDTO;
 import com.me2me.live.dto.TopicTransferRecordDto;
 import com.me2me.live.dto.TopicVoteInfoDto;
 import com.me2me.live.dto.UserAtListDTO;
+import com.me2me.live.dto.UserForbidInfoDto;
 import com.me2me.live.dto.UserKingdomInfoDTO;
 import com.me2me.live.dto.VoteInfoDto;
 import com.me2me.live.event.AggregationPublishEvent;
@@ -9783,5 +9784,29 @@ public class LiveServiceImpl implements LiveService {
 	@Override
 	public List<TopicUserForbid> getForbidListByTopicId(long topicId,int start,int pageSize) {
 		return liveMybatisDao.getForbidListByTopicId(topicId,start,pageSize);
+	}
+
+	@Override
+	public Response userForbidInfo(long uid, long topicId) {
+		UserForbidInfoDto dto = new UserForbidInfoDto();
+		//判断王国是否存在
+		Topic topic = liveMybatisDao.getTopicById(topicId);
+		if(topic == null){
+			return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
+		}
+		//根据uid判断用户是否是国王，核心圈，管理员
+		int internalStatus = getInternalStatus(topic, uid);
+		if(internalStatus==2||uid==topic.getUid()||userService.isAdmin(uid)){
+			dto.setForbidStatus(0);
+		}else{
+			//判断topic_user_forbid是否已经存在该用户的禁言信息
+			TopicUserForbid topicUserForbid = liveMybatisDao.findTopicUserForbidByForbidUidAndTopicIdAndAction(uid,topicId,1);
+			if(topicUserForbid==null){
+				dto.setForbidStatus(2);
+			}else{
+				dto.setForbidStatus(1);
+			}
+		}
+		return Response.success(ResponseStatus.OPERATION_SUCCESS.status,ResponseStatus.OPERATION_SUCCESS.message,dto);
 	}
 }

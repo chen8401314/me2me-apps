@@ -108,6 +108,7 @@ import com.me2me.web.request.TopicTagsModifyRequest;
 import com.me2me.web.request.TopicTagsRequest;
 import com.me2me.web.request.TopicVoteInfoRequest;
 import com.me2me.web.request.UserAtListRequest;
+import com.me2me.web.request.UserForbidInfoRequest;
 import com.me2me.web.request.UserKingdomInfoRequest;
 import com.me2me.web.request.VoteInfoRequest;
 import com.me2me.web.request.VoteRequest;
@@ -1261,6 +1262,17 @@ public class Live extends BaseController {
     @RequestMapping(value = "/forbidTalk",method = RequestMethod.POST)
     public Response forbidTalk(ForbidTalkRequest request){
     	return liveService.forbidTalk(request.getAction(),request.getForbidUid(),request.getTopicId(),request.getUid());
+    }
+    
+    /**
+     * 王国禁言信息查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/userForbidInfo",method = RequestMethod.POST)
+    public Response userForbidInfo(UserForbidInfoRequest request){
+    	return liveService.userForbidInfo(request.getUid(),request.getTopicId());
     }
     
     /**

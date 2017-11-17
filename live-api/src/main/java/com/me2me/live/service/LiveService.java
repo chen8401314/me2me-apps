@@ -741,6 +741,16 @@ public interface LiveService {
      * @return
      */
 	List<TopicUserForbid> getForbidListByTopicId(long topicId, int start, int pageSize);
+	
+	
+	/**
+     * 获取禁言信息查询接口
+	 * @param pageSize 
+	 * @param start 
+     * @param request
+     * @return
+     */
+	Response userForbidInfo(long uid, long topicId);
 
 
 }
