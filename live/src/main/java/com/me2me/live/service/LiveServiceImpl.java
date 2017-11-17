@@ -9685,100 +9685,103 @@ public class LiveServiceImpl implements LiveService {
 
 	@Override
 	public Response forbidTalk(int action, long forbidUid, long topicId, long uid) {
-		//判断王国是否存在
+		// 判断王国是否存在
 		Topic topic = liveMybatisDao.getTopicById(topicId);
-		if(topic == null){
+		if (topic == null) {
 			return Response.failure(50037, "来晚一步！这个王国已经被删除了......");
 		}
 
-		//核心圈成员有禁言权限，判断操作者是否是核心圈成员
+		// 核心圈成员有禁言权限，判断操作者是否是核心圈成员
 		int internalStatus1 = getInternalStatus(topic, uid);
-		if(internalStatus1!=2&&!userService.isAdmin(uid)){
+		if (internalStatus1 != 2 && !userService.isAdmin(uid)) {
 			return Response.failure(50066, "你无权操作！");
 		}
-		//判断被禁言用户是否是核心圈成员
+		// 判断被禁言用户是否是核心圈成员
 		int internalStatus = 0;
-		if(action==1){
+		if (action == 1) {
 			internalStatus = getInternalStatus(topic, forbidUid);
-			if(internalStatus==2){
+			if (internalStatus == 2) {
 				return Response.failure(50066, "你无权操作！");
 			}
 		}
-		//判断被禁言用户是否存在
+		// 判断被禁言用户是否存在
 		UserProfile userProfile = userService.getUserProfileByUid(forbidUid);
-		if(userProfile==null){
+		if (userProfile == null) {
 			return Response.failure(50066, "你无权操作！");
 		}
-		//判断topic_user_forbid是否已经存在该用户的禁言信息
-		TopicUserForbid topicUserForbid = liveMybatisDao.findTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid,topicId,action);
-		if(action==1){//针对某一用户进行单禁
-				if(topicUserForbid==null){
-					//向topic_user_forbid表中插入数据
-					TopicUserForbid newTopicUserForbid = new TopicUserForbid();
-					newTopicUserForbid.setOptUid(uid);
-					newTopicUserForbid.setTopicId(topicId);
-					newTopicUserForbid.setForbidPattern(action);
-					newTopicUserForbid.setUid(forbidUid);
-					liveMybatisDao.insertTopicUserForbid(newTopicUserForbid);
-					
-					String message ="你在【" + topic.getTitle() + "】中被禁言！";
-		    		//推送
-					JsonObject jsonObject = new JsonObject();
-	                jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
-	                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
-	                jsonObject.addProperty("topicId",topicId);
-	                jsonObject.addProperty("contentType", topic.getType());
-	                jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, forbidUid));
-	                jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);
-		    		userService.pushWithExtra(String.valueOf(forbidUid), message, JPushUtils.packageExtra(jsonObject));
-		    		
-		    		//系统消息
-		    		String fragment = userProfile.getNickName() + "在【"+ topic.getTitle() + "】中被禁言！";
-		    		TopicFragmentWithBLOBs topicFragmentWithBLOBs = new TopicFragmentWithBLOBs();
-		    		topicFragmentWithBLOBs.setUid(uid);
-		    		topicFragmentWithBLOBs.setTopicId(topicId);
-		    		topicFragmentWithBLOBs.setFragment(fragment);
-		            topicFragmentWithBLOBs.setType(Specification.LiveSpeakType.SYSTEM.index);
-		            topicFragmentWithBLOBs.setContentType(0);
-		            //组装extra
-		            JSONObject obj = new JSONObject();
-		            obj.put("type", "system");
-		            obj.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
-		            obj.put("content", fragment);
-		            topicFragmentWithBLOBs.setExtra(obj.toJSONString());
-		            liveMybatisDao.createTopicFragment(topicFragmentWithBLOBs);
-				}
-		}else if(action==2){//针对某一用户进行解禁
-				if(topicUserForbid!=null){
-					//删除topic_user_forbid表中的数据
-					liveMybatisDao.deleteTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid,topicId,action);
-				}
-		}else if(action==3){//针对王国采取全部禁言
-			if(uid!=topic.getUid()){
-				return Response.failure(50066, "你无权操作！");
-			}	
-			
-			if(topicUserForbid==null){
-					//向topic_user_forbid表中插入数据
-					TopicUserForbid newTopicUserForbid = new TopicUserForbid();
-					newTopicUserForbid.setOptUid(uid);
-					newTopicUserForbid.setTopicId(topicId);
-					newTopicUserForbid.setForbidPattern(action);
-					liveMybatisDao.insertTopicUserForbid(newTopicUserForbid);
-				}
-		}else if(action==4){//针对王国解除全部禁言
-			if(uid!=topic.getUid()){
+		// 判断topic_user_forbid是否已经存在该用户的禁言信息
+		TopicUserForbid topicUserForbid = liveMybatisDao.findTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid, topicId, action);
+		if (action == 1) {// 针对某一用户进行单禁
+			if (topicUserForbid == null) {
+				// 向topic_user_forbid表中插入数据
+				TopicUserForbid newTopicUserForbid = new TopicUserForbid();
+				newTopicUserForbid.setOptUid(uid);
+				newTopicUserForbid.setTopicId(topicId);
+				newTopicUserForbid.setForbidPattern(action);
+				newTopicUserForbid.setUid(forbidUid);
+				liveMybatisDao.insertTopicUserForbid(newTopicUserForbid);
+
+				String message = "你在【" + topic.getTitle() + "】中被禁言！";
+				// 推送
+				JsonObject jsonObject = new JsonObject();
+				jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
+				jsonObject.addProperty("type", Specification.PushObjectType.LIVE.index);
+				jsonObject.addProperty("topicId", topicId);
+				jsonObject.addProperty("contentType", topic.getType());
+				jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, forbidUid));
+				jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);
+				userService.pushWithExtra(String.valueOf(forbidUid), message, JPushUtils.packageExtra(jsonObject));
+
+				// 系统消息
+				String fragment = userProfile.getNickName() + "在【" + topic.getTitle() + "】中被禁言！";
+				TopicFragmentWithBLOBs topicFragmentWithBLOBs = new TopicFragmentWithBLOBs();
+				topicFragmentWithBLOBs.setUid(uid);
+				topicFragmentWithBLOBs.setTopicId(topicId);
+				topicFragmentWithBLOBs.setFragment(fragment);
+				topicFragmentWithBLOBs.setType(Specification.LiveSpeakType.SYSTEM.index);
+				topicFragmentWithBLOBs.setContentType(0);
+				// 组装extra
+				JSONObject obj = new JSONObject();
+				obj.put("type", "system");
+				obj.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+				obj.put("content", fragment);
+				topicFragmentWithBLOBs.setExtra(obj.toJSONString());
+				liveMybatisDao.createTopicFragment(topicFragmentWithBLOBs);
+			}
+			return Response.success(200, "禁言操作已成功");
+		} else if (action == 2) {// 针对某一用户进行解禁
+			if (topicUserForbid != null) {
+				// 删除topic_user_forbid表中的数据
+				liveMybatisDao.deleteTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid, topicId, action);
+			}
+			return Response.success(200, "已成功解除用户禁言");
+		} else if (action == 3) {// 针对王国采取全部禁言
+			if (uid != topic.getUid()) {
 				return Response.failure(50066, "你无权操作！");
 			}
-			
-			if(topicUserForbid!=null){
-				//删除topic_user_forbid表中的数据
-				liveMybatisDao.deleteTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid,topicId,action);
+
+			if (topicUserForbid == null) {
+				// 向topic_user_forbid表中插入数据
+				TopicUserForbid newTopicUserForbid = new TopicUserForbid();
+				newTopicUserForbid.setOptUid(uid);
+				newTopicUserForbid.setTopicId(topicId);
+				newTopicUserForbid.setForbidPattern(action);
+				liveMybatisDao.insertTopicUserForbid(newTopicUserForbid);
 			}
-		}else{
-    		return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
-    	}
-		return Response.success(200, "操作成功");
+			return Response.success(200, "王国禁言");
+		} else if (action == 4) {// 针对王国解除全部禁言
+			if (uid != topic.getUid()) {
+				return Response.failure(50066, "你无权操作！");
+			}
+
+			if (topicUserForbid != null) {
+				// 删除topic_user_forbid表中的数据
+				liveMybatisDao.deleteTopicUserForbidByForbidUidAndTopicIdAndAction(forbidUid, topicId, action);
+			}
+			return Response.success(200, "王国解除禁言");
+		} else {
+			return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
+		}
 	}
 
 	@Override
