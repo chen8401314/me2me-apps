@@ -3243,7 +3243,19 @@ public class LiveServiceImpl implements LiveService {
         	int firstPage = firstCount%offset==0?firstCount/offset:firstCount/offset+1;
         	liveUpdateDto.setFirstPage(firstPage);
         }
-        
+      //根据cid以及uid判断是否全禁言以及单禁言
+        TopicUserForbid topicUserForbid1 = liveMybatisDao.findTopicUserForbidByTopicId(getLiveUpdateDto.getTopicId());
+        TopicUserForbid topicUserForbid2 = liveMybatisDao.findTopicUserForbidByTopicIdAndUid(getLiveUpdateDto.getTopicId(),getLiveUpdateDto.getUid());
+        if(topicUserForbid1!=null){
+        	liveUpdateDto.setIsAllForbid(1);
+        }else{
+        	liveUpdateDto.setIsAllForbid(0);
+        }
+        if(topicUserForbid2!=null){
+        	liveUpdateDto.setIsForbid(1);
+        }else{
+        	liveUpdateDto.setIsForbid(0);
+        }
         log.info("get live update start ...");
         return Response.success(ResponseStatus.GET_LIVE_UPDATE_SUCCESS.status, ResponseStatus.GET_LIVE_UPDATE_SUCCESS.message, liveUpdateDto);
     }

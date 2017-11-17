@@ -13,4 +13,6 @@ public class GetLiveUpdateDto implements BaseEntity{
     private long sinceId;
 
     private int offset;
+    
+    private long uid;
 }
