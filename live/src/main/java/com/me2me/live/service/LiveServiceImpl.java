@@ -2436,6 +2436,12 @@ public class LiveServiceImpl implements LiveService {
             	result.setIsFirst(0);
             }
             
+            int internalStatus = 1;
+            if(this.isInCore(uid, topic.getCoreCircle())){
+            	internalStatus = 2;
+            }
+            result.setInternalStatus(internalStatus);
+            
             resp  = Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message, result);
         } else if (action == 1) {//取消订阅
             if(null != liveFavorite){

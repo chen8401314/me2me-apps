@@ -11,4 +11,5 @@ public class SubscribedTopicDTO implements BaseEntity {
 	private int currentLevel;
     private int upgrade;
     private int isFirst;
+    private int internalStatus;
 }
