@@ -1135,9 +1135,8 @@ public class LiveServiceImpl implements LiveService {
     	TopicUserForbid topicUserForbid1 = liveMybatisDao.findTopicUserForbidByTopicId(speakDto.getTopicId());
     	//判断该用户是否被单禁言
     	TopicUserForbid topicUserForbid2 = liveMybatisDao.findTopicUserForbidByTopicIdAndUid(speakDto.getTopicId(),speakDto.getUid());
-    	//判断该用户是否是核心圈成员
-        int coreStatus = getInternalStatus(topic, speakDto.getUid());
-    	if(topicUserForbid1!=null&&coreStatus!=2&&speakDto.getContentType()!=24&&!userService.isAdmin(speakDto.getUid())){//不是送礼物，不是核心圈成员，不是管理员
+    	//全体禁言时除了发礼物外，只能国王进行发言
+    	if(topicUserForbid1!=null&&speakDto.getContentType()!=24&&speakDto.getUid()!=topic.getUid()){//不是送礼物，不是国王
     		return Response.failure(50071, "此王国处于全体禁言模式");
     	}
     	if(topicUserForbid2!=null&&speakDto.getContentType()!=24){
@@ -8957,7 +8956,6 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response joinLottery(long lotteryId,String content,long uid,int source){
     	LotteryInfo lotteryInfo = liveMybatisDao.getLotteryInfoById(lotteryId);
-    	//根据uid和topicId判断是否已经被该王国禁言
     	long topicId = lotteryInfo.getTopicId();
     	Topic topic = liveMybatisDao.getTopicById(topicId);
     	if(topic==null){
@@ -8967,9 +8965,8 @@ public class LiveServiceImpl implements LiveService {
     	TopicUserForbid topicUserForbid1 = liveMybatisDao.findTopicUserForbidByTopicId(topicId);
     	//判断该用户是否被单禁言
     	TopicUserForbid topicUserForbid2 = liveMybatisDao.findTopicUserForbidByTopicIdAndUid(topicId,uid);
-    	//判断该用户是否是核心圈成员
-        int coreStatus = getInternalStatus(topic, uid);
-    	if(topicUserForbid1!=null&&coreStatus!=2&&!userService.isAdmin(uid)){
+    	//全国禁言时只有国王能参与抽奖
+    	if(topicUserForbid1!=null&&uid!=topic.getUid()){
     		return Response.failure(50071, "此王国处于全体禁言模式");
     	}
     	if(topicUserForbid2!=null){
