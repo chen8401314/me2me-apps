@@ -59,7 +59,9 @@ public class RemindAndJpushAtMessageListener {
 			return;
 		}
 		
+		//at的第一个人事放在atUid里的，其他的人放在extra的array数组里
 		List<Long> atUidList = new ArrayList<Long>();//被at的uid集合
+		atUidList.add(speakDto.getAtUid());
 		if(!StringUtils.isEmpty(speakDto.getExtra())){
 			JSONObject obj = JSON.parseObject(speakDto.getExtra());
 			if(null != obj.get("array")){
@@ -71,18 +73,9 @@ public class RemindAndJpushAtMessageListener {
 						}
 					}
 				}
-				if(atUidList.size() == 0){
-					atUidList.add(speakDto.getAtUid());
-				}
-			}else{
-				atUidList.add(speakDto.getAtUid());
 			}
-		}else{
-			atUidList.add(speakDto.getAtUid());
 		}
 
-        
-        
         Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
         UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
         
