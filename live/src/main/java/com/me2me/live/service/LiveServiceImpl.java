@@ -1270,6 +1270,7 @@ public class LiveServiceImpl implements LiveService {
             		}else{
             			imageInfoArray = new JSONArray();
             		}
+            		String image = null;
             		for(int i=0;i<imagesArray.size();i++){
             			TopicImage topicImage = new TopicImage();
             			topicImage.setCreateTime(new Date());
@@ -1279,7 +1280,11 @@ public class LiveServiceImpl implements LiveService {
             				topicImage.setExtra("");
             			}
             			topicImage.setFid(topicFragment.getId());
-            			topicImage.setImage(imagesArray.getString(i));
+            			image = imagesArray.getString(i);
+                    	if(image.startsWith("http")){
+                    		image = image.substring(image.lastIndexOf("/")+1);
+                    	}
+            			topicImage.setImage(image);
             			topicImage.setTopicId(topicFragment.getTopicId());
             			liveMybatisDao.saveTopicImage(topicImage);
             		}
@@ -8905,6 +8910,7 @@ public class LiveServiceImpl implements LiveService {
         liveMybatisDao.createTopicFragment(fragment);
 
         if(images.size() > 0){//有图片的保存王国图库
+        	String image = null;
         	for(int i=0;i<images.size();i++){
         		TopicImage topicImage = new TopicImage();
             	topicImage.setCreateTime(new Date());
@@ -8914,7 +8920,11 @@ public class LiveServiceImpl implements LiveService {
             		topicImage.setExtra("");
             	}
             	topicImage.setFid(fragment.getId());
-            	topicImage.setImage(images.getString(i));
+            	image = images.getString(i);
+            	if(image.startsWith("http")){
+            		image = image.substring(image.lastIndexOf("/")+1);
+            	}
+            	topicImage.setImage(image);
             	topicImage.setTopicId(fragment.getTopicId());
             	liveMybatisDao.saveTopicImage(topicImage);
         	}
