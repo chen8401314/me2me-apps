@@ -135,6 +135,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 		
 		TopicImage topicImage = null;
 		GetKingdomImageDTO.ImageElement e = null;
+		String image = null;
 		if(type == 0){//向后拉取
 			boolean flag = false;
 			for(int i=0;i<currList.size();i++){
@@ -144,8 +145,14 @@ public class LiveExtServiceImpl implements LiveExtService {
 					e = new GetKingdomImageDTO.ImageElement();
 					e.setIndex(beforeCount);
 					e.setFid(topicImage.getFid());
-					e.setImageName(topicImage.getImage());
-					e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+topicImage.getImage());
+					image = topicImage.getImage();
+					if(image.startsWith("http")){
+						e.setImageName(image.substring(image.lastIndexOf("/")+1));
+						e.setFragmentImage(image);
+					}else{
+						e.setImageName(image);
+						e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
+					}
 					e.setExtra(topicImage.getExtra());
 					result.getImageDatas().add(e);
 					if(result.getImageDatas().size() >= pageSize){
@@ -167,8 +174,14 @@ public class LiveExtServiceImpl implements LiveExtService {
 						e = new GetKingdomImageDTO.ImageElement();
 						e.setIndex(beforeCount);
 						e.setFid(topicImage.getFid());
-						e.setImageName(topicImage.getImage());
-						e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+topicImage.getImage());
+						image = topicImage.getImage();
+						if(image.startsWith("http")){
+							e.setImageName(image.substring(image.lastIndexOf("/")+1));
+							e.setFragmentImage(image);
+						}else{
+							e.setImageName(image);
+							e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
+						}
 						e.setExtra(topicImage.getExtra());
 						result.getImageDatas().add(e);
 					}
@@ -184,8 +197,14 @@ public class LiveExtServiceImpl implements LiveExtService {
 					e = new GetKingdomImageDTO.ImageElement();
 					e.setIndex(beforeCount);
 					e.setFid(topicImage.getFid());
-					e.setImageName(topicImage.getImage());
-					e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+topicImage.getImage());
+					image = topicImage.getImage();
+					if(image.startsWith("http")){
+						e.setImageName(image.substring(image.lastIndexOf("/")+1));
+						e.setFragmentImage(image);
+					}else{
+						e.setImageName(image);
+						e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
+					}
 					e.setExtra(topicImage.getExtra());
 					result.getImageDatas().add(0, e);//往前插入
 					if(result.getImageDatas().size() >= pageSize){
@@ -205,8 +224,14 @@ public class LiveExtServiceImpl implements LiveExtService {
 					e = new GetKingdomImageDTO.ImageElement();
 					e.setIndex(beforeCount);
 					e.setFid(topicImage.getFid());
-					e.setImageName(topicImage.getImage());
-					e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+topicImage.getImage());
+					image = topicImage.getImage();
+					if(image.startsWith("http")){
+						e.setImageName(image.substring(image.lastIndexOf("/")+1));
+						e.setFragmentImage(image);
+					}else{
+						e.setImageName(image);
+						e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
+					}
 					e.setExtra(topicImage.getExtra());
 					result.getImageDatas().add(0, e);
 				}
@@ -226,8 +251,14 @@ public class LiveExtServiceImpl implements LiveExtService {
 				e = new GetKingdomImageDTO.ImageElement();
 				e.setIndex(currStartCount);
 				e.setFid(topicImage.getFid());
-				e.setImageName(topicImage.getImage());
-				e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+topicImage.getImage());
+				image = topicImage.getImage();
+				if(image.startsWith("http")){
+					e.setImageName(image.substring(image.lastIndexOf("/")+1));
+					e.setFragmentImage(image);
+				}else{
+					e.setImageName(image);
+					e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
+				}
 				e.setExtra(topicImage.getExtra());
 				result.getImageDatas().add(e);
 				currStartCount++;
@@ -240,8 +271,14 @@ public class LiveExtServiceImpl implements LiveExtService {
 					e = new GetKingdomImageDTO.ImageElement();
 					e.setIndex(beforeCount);
 					e.setFid(topicImage.getFid());
-					e.setImageName(topicImage.getImage());
-					e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+topicImage.getImage());
+					image = topicImage.getImage();
+					if(image.startsWith("http")){
+						e.setImageName(image.substring(image.lastIndexOf("/")+1));
+						e.setFragmentImage(image);
+					}else{
+						e.setImageName(image);
+						e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
+					}
 					e.setExtra(topicImage.getExtra());
 					result.getImageDatas().add(0, e);
 					beforeCount--;
@@ -254,8 +291,14 @@ public class LiveExtServiceImpl implements LiveExtService {
 					e = new GetKingdomImageDTO.ImageElement();
 					e.setIndex(currStartCount);
 					e.setFid(topicImage.getFid());
-					e.setImageName(topicImage.getImage());
-					e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+topicImage.getImage());
+					image = topicImage.getImage();
+					if(image.startsWith("http")){
+						e.setImageName(image.substring(image.lastIndexOf("/")+1));
+						e.setFragmentImage(image);
+					}else{
+						e.setImageName(image);
+						e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
+					}
 					e.setExtra(topicImage.getExtra());
 					result.getImageDatas().add(e);
 					currStartCount++;
