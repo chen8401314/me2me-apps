@@ -8754,7 +8754,10 @@ public class ContentServiceImpl implements ContentService {
 						case 51:// 上市王国集合
 							baseElement.setType(51);
 							baseElement.setTitle("最新上市王国");
-							dto.getData().add(baseElement);
+							int cc = liveForContentJdbcDao.countListingKingdoms();
+							if(cc>0){//大于0的才显示
+								dto.getData().add(baseElement);
+							}
 							break;
 						case 52:// 用户集合
 							baseElement.setType(52);

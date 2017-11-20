@@ -1203,6 +1203,12 @@ public class LiveForContentJdbcDao {
 		return jdbcTemplate.queryForList(sql,(page-1)*pageSize,pageSize);
 	}
 	
+	public int countListingKingdoms(){
+		String sql = "SELECT count(1) as cc FROM topic t,topic_listed tl WHERE tl.topic_id  =t.id and tl.status in(0,1)";
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		return Integer.valueOf(list.get(0).get("cc").toString());
+	}
+	
     /**
      * 转让王国修改UGC uid
      * @param topicId
