@@ -1250,8 +1250,7 @@ public class LiveServiceImpl implements LiveService {
             //当保存的为图片相关的内容时（左侧图片，右侧图片，图组，日签，情绪周总结），需要保存到王国图库
             if((speakDto.getType() == 0 && speakDto.getContentType() == 1)
             		|| (speakDto.getType() == 51 && speakDto.getContentType() == 51)
-            		|| (speakDto.getType() == 1 && speakDto.getContentType() == 51)
-            		|| (speakDto.getType() == 0 && speakDto.getContentType() == 25)){//左侧图片 or 右侧图片 or 日签
+            		|| (speakDto.getType() == 1 && speakDto.getContentType() == 51)){//左侧图片 or 右侧图片 or 日签
             	TopicImage topicImage = new TopicImage();
             	topicImage.setCreateTime(new Date());
             	topicImage.setExtra(topicFragment.getExtra());
