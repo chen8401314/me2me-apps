@@ -49,5 +49,9 @@ public class SettingsDto implements BaseEntity {
     private String kcName;
     
     private String kcIcon;
+    
+    private int secretType;
+    
+    private int autoCoreType;
 
 }

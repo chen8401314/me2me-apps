@@ -43,4 +43,11 @@ public class CreateKingdomRequest extends Request {
 	@Setter
     @Getter
 	private int kcid;
+	@Setter
+    @Getter
+	private int secretType;
+	@Setter
+    @Getter
+	private int autoCoreType;
+	
 }

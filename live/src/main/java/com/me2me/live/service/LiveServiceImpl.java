@@ -20,6 +20,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.MBeanExportConfiguration.SpecificPlatform;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -709,6 +710,13 @@ public class LiveServiceImpl implements LiveService {
         	showLiveDto.setIsForbid(0);
         }
         
+        
+        //判断王国是否设置了加入及自动加入核心圈
+        if(topic.getAutoJoinCore()==0){
+        	showLiveDto.setAutoCoreType(0);
+        }else{
+        	showLiveDto.setAutoCoreType(1);
+        }
         String KINGDOM_VIEW_KEY = "USER_VIEW_KINGDOM_"+uid+"_"+topic.getId();
         String visited =  cacheService.get(KINGDOM_VIEW_KEY);
         showLiveDto.setIsFirstView(visited==null?1:0);
@@ -2414,9 +2422,10 @@ public class LiveServiceImpl implements LiveService {
             }
 
             //判断是否是特殊王国，如果是特殊王国，则加入王国的同时，加入核心圈--“赛出家乡美”活动需求
-            Set<String> specialTopicList = cacheService.smembers(CacheConstant.ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
-            if(null != specialTopicList && specialTopicList.size() > 0 && specialTopicList.contains(String.valueOf(topicId))){
-                //特殊王国，则加入的同时加入核心圈，无需关心是否超出核心圈上限
+            //Set<String> specialTopicList = cacheService.smembers(CacheConstant.ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
+            //if(null != specialTopicList && specialTopicList.size() > 0 && specialTopicList.contains(String.valueOf(topicId))){
+            if(topic.getAutoJoinCore()==1){
+            //特殊王国，则加入的同时加入核心圈，无需关心是否超出核心圈上限
                 if(!this.isInCore(uid, topic.getCoreCircle())){
                     topic = liveMybatisDao.getTopicById(topicId);//再拉一次，减少并发问题
                     JSONArray array = JSON.parseArray(topic.getCoreCircle());
@@ -3864,7 +3873,10 @@ public class LiveServiceImpl implements LiveService {
             }
         }
         topic.setType(kingdomType);
-        topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);//目前默认公开的，等以后有需求的再说
+        //创建王国时设置是否私密以及是否自动加入核心圈
+        topic.setRights(createKingdomDto.getSecretType());
+        topic.setAutoJoinCore(createKingdomDto.getAutoCoreType());
+        //topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);//目前默认公开的，等以后有需求的再说
         topic.setSummary(createKingdomDto.getFragment());//目前，第一次发言即王国简介
         topic.setCeAuditType(0);//聚合王国属性，是否需要国王审核才能加入此聚合王国，默认0是
         topic.setAcAuditType(1);//个人王国属性，是否需要国王审核才能收录此王国，默认1否
@@ -4219,6 +4231,20 @@ public class LiveServiceImpl implements LiveService {
             	}
             }
             
+            //查询是否是私密王国
+            if(topic.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
+            	dto.setSecretType(1);
+            }else{
+            	dto.setSecretType(0);
+            }
+            
+            //查询是否自动加入核心圈开关量
+            if(topic.getAutoJoinCore()==0){
+            	dto.setAutoCoreType(0);
+            }else{
+            	dto.setAutoCoreType(1);
+            }
+            
             log.info("get settings success");
         }
         return Response.success(dto);
@@ -4256,7 +4282,7 @@ public class LiveServiceImpl implements LiveService {
 	        	log.info("update kingdom category success");
 	            return Response.success();
 			}else{
-				return Response.failure(500999, "只有国王或管理员可以操作");
+				return Response.failure(ResponseStatus.YOU_ARE_NOT_KING_OR_ADMIN.status, ResponseStatus.YOU_ARE_NOT_KING_OR_ADMIN.message);
 			}
         }
 		
@@ -4356,6 +4382,18 @@ public class LiveServiceImpl implements LiveService {
                 liveLocalJdbcDao.updateTopicContentTitle(topic.getId(), dto.getParams());
                 log.info("update live success");
                 return Response.success();
+            }else if(dto.getAction() == Specification.SettingModify.SECRET_OPT.index){
+            	//私密王国设置
+            	topic.setRights(Integer.valueOf(dto.getParams()));
+            	liveMybatisDao.updateTopic(topic);
+            	log.info("update topic rights");
+            	return Response.success();
+            }else if(dto.getAction() == Specification.SettingModify.AUTO_JOIN_CORE_OPT.index){
+            	//加入及自动加入核心圈设置
+            	topic.setAutoJoinCore(Integer.valueOf(dto.getParams()));
+            	liveMybatisDao.updateTopic(topic);
+            	log.info("update topic auto_join_core");
+            	return Response.success();
             }
 		} else {
 			return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);

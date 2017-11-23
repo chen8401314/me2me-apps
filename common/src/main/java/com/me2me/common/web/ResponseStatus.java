@@ -440,6 +440,8 @@ public enum  ResponseStatus {
     ACTION_NOT_SUPPORT("暂不支持的操作类型", "action not support", 50055),
 
     YOU_ARE_NOT_KING("只有国王才能操作", "you are not king", 50056),
+    
+    YOU_ARE_NOT_KING_OR_ADMIN("只有国王或管理员可以操作", "you are not king or admin", 500999),
 
     REPEATED_TREATMENT("重复处理", "repeated treatment", 50057),
     

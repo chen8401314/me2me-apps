@@ -99,6 +99,8 @@ public class ShowLiveDto implements BaseEntity {
     
     private int isAllForbid;//是否全禁言 0 否 1 是
     
+    private int autoCoreType;//判断是否加入及自动加入核心圈
+    
     @Data
     public static class TopicElement implements BaseEntity{
 		private static final long serialVersionUID = 986248317266706695L;
