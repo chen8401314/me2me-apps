@@ -376,18 +376,20 @@ public class LiveExtServiceImpl implements LiveExtService {
 	@Override
 	public Response shareImgInfo(long targetUid, long topicId, long fid){
 		ShareImgInfoDTO result = new ShareImgInfoDTO();
-		
+		//获取昵称
 		String nickName = "";
 		UserProfile targetUser = userService.getUserProfileByUid(targetUid);
 		if(null != targetUser){
 			nickName = targetUser.getNickName();
 		}
-		
+		//获取王国名
 		Topic topic = liveMybatisDao.getTopicById(topicId);
 		if(null == topic){
 			return Response.success(result);
 		}
-		
+		String title = topic.getTitle();
+
+		//获取更新次数和更新时间
 		int count = 0;
 		Date updateTime = null;
 		Map<String, Object> fragmentInfo = extDao.getTopicFragmentInfo(topicId, targetUid, fid);
@@ -402,6 +404,10 @@ public class LiveExtServiceImpl implements LiveExtService {
 		if(null == updateTime){
 			updateTime = new Date();
 		}
+		
+		//开始画头部图
+		
+		
 		
 		List<String> textList = new ArrayList<String>();
 		

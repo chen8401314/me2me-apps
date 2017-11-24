@@ -4,24 +4,41 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
+import java.util.Locale;
 
 public class DateUtil {
 
 	public static String date2string(Date date, String pattern){
-		if(null == date || StringUtils.isBlank(pattern)){
-			return "";
-		}
-		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
-		return sdf.format(date);
+		return date2string(date, pattern, null);
 	}
 	
 	public static Date string2date(String dateStr, String pattern) throws ParseException{
-		if(StringUtils.isBlank(dateStr) || StringUtils.isBlank(pattern)){
+		return string2date(dateStr, pattern, null);
+	}
+	
+	public static String date2string(Date date, String pattern, Locale locale){
+		if(null == date || null == pattern){
+			return "";
+		}
+		SimpleDateFormat sdf = null;
+		if(null == locale){
+			sdf = new SimpleDateFormat(pattern);
+		}else{
+			sdf = new SimpleDateFormat(pattern, locale);
+		}
+		return sdf.format(date);
+	}
+	
+	public static Date string2date(String dateStr, String pattern, Locale locale) throws ParseException{
+		if(null == dateStr || null == pattern){
 			return null;
 		}
-		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+		SimpleDateFormat sdf = null;
+		if(null == locale){
+			sdf = new SimpleDateFormat(pattern);
+		}else{
+			sdf = new SimpleDateFormat(pattern, locale);
+		}
 		try{
 			return sdf.parse(dateStr);
 		}catch(Exception e){

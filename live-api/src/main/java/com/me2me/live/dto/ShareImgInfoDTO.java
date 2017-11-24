@@ -12,9 +12,6 @@ public class ShareImgInfoDTO implements BaseEntity {
 	private static final long serialVersionUID = -136051781095303227L;
 
 	private List<ImageInfoElement> imageInfos = Lists.newArrayList();
-	private String textImageDatas;
-	private int textImageHeight;
-	private int textImageWidth;
 	
 	@Data
 	public static class ImageInfoElement implements BaseEntity {
@@ -22,7 +19,5 @@ public class ShareImgInfoDTO implements BaseEntity {
 		
 		private int type;
 		private String imageUrl;
-		private int textHeightStart;
-		private int textHeightEnd;
 	}
 }
