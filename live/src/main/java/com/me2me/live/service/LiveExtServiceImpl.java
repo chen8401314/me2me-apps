@@ -3,6 +3,7 @@ package com.me2me.live.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.util.StringUtils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.me2me.common.Constant;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.content.dto.NewKingdom;
@@ -404,6 +406,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 		if(null == updateTime){
 			updateTime = new Date();
 		}
+		String timeStr = DateUtil.date2string(updateTime, "dd MMM", Locale.ENGLISH);
 		
 		//开始画头部图
 		

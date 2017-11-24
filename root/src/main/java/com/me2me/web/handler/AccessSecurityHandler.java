@@ -62,6 +62,7 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         WHITE_LIST.add("/api/user/findEncrypt");
         WHITE_LIST.add("/api/user/verify");
         WHITE_LIST.add("/api/user/thirdPartLogin");
+        WHITE_LIST.add("/api/io/getQiniuAccessToken");
         //验证码登录与注册
         WHITE_LIST.add("/api/user/loginByVerify");
         WHITE_LIST.add("/api/user/signUpByVerify");
