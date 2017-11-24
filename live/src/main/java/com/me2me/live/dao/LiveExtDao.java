@@ -71,4 +71,27 @@ public class LiveExtDao {
 		String sql = "select t.fid,t.image,t.extra from topic_image t where t.topic_id=? and DATE_FORMAT(t.create_time,'%Y-%m')=? order by t.fid,t.id";
 		return jdbcTemplate.queryForList(sql, topicId, month);
 	}
+	
+	public List<Map<String, Object>> getTopicCardImageInfo(long topicId, long uid, long fid){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select f.fragment,f.fragment_image,f.type,f.content_type,f.extra");
+		sb.append(" from topic_fragment f where f.status=1 and f.topic_id=? and f.id>=?");
+		sb.append(" and f.uid=? and ((f.type=0 and f.content_type in (0,1))");
+		sb.append(" or f.type in (12,23,25)) order by f.id limit 5");
+		return jdbcTemplate.queryForList(sb.toString(), topicId,fid,uid);
+	}
+	
+	public Map<String, Object> getTopicFragmentInfo(long topicId, long uid, long fid){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select count(1) as cc,max(f.create_time) as maxtime");
+		sb.append(" from topic_fragment f where f.status=1");
+		sb.append(" and f.topic_id=? and f.id<=? and f.uid=?");
+		sb.append(" and f.type in (0,3,11,12,13,52,54,55,57,58)");
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString(), topicId,fid,uid);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
 }

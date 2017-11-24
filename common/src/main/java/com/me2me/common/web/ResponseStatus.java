@@ -481,13 +481,18 @@ public enum  ResponseStatus {
     
     KINGDOM_STEAL_FAILURE("王国偷取失败","kingdom steal failure",50074),
     
+    CONTENT_NOT_EXISTS("内容不存在","content not exists",50075),
+    
+    
     
     
     ILLEGAL_REQUEST("非法的请求参数","illegal request",50099),
 	
     //创建王国余额不足
-	CREATE_KINGDOM_PRICE_LACK("需要消耗#{price}#米汤币,当前余额不足！","create kingdom price lack",500100);
+	CREATE_KINGDOM_PRICE_LACK("需要消耗#{price}#米汤币,当前余额不足！","create kingdom price lack",500100),
 
+	COMMON_ERROR_RESULT("通用错误返回", "common error result", 500999);
+	
     public final String message;
 
     public final String englishMessage;

@@ -1,6 +1,7 @@
 package com.me2me.live.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -19,11 +22,14 @@ import com.me2me.live.dto.CategoryKingdomsDto;
 import com.me2me.live.dto.GetKingdomImageDTO;
 import com.me2me.live.dto.KingdomImageListDTO;
 import com.me2me.live.dto.KingdomImageMonthDTO;
+import com.me2me.live.dto.ShareImgInfoDTO;
 import com.me2me.live.dto.TopicCategoryDto;
 import com.me2me.live.dto.TopicCategoryDto.Category;
 import com.me2me.live.mapper.TopicCategoryMapper;
+import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicCategory;
 import com.me2me.live.model.TopicImage;
+import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -363,6 +369,98 @@ public class LiveExtServiceImpl implements LiveExtService {
 				result.getImageDatas().add(e);
 			}
 		}
+		
+		return Response.success(result);
+	}
+	
+	@Override
+	public Response shareImgInfo(long targetUid, long topicId, long fid){
+		ShareImgInfoDTO result = new ShareImgInfoDTO();
+		
+		String nickName = "";
+		UserProfile targetUser = userService.getUserProfileByUid(targetUid);
+		if(null != targetUser){
+			nickName = targetUser.getNickName();
+		}
+		
+		Topic topic = liveMybatisDao.getTopicById(topicId);
+		if(null == topic){
+			return Response.success(result);
+		}
+		
+		int count = 0;
+		Date updateTime = null;
+		Map<String, Object> fragmentInfo = extDao.getTopicFragmentInfo(topicId, targetUid, fid);
+		if(null != fragmentInfo && fragmentInfo.size() > 0){
+			if(null != fragmentInfo.get("cc")){
+				count = ((Long)fragmentInfo.get("cc")).intValue();
+			}
+			if(null != fragmentInfo.get("maxtime")){
+				updateTime = (Date)fragmentInfo.get("maxtime");
+			}
+		}
+		if(null == updateTime){
+			updateTime = new Date();
+		}
+		
+		List<String> textList = new ArrayList<String>();
+		
+		//获取需要的信息
+		List<Map<String, Object>> list = extDao.getTopicCardImageInfo(topicId, targetUid, fid);
+		if(null != list && list.size() > 0){
+			int contentType = 0;
+			String extra = null;
+			JSONArray imagesArray = null;
+			ShareImgInfoDTO.ImageInfoElement e = null;
+			for(Map<String, Object> m : list){
+				if(result.getImageInfos().size() >= 5){
+					break;
+				}
+				contentType = (Integer)m.get("content_type");
+				if(contentType == 0){//文字
+					e = new ShareImgInfoDTO.ImageInfoElement();
+					e.setType(1);
+					textList.add((String)m.get("fragment"));
+					result.getImageInfos().add(e);
+				}else if(contentType == 1){//图片
+					e = new ShareImgInfoDTO.ImageInfoElement();
+					e.setType(2);
+					e.setImageUrl(Constant.QINIU_DOMAIN+"/"+(String)m.get("fragment_image"));
+					result.getImageInfos().add(e);
+				}else if(contentType == 12){//视频
+					e = new ShareImgInfoDTO.ImageInfoElement();
+					e.setType(3);
+					e.setImageUrl(Constant.QINIU_DOMAIN+"/"+(String)m.get("fragment_image"));
+					result.getImageInfos().add(e);
+				}else if(contentType == 23 || contentType == 25){//UGC or 图组 （因为结构是一样的，所以一起处理了）
+					extra = (String)m.get("extra");
+					if(!StringUtils.isEmpty(extra)){
+						JSONObject extraJson = null;
+						try{
+							extraJson = JSONObject.parseObject(extra.replaceAll("\n", "").replaceAll("\\\\", "\\\\\\\\"));
+						}catch(Exception ignore){
+						}
+						if(null != extraJson){
+							imagesArray = extraJson.getJSONArray("images");
+						}
+						if(null != imagesArray && imagesArray.size() > 0){
+							for (int i = 0; i < imagesArray.size(); i++) {
+								e = new ShareImgInfoDTO.ImageInfoElement();
+								e.setType(2);
+								e.setImageUrl(imagesArray.getString(i));
+								result.getImageInfos().add(e);
+								if(result.getImageInfos().size() >= 5){
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		//开始画文字图片
+		
 		
 		return Response.success(result);
 	}

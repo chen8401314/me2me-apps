@@ -95,6 +95,7 @@ import com.me2me.web.request.SaveDaySignRecordRequest;
 import com.me2me.web.request.SendGiftRequest;
 import com.me2me.web.request.SetLiveRequest;
 import com.me2me.web.request.SettingModifyRequest;
+import com.me2me.web.request.ShareImgInfoRequest;
 import com.me2me.web.request.SignOutLiveRequest;
 import com.me2me.web.request.SpeakRequest;
 import com.me2me.web.request.SpecialKingdomInfoRequest;
@@ -1307,5 +1308,16 @@ public class Live extends BaseController {
     @RequestMapping(value = "/kingdomImageList",method = RequestMethod.POST)
     public Response kingdomImageList(KingdomImageListRequest request){
     	return liveExtService.kingdomImageList(request.getUid(), request.getTopicId(), request.getMonth());
+    }
+    
+    /**
+     * 分享卡片信息获取接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/kingdomImageList",method = RequestMethod.POST)
+    public Response shareImgInfo(ShareImgInfoRequest request){
+    	return liveExtService.shareImgInfo(request.getTargetUid(), request.getTopicId(), request.getFid());
     }
 }

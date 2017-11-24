@@ -60,4 +60,13 @@ public interface LiveExtService {
 	 * @return
 	 */
 	Response kingdomImageList(long uid, long topicId, String month);
+	
+	/**
+	 * 分享卡片信息获取接口
+	 * @param targetUid
+	 * @param topicId
+	 * @param fid
+	 * @return
+	 */
+	Response shareImgInfo(long targetUid, long topicId, long fid);
 }
