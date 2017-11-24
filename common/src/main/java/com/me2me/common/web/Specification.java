@@ -1264,7 +1264,11 @@ public interface Specification {
 
         LIVE_NAME("王国名",8),
         
-        KINGDOM_CATEGORY("王国分类",9);
+        KINGDOM_CATEGORY("王国分类",9),
+    	
+    	SECRET_OPT("私密王国设置",10),
+    	
+    	AUTO_JOIN_CORE_OPT("加入并自动加入核心圈设置",11);
 
         public final String name;
         public final int index;
