@@ -1320,6 +1320,6 @@ public class Live extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/shareImgInfo",method = RequestMethod.POST)
     public Response shareImgInfo(ShareImgInfoRequest request){
-    	return liveExtService.shareImgInfo(request.getTargetUid(), request.getTopicId(), request.getFid());
+    	return liveExtService.shareImgInfo(request.getUid(), request.getTargetUid(), request.getTopicId(), request.getFid());
     }
 }

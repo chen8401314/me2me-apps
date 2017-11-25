@@ -12,6 +12,7 @@ public class ShareImgInfoDTO implements BaseEntity {
 	private static final long serialVersionUID = -136051781095303227L;
 
 	private List<ImageInfoElement> imageInfos = Lists.newArrayList();
+	private String qrCode;
 	
 	@Data
 	public static class ImageInfoElement implements BaseEntity {
