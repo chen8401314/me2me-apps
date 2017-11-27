@@ -13,6 +13,8 @@ public class ShareImgInfoDTO implements BaseEntity {
 
 	private List<ImageInfoElement> imageInfos = Lists.newArrayList();
 	private String qrCode;
+	private int qrCodeHeight;
+	private int qrCodeWidth;
 	
 	@Data
 	public static class ImageInfoElement implements BaseEntity {
@@ -20,5 +22,7 @@ public class ShareImgInfoDTO implements BaseEntity {
 		
 		private int type;
 		private String imageUrl;
+		private int height;
+		private int width;
 	}
 }
