@@ -195,4 +195,9 @@ public interface ContentMapper {
     List<Content> getAttention(Map map);
     
     List<Content> getTagTopicList(@Param("tagId") long tagId, @Param("blacklistUids") List<Long> blacklistUids,@Param("page") int page,@Param("pageSize") int pageSize);
+    
+    List<Content> getAcKingdomList(@Param("topicId") long topicId,@Param("page") int page,@Param("pageSize") int pageSize);
+    
+    List<Map<String,Object>> getAcKingdomImageList(@Param("topicId") long topicId,@Param("page") int page,@Param("pageSize") int pageSize);
+    
 }

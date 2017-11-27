@@ -376,5 +376,9 @@ public class Contents extends BaseController {
     public Response tagDetail(TagDetailRequest request){
     	return contentService.tagDetail(request.getUid(), request.getTagId(), request.getTagName(), request.getPage(),request.getVersion());
     }
-    
+    @RequestMapping(value = "/acKingdomList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response acKingdomList(AcKingdomListRequest request){
+    	return contentService.acKingdomList(request.getUid(), request.getCeTopicId(), request.getResultType(), request.getPage());
+    }
 }

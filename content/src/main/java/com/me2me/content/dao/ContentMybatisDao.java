@@ -1082,5 +1082,11 @@ public class ContentMybatisDao {
 	public List<Content> getTagTopicList(long tagId, List<Long> blacklistUids,int page,int pageSize){
 		return contentMapper.getTagTopicList(tagId, blacklistUids,page,pageSize);
 	}
+	public List<Content> getAcKingdomList(long topicId,int page,int pageSize){
+		return contentMapper.getAcKingdomList(topicId,page,pageSize);
+	}
+	public List<Map<String,Object>> getAcKingdomImageList(long topicId,int page,int pageSize){
+		return contentMapper.getAcKingdomImageList(topicId,page,pageSize);
+	}
 	
 }
