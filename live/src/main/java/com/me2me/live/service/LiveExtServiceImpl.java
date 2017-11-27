@@ -3,6 +3,7 @@ package com.me2me.live.service;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Date;
@@ -420,6 +421,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 		//开始画头部图
 		BufferedImage image = new BufferedImage(1125, 498, BufferedImage.TYPE_INT_RGB);
 		Graphics2D main = image.createGraphics();
+		main.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);//锯齿处理
 		//设置整体背景
 		main.setColor(Color.white);
 		main.fillRect(0, 0, 375*3, 498);
@@ -446,6 +448,8 @@ public class LiveExtServiceImpl implements LiveExtService {
 		ShareImgInfoDTO.ImageInfoElement e = new ShareImgInfoDTO.ImageInfoElement();
 		e.setType(0);//封面
 		e.setImageUrl(ImageUtil.getImageBase64String(image));
+		e.setHeight(498);
+		e.setWidth(1125);
 		result.getImageInfos().add(e);
 		
 		//获取需要的信息
@@ -454,20 +458,33 @@ public class LiveExtServiceImpl implements LiveExtService {
 			int contentType = 0;
 			String extra = null;
 			JSONArray imagesArray = null;
+			JSONArray imageInfosArray = null;
+			JSONObject extraJson = null;
 			for(Map<String, Object> m : list){
 				if(result.getImageInfos().size() >= 5){
 					break;
 				}
 				contentType = (Integer)m.get("content_type");
 				if(contentType == 0){//文字
-					e = new ShareImgInfoDTO.ImageInfoElement();
-					e.setType(1);
-					e.setImageUrl(this.drawText((String)m.get("fragment"), main));
-					result.getImageInfos().add(e);
+					result.getImageInfos().add(this.drawText((String)m.get("fragment"), main));
 				}else if(contentType == 1){//图片
 					e = new ShareImgInfoDTO.ImageInfoElement();
 					e.setType(2);
 					e.setImageUrl(Constant.QINIU_DOMAIN+"/"+(String)m.get("fragment_image"));
+					if(!StringUtils.isEmpty(extra)){
+						try{
+							extraJson = JSONObject.parseObject(extra.replaceAll("\n", "").replaceAll("\\\\", "\\\\\\\\"));
+						}catch(Exception ignore){
+						}
+						if(null != extraJson){
+							if(null != extraJson.get("w")){
+								e.setWidth(extraJson.getIntValue("w"));
+							}
+							if(null != extraJson.get("h")){
+								e.setHeight(extraJson.getIntValue("h"));
+							}
+						}
+					}
 					result.getImageInfos().add(e);
 				}else if(contentType == 12){//视频
 					e = new ShareImgInfoDTO.ImageInfoElement();
@@ -477,19 +494,39 @@ public class LiveExtServiceImpl implements LiveExtService {
 				}else if(contentType == 23 || contentType == 25){//UGC or 图组 （因为结构是一样的，所以一起处理了）
 					extra = (String)m.get("extra");
 					if(!StringUtils.isEmpty(extra)){
-						JSONObject extraJson = null;
 						try{
 							extraJson = JSONObject.parseObject(extra.replaceAll("\n", "").replaceAll("\\\\", "\\\\\\\\"));
 						}catch(Exception ignore){
 						}
 						if(null != extraJson){
 							imagesArray = extraJson.getJSONArray("images");
+							imageInfosArray = extraJson.getJSONArray("imageInfo");
+							
+							//如果是UGC，则需要将content先已文字形式列出
+							if(null != extraJson.get("content")){
+								String content = extraJson.getString("content");
+								if(!StringUtils.isEmpty(content)){
+									result.getImageInfos().add(this.drawText(content, main));
+									if(result.getImageInfos().size() >= 5){
+										break;
+									}
+								}
+							}
 						}
+						
 						if(null != imagesArray && imagesArray.size() > 0){
 							for (int i = 0; i < imagesArray.size(); i++) {
 								e = new ShareImgInfoDTO.ImageInfoElement();
 								e.setType(2);
 								e.setImageUrl(imagesArray.getString(i));
+								if(null != imageInfosArray && imageInfosArray.size() > i){
+									if(null != imageInfosArray.getJSONObject(i).get("h")){
+										e.setHeight(imageInfosArray.getJSONObject(i).getIntValue("h"));
+									}
+									if(null != imageInfosArray.getJSONObject(i).get("w")){
+										e.setWidth(imageInfosArray.getJSONObject(i).getIntValue("w"));
+									}
+								}
 								result.getImageInfos().add(e);
 								if(result.getImageInfos().size() >= 5){
 									break;
@@ -502,16 +539,21 @@ public class LiveExtServiceImpl implements LiveExtService {
 		}
 		
 		//最后再给一张王国的二维码
-		String webUrl = live_web + topicId + "?uid=" + uid;
+		String webUrl = live_web + topicId;
 		byte[] qrBytes = QRCodeUtil.getTopicShareCardQrCode(webUrl, 135, 135);
 		if(null != qrBytes){
 			result.setQrCode(new sun.misc.BASE64Encoder().encodeBuffer(qrBytes).trim());
+			result.setQrCodeHeight(135);
+			result.setQrCodeWidth(135);
 		}
 		
 		return Response.success(result);
 	}
 	
-	private String drawText(String fragment, Graphics2D main){
+	private ShareImgInfoDTO.ImageInfoElement drawText(String fragment, Graphics2D main){
+		ShareImgInfoDTO.ImageInfoElement e = new ShareImgInfoDTO.ImageInfoElement();
+		e.setType(1);
+		
 		main.setFont(new Font("苹方 细体", Font.PLAIN, 24*3));//算宽度参考用的，不作为画图实体
 		List<String> list = new ArrayList<String>();
 		StringBuilder str = new StringBuilder();
@@ -560,6 +602,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 		
 		BufferedImage image = new BufferedImage(375*3, height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D text = image.createGraphics();
+		text.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);//锯齿处理
 		text.setColor(Color.white);
 		text.fillRect(0, 0, 375*3, height);
 		
@@ -568,6 +611,9 @@ public class LiveExtServiceImpl implements LiveExtService {
 		for(int i=0;i<list.size();i++){
 			text.drawString(list.get(i), 40*3, (int)((i+0.5)*33*3+(double)main.getFontMetrics().getHeight()/3));
 		}
-		return ImageUtil.getImageBase64String(image);
+		e.setImageUrl(ImageUtil.getImageBase64String(image));
+		e.setHeight(height);
+		e.setWidth(375*3);
+		return e;
 	}
 }
