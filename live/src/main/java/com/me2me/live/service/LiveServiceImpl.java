@@ -854,6 +854,18 @@ public class LiveServiceImpl implements LiveService {
                     showLiveDto.getAcTopList().add(e);
                 }
             }
+            
+            //聚合王国顶部图片列表
+            List<Map<String, Object>> imageList = liveLocalJdbcDao.getAggregationImage(cid);
+            ShowLiveDto.AcImageElement e = null;
+            for(Map<String, Object> t : imageList){
+                e = new ShowLiveDto.AcImageElement();
+                e.setType((Integer)t.get("type"));
+                e.setImageUrl(Constant.QINIU_DOMAIN + "/" + (String)t.get("image"));
+                e.setExtra((String)t.get("extra"));
+                showLiveDto.getAcImageList().add(e);
+            }
+            
         }else{
             //暂不支持
         }

@@ -101,6 +101,8 @@ public class ShowLiveDto implements BaseEntity {
     
     private int autoCoreType;//判断是否加入及自动加入核心圈
     
+    private List<AcImageElement> acImageList = Lists.newArrayList();
+    
     @Data
     public static class TopicElement implements BaseEntity{
 		private static final long serialVersionUID = 986248317266706695L;
@@ -111,4 +113,12 @@ public class ShowLiveDto implements BaseEntity {
 		private int internalStatus;
     }
     
+    @Data
+    public static class AcImageElement implements BaseEntity{
+    	
+		private static final long serialVersionUID = 639820189834699033L;
+		private int type;
+		private String imageUrl;
+		private String extra;
+    }
 }

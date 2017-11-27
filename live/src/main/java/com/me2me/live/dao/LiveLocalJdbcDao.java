@@ -1687,4 +1687,11 @@ public class LiveLocalJdbcDao {
 		delSql.append(")");
 		jdbcTemplate.update(delSql.toString());
 	}
+	
+	public List<Map<String, Object>> getAggregationImage(long topicId){
+		StringBuilder sb = new StringBuilder();
+		sb.append(" select ti.image,ti.type,ti.extra from topic_image ti,topic_aggregation ta  ");
+		sb.append(" where ti.topic_id = ta.sub_topic_id and ta.topic_id=? order by ti.id,ti.fid desc ");
+		return jdbcTemplate.queryForList(sb.toString(), topicId);
+	}
 }
