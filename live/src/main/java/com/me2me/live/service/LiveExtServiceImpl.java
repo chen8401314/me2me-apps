@@ -448,8 +448,6 @@ public class LiveExtServiceImpl implements LiveExtService {
 		ShareImgInfoDTO.ImageInfoElement e = new ShareImgInfoDTO.ImageInfoElement();
 		e.setType(0);//封面
 		e.setImageUrl(ImageUtil.getImageBase64String(image));
-		e.setHeight(498);
-		e.setWidth(1125);
 		result.getImageInfos().add(e);
 		
 		//获取需要的信息
@@ -458,7 +456,6 @@ public class LiveExtServiceImpl implements LiveExtService {
 			int contentType = 0;
 			String extra = null;
 			JSONArray imagesArray = null;
-			JSONArray imageInfosArray = null;
 			JSONObject extraJson = null;
 			for(Map<String, Object> m : list){
 				if(result.getImageInfos().size() >= 5){
@@ -471,20 +468,6 @@ public class LiveExtServiceImpl implements LiveExtService {
 					e = new ShareImgInfoDTO.ImageInfoElement();
 					e.setType(2);
 					e.setImageUrl(Constant.QINIU_DOMAIN+"/"+(String)m.get("fragment_image"));
-					if(!StringUtils.isEmpty(extra)){
-						try{
-							extraJson = JSONObject.parseObject(extra.replaceAll("\n", "").replaceAll("\\\\", "\\\\\\\\"));
-						}catch(Exception ignore){
-						}
-						if(null != extraJson){
-							if(null != extraJson.get("w")){
-								e.setWidth(extraJson.getIntValue("w"));
-							}
-							if(null != extraJson.get("h")){
-								e.setHeight(extraJson.getIntValue("h"));
-							}
-						}
-					}
 					result.getImageInfos().add(e);
 				}else if(contentType == 12){//视频
 					e = new ShareImgInfoDTO.ImageInfoElement();
@@ -500,7 +483,6 @@ public class LiveExtServiceImpl implements LiveExtService {
 						}
 						if(null != extraJson){
 							imagesArray = extraJson.getJSONArray("images");
-							imageInfosArray = extraJson.getJSONArray("imageInfo");
 							
 							//如果是UGC，则需要将content先已文字形式列出
 							if(null != extraJson.get("content")){
@@ -519,14 +501,6 @@ public class LiveExtServiceImpl implements LiveExtService {
 								e = new ShareImgInfoDTO.ImageInfoElement();
 								e.setType(2);
 								e.setImageUrl(imagesArray.getString(i));
-								if(null != imageInfosArray && imageInfosArray.size() > i){
-									if(null != imageInfosArray.getJSONObject(i).get("h")){
-										e.setHeight(imageInfosArray.getJSONObject(i).getIntValue("h"));
-									}
-									if(null != imageInfosArray.getJSONObject(i).get("w")){
-										e.setWidth(imageInfosArray.getJSONObject(i).getIntValue("w"));
-									}
-								}
 								result.getImageInfos().add(e);
 								if(result.getImageInfos().size() >= 5){
 									break;
@@ -543,8 +517,6 @@ public class LiveExtServiceImpl implements LiveExtService {
 		byte[] qrBytes = QRCodeUtil.getTopicShareCardQrCode(webUrl, 135, 135);
 		if(null != qrBytes){
 			result.setQrCode(new sun.misc.BASE64Encoder().encodeBuffer(qrBytes).trim());
-			result.setQrCodeHeight(135);
-			result.setQrCodeWidth(135);
 		}
 		
 		return Response.success(result);
@@ -612,8 +584,6 @@ public class LiveExtServiceImpl implements LiveExtService {
 			text.drawString(list.get(i), 40*3, (int)((i+0.5)*33*3+(double)main.getFontMetrics().getHeight()/3));
 		}
 		e.setImageUrl(ImageUtil.getImageBase64String(image));
-		e.setHeight(height);
-		e.setWidth(375*3);
 		return e;
 	}
 }
