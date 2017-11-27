@@ -286,7 +286,7 @@ public class LiveServiceImpl implements LiveService {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveTimeLineDto.getUid(), getLiveTimeLineDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-        List<TopicFragmentWithBLOBs> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), getLiveTimeLineDto.getPageSize(),getLiveTimeLineDto.getReqType());
+        List<TopicFragmentWithBLOBs> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), getLiveTimeLineDto.getPageSize());
         log.info("get timeLine data");
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
         log.info("buildLiveTimeLine success");

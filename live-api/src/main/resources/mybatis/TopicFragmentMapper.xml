@@ -613,7 +613,7 @@
     count(*)
     from topic_fragment where topic_id=#{topicId} and status=1 
    <if test="reqType==1">
-      and (f.type in(0,3,11,12,13,52,54,55,58) or f.uid =  #{uid} )
+      and (type in(0,3,11,12,13,52,54,55,58) or uid =  #{uid} )
       </if>
   </select>
 </mapper>

@@ -351,25 +351,11 @@ public class LiveMybatisDao {
         return topicMapper.countByExample(example);
     }
     
-    public List<TopicFragmentWithBLOBs> getTopicFragment(long topicId, long sinceId, int pageSize,int reqType) {
+    public List<TopicFragmentWithBLOBs> getTopicFragment(long topicId, long sinceId, int pageSize) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdGreaterThan(sinceId);
-        if(reqType==1){
-        	List<Integer> list = new ArrayList<Integer>();
-            list.add(0);
-            list.add(3);
-            list.add(11);
-            list.add(12);
-            list.add(13);
-            list.add(52);
-            list.add(54);
-            list.add(55);
-            list.add(57);
-            list.add(58);
-            criteria.andTypeIn(list);
-        }
 //        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         example.setOrderByClause("id asc limit "+ pageSize);
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
