@@ -3027,7 +3027,7 @@ public class LiveServiceImpl implements LiveService {
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveDetailDto.getUid(), getLiveDetailDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
 
-        int totalRecords = liveMybatisDao.countFragmentByTopicIdAndReqType(getLiveDetailDto.getTopicId(),getLiveDetailDto.getReqType());
+        int totalRecords = liveMybatisDao.countFragmentByTopicIdAndReqType(getLiveDetailDto.getTopicId(),getLiveDetailDto.getReqType(),getLiveDetailDto.getUid());
 
         LiveDetailDto liveDetailDto = new LiveDetailDto();
         liveDetailDto.setTotalRecords(totalRecords);
@@ -3096,7 +3096,7 @@ public class LiveServiceImpl implements LiveService {
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveDetailDto.getUid(), getLiveDetailDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
 
-        int totalRecords = liveMybatisDao.countFragmentByTopicIdAndReqType(getLiveDetailDto.getTopicId(),getLiveDetailDto.getReqType());
+        int totalRecords = liveMybatisDao.countFragmentByTopicIdAndReqType(getLiveDetailDto.getTopicId(),getLiveDetailDto.getReqType(),getLiveDetailDto.getUid());
 
         LiveDetailPageDto liveDetailDto = new LiveDetailPageDto();
         liveDetailDto.setTotalRecords(totalRecords);

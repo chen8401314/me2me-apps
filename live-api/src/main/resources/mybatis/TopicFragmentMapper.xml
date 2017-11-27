@@ -581,9 +581,9 @@
     ,
     <include refid="Blob_Column_List" />
     from topic_fragment f
-    where f.topic_id=#{topicId,jdbcType=BIGINT} 
+    where f.topic_id=#{topicId,jdbcType=BIGINT} and status=1
     <if test="reqType==1">
-      and f.type in(0,3,11,12,13,52,54,55,57,58) 
+      and (f.type in(0,3,11,12,13,52,54,55,58) or f.uid =  #{uid} )
       </if>
     order by id asc limit #{startIndex,jdbcType=INTEGER},#{offset,jdbcType=INTEGER}
     <if test="sinceId&gt;0">
@@ -608,5 +608,12 @@
     from topic_fragment where topic_id=#{topicId} and ((type=0 and content_type=1) or (type=54 and content_type=51)) and status=1 and DATE_FORMAT(create_time,'%Y-%m')=#{month}
     order by id asc
   </select>
-
+  <select id="countFragmentByTopicIdAndReqType" parameterType="java.util.Map"  resultType="java.lang.Integer">
+    select
+    count(*)
+    from topic_fragment where topic_id=#{topicId} and status=1 
+   <if test="reqType==1">
+      and (f.type in(0,3,11,12,13,52,54,55,58) or f.uid =  #{uid} )
+      </if>
+  </select>
 </mapper>

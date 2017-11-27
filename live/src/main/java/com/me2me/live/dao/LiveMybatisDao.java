@@ -1058,25 +1058,8 @@ public class LiveMybatisDao {
         criteria.andTopicIdEqualTo(topicId);
        return  topicFragmentMapper.countByExample(example);
     }
-    public int countFragmentByTopicIdAndReqType(long topicId,int reqType) {
-        TopicFragmentExample example = new TopicFragmentExample();
-        TopicFragmentExample.Criteria criteria = example.createCriteria();
-        criteria.andTopicIdEqualTo(topicId);
-        if(reqType==1){
-        	List<Integer> list = new ArrayList<Integer>();
-            list.add(0);
-            list.add(3);
-            list.add(11);
-            list.add(12);
-            list.add(13);
-            list.add(52);
-            list.add(54);
-            list.add(55);
-            list.add(57);
-            list.add(58);
-            criteria.andTypeIn(list);
-        }
-       return  topicFragmentMapper.countByExample(example);
+    public int countFragmentByTopicIdAndReqType(long topicId,int reqType,long uid) {
+       return  topicFragmentMapper.countFragmentByTopicIdAndReqType(topicId,reqType,uid);
     }
     public int countFragmentBeforeFid(long topicId, long fid){
     	TopicFragmentExample example = new TopicFragmentExample();

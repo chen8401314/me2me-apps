@@ -135,5 +135,8 @@ public interface TopicFragmentMapper {
      * @return
      */
     List<TopicFragmentWithBLOBs> getImgFragmentByMonth(@Param("topicId")long topicId,@Param("month")String month);
+    
+    int countFragmentByTopicIdAndReqType(@Param("topicId")long topicId,@Param("reqType")int reqType,@Param("uid")long uid);
+    
 
 }
