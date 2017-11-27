@@ -539,7 +539,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 		}
 		
 		//最后再给一张王国的二维码
-		String webUrl = live_web + topicId + "?uid=" + uid;
+		String webUrl = live_web + topicId;
 		byte[] qrBytes = QRCodeUtil.getTopicShareCardQrCode(webUrl, 135, 135);
 		if(null != qrBytes){
 			result.setQrCode(new sun.misc.BASE64Encoder().encodeBuffer(qrBytes).trim());
