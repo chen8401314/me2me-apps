@@ -310,19 +310,11 @@ public class LiveServiceImpl implements LiveService {
             return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
         }
         
-        //特殊王国处理，对于给定的王国，如果非国王或核心圈则无法进入
-        String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
-        if(!StringUtils.isEmpty(specialTopicIds)){
-        	String[] tmp = specialTopicIds.split(",");
-        	String currentTopicId = String.valueOf(topicId);
-        	for(String t : tmp){
-        		if(currentTopicId.equals(t)){//符合条件，则进行判断
-        			if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())){
-        				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,"此王国需要经过国王邀请才允许进入");
-        			}
-        			break;
-        		}
-        	}
+        //私密王国处理
+        if(topic.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
+        	if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())){
+				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,"此王国需要经过国王邀请才允许进入");
+			}
         }
         
         liveCoverDto.setTitle(topic.getTitle());
@@ -711,7 +703,7 @@ public class LiveServiceImpl implements LiveService {
         }
         
         
-        //判断王国是否设置了加入及自动加入核心圈
+        //判断王国是否设置了加入即自动加入核心圈
         if(topic.getAutoJoinCore()==0){
         	showLiveDto.setAutoCoreType(0);
         }else{
@@ -721,19 +713,11 @@ public class LiveServiceImpl implements LiveService {
         String visited =  cacheService.get(KINGDOM_VIEW_KEY);
         showLiveDto.setIsFirstView(visited==null?1:0);
         
-        //特殊王国处理，对于给定的王国，如果非国王或核心圈则无法进入
-        String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
-        if(!StringUtils.isEmpty(specialTopicIds)){
-        	String[] tmp = specialTopicIds.split(",");
-        	String currentTopicId = String.valueOf(cid);
-        	for(String t : tmp){
-        		if(currentTopicId.equals(t)){//符合条件，则进行判断
-        			if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())){
-        				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,"此王国需要经过国王邀请才允许进入");
-        			}
-        			break;
-        		}
-        	}
+        //如果是私密王国则只有国王和核心圈成员可以进入 
+        if(topic.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
+        	if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())){
+				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,"此王国需要经过国王邀请才允许进入");
+			}
         }
         
         Content content = contentService.getContentByTopicId(cid);
@@ -2424,7 +2408,7 @@ public class LiveServiceImpl implements LiveService {
             //判断是否是特殊王国，如果是特殊王国，则加入王国的同时，加入核心圈--“赛出家乡美”活动需求
             //Set<String> specialTopicList = cacheService.smembers(CacheConstant.ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
             //if(null != specialTopicList && specialTopicList.size() > 0 && specialTopicList.contains(String.valueOf(topicId))){
-            if(topic.getAutoJoinCore()==1){
+            if(topic.getAutoJoinCore()==1){//王国设置加入王国时自动加入核心圈
             //特殊王国，则加入的同时加入核心圈，无需关心是否超出核心圈上限
                 if(!this.isInCore(uid, topic.getCoreCircle())){
                     topic = liveMybatisDao.getTopicById(topicId);//再拉一次，减少并发问题
@@ -3874,9 +3858,12 @@ public class LiveServiceImpl implements LiveService {
         }
         topic.setType(kingdomType);
         //创建王国时设置是否私密以及是否自动加入核心圈
-        topic.setRights(createKingdomDto.getSecretType());
+        if(createKingdomDto.getSecretType()==1){
+        	topic.setRights(Specification.KingdomRights.PRIVATE_KINGDOM.index);
+        }else{
+        	topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);
+        }
         topic.setAutoJoinCore(createKingdomDto.getAutoCoreType());
-        //topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);//目前默认公开的，等以后有需求的再说
         topic.setSummary(createKingdomDto.getFragment());//目前，第一次发言即王国简介
         topic.setCeAuditType(0);//聚合王国属性，是否需要国王审核才能加入此聚合王国，默认0是
         topic.setAcAuditType(1);//个人王国属性，是否需要国王审核才能收录此王国，默认1否
@@ -4384,7 +4371,11 @@ public class LiveServiceImpl implements LiveService {
                 return Response.success();
             }else if(dto.getAction() == Specification.SettingModify.SECRET_OPT.index){
             	//私密王国设置
-            	topic.setRights(Integer.valueOf(dto.getParams()));
+            	if(Integer.valueOf(dto.getParams())==0){
+            		topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);
+            	}else{
+            		topic.setRights(Specification.KingdomRights.PRIVATE_KINGDOM.index);
+            	}
             	liveMybatisDao.updateTopic(topic);
             	log.info("update topic rights");
             	return Response.success();

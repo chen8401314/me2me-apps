@@ -68,5 +68,5 @@ public interface LiveExtService {
 	 * @param fid
 	 * @return
 	 */
-	Response shareImgInfo(long targetUid, long topicId, long fid);
+	Response shareImgInfo(long uid, long targetUid, long topicId, long fid);
 }

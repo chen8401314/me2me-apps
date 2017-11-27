@@ -1,21 +1,30 @@
 package com.me2me.live.service;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.me2me.common.Constant;
+import com.me2me.common.utils.DateUtil;
+import com.me2me.common.utils.ImageUtil;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.content.dto.NewKingdom;
 import com.me2me.content.service.ContentService;
+import com.me2me.core.QRCodeUtil;
 import com.me2me.live.dao.LiveExtDao;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.CategoryKingdomsDto;
@@ -54,6 +63,8 @@ public class LiveExtServiceImpl implements LiveExtService {
 	@Autowired
     private LiveMybatisDao liveMybatisDao;
 	
+	@Value("#{app.live_web}")
+    private String live_web;
 	
 	@Override
 	public Response category() {
@@ -374,20 +385,22 @@ public class LiveExtServiceImpl implements LiveExtService {
 	}
 	
 	@Override
-	public Response shareImgInfo(long targetUid, long topicId, long fid){
+	public Response shareImgInfo(long uid, long targetUid, long topicId, long fid){
 		ShareImgInfoDTO result = new ShareImgInfoDTO();
-		
+		//获取昵称
 		String nickName = "";
 		UserProfile targetUser = userService.getUserProfileByUid(targetUid);
 		if(null != targetUser){
 			nickName = targetUser.getNickName();
 		}
-		
+		//获取王国名
 		Topic topic = liveMybatisDao.getTopicById(topicId);
 		if(null == topic){
 			return Response.success(result);
 		}
-		
+		String title = topic.getTitle();
+
+		//获取更新次数和更新时间
 		int count = 0;
 		Date updateTime = null;
 		Map<String, Object> fragmentInfo = extDao.getTopicFragmentInfo(topicId, targetUid, fid);
@@ -402,8 +415,38 @@ public class LiveExtServiceImpl implements LiveExtService {
 		if(null == updateTime){
 			updateTime = new Date();
 		}
+		String timeStr = DateUtil.date2string(updateTime, "dd MMM", Locale.ENGLISH);
 		
-		List<String> textList = new ArrayList<String>();
+		//开始画头部图
+		BufferedImage image = new BufferedImage(1125, 498, BufferedImage.TYPE_INT_RGB);
+		Graphics2D main = image.createGraphics();
+		//设置整体背景
+		main.setColor(Color.white);
+		main.fillRect(0, 0, 375*3, 498);
+		
+		main.setColor(new Color(50,51,51));
+		main.setFont(new Font("苹方 细体", Font.PLAIN, 40*3));
+		main.drawString(title, 150, 270+main.getFontMetrics().getHeight()/3);
+		
+		main.setColor(new Color(185,185,185));
+		main.setFont(new Font("PingFang SC Regular", Font.PLAIN, 14*3));
+		main.drawString(nickName + " | 第"+count+"次更新", 150, 468+main.getFontMetrics().getHeight()/3);
+		
+		main.setColor(new Color(50,51,51));
+		main.setFont(new Font("PingFang SC Regular", Font.PLAIN, 12*3));
+		main.drawString(timeStr, (375-30)*3-main.getFontMetrics().stringWidth(timeStr), 472+main.getFontMetrics().getHeight()/3);
+		
+		main.setColor(new Color(50,51,51)); 
+		main.setFont(new Font("PingFang SC Regular", Font.PLAIN, 6*3));
+		String logoStr = "M E T O M E";
+		int x = (375-30)*3-main.getFontMetrics().stringWidth(logoStr);
+		int y = 429+main.getFontMetrics().getHeight()/3;
+		main.drawString(logoStr, x, y);
+		
+		ShareImgInfoDTO.ImageInfoElement e = new ShareImgInfoDTO.ImageInfoElement();
+		e.setType(0);//封面
+		e.setImageUrl(ImageUtil.getImageBase64String(image));
+		result.getImageInfos().add(e);
 		
 		//获取需要的信息
 		List<Map<String, Object>> list = extDao.getTopicCardImageInfo(topicId, targetUid, fid);
@@ -411,7 +454,6 @@ public class LiveExtServiceImpl implements LiveExtService {
 			int contentType = 0;
 			String extra = null;
 			JSONArray imagesArray = null;
-			ShareImgInfoDTO.ImageInfoElement e = null;
 			for(Map<String, Object> m : list){
 				if(result.getImageInfos().size() >= 5){
 					break;
@@ -420,7 +462,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 				if(contentType == 0){//文字
 					e = new ShareImgInfoDTO.ImageInfoElement();
 					e.setType(1);
-					textList.add((String)m.get("fragment"));
+					e.setImageUrl(this.drawText((String)m.get("fragment"), main));
 					result.getImageInfos().add(e);
 				}else if(contentType == 1){//图片
 					e = new ShareImgInfoDTO.ImageInfoElement();
@@ -459,9 +501,73 @@ public class LiveExtServiceImpl implements LiveExtService {
 			}
 		}
 		
-		//开始画文字图片
-		
+		//最后再给一张王国的二维码
+		String webUrl = live_web + topicId + "?uid=" + uid;
+		byte[] qrBytes = QRCodeUtil.getTopicShareCardQrCode(webUrl, 135, 135);
+		if(null != qrBytes){
+			result.setQrCode(new sun.misc.BASE64Encoder().encodeBuffer(qrBytes).trim());
+		}
 		
 		return Response.success(result);
+	}
+	
+	private String drawText(String fragment, Graphics2D main){
+		main.setFont(new Font("苹方 细体", Font.PLAIN, 24*3));//算宽度参考用的，不作为画图实体
+		List<String> list = new ArrayList<String>();
+		StringBuilder str = new StringBuilder();
+		String tmp = null;
+		for(int i=0;i<fragment.length();i++){
+			tmp = fragment.substring(i, i+1);
+			if("\n".equals(tmp)){
+				list.add(str.toString());
+				str = new StringBuilder();
+				if(list.size() >= 11){
+					break;
+				}
+				continue;
+			}
+			str.append(tmp);
+			if(main.getFontMetrics().stringWidth(str.toString()) > 305*3){
+				list.add(str.toString().substring(0,str.toString().length()-1));
+				str = new StringBuilder();
+				if(list.size() >= 11){
+					break;
+				}
+				str.append(tmp);
+				continue;
+			}
+		}
+		if(!"".equals(str.toString())){
+			list.add(str.toString());
+		}
+		if(list.size() > 10){
+			list = list.subList(0, 10);
+			String s = list.get(9);
+			int le = s.length();
+			if(le > 0){
+				for(int i=0;i<le;i++){
+					if(main.getFontMetrics().stringWidth(s + "...") <= 305*3){
+						break;
+					}else{
+						s = s.substring(0, le-1-i);
+					}
+				}
+			}
+			list.add(9, s+"...");
+		}
+		
+		int height = 3*33*list.size();
+		
+		BufferedImage image = new BufferedImage(375*3, height, BufferedImage.TYPE_INT_RGB);
+		Graphics2D text = image.createGraphics();
+		text.setColor(Color.white);
+		text.fillRect(0, 0, 375*3, height);
+		
+		text.setColor(new Color(50,51,51));
+		text.setFont(new Font("苹方 细体", Font.PLAIN, 24*3));
+		for(int i=0;i<list.size();i++){
+			text.drawString(list.get(i), 40*3, (int)((i+0.5)*33*3+(double)main.getFontMetrics().getHeight()/3));
+		}
+		return ImageUtil.getImageBase64String(image);
 	}
 }

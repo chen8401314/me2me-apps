@@ -9,13 +9,8 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import org.springframework.beans.factory.annotation.Value;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -53,6 +48,21 @@ public class QRCodeUtil {
             BitMatrix bitMatrix = formatWriter.encode(contents, BarcodeFormat.QR_CODE, width, height, getDecodeHintType());
             int w = bitMatrix.getWidth();
             int h = bitMatrix.getHeight();
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix,"png",os);
+            return os.toByteArray();
+        } catch (WriterException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+       return null;
+    }
+    
+    public static byte[] getTopicShareCardQrCode(String contents, int width, int height){
+    	MultiFormatWriter formatWriter = new MultiFormatWriter();
+        try {
+            BitMatrix bitMatrix = formatWriter.encode(contents, BarcodeFormat.QR_CODE, width, height, getDecodeHintType());
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             MatrixToImageWriter.writeToStream(bitMatrix,"png",os);
             return os.toByteArray();
