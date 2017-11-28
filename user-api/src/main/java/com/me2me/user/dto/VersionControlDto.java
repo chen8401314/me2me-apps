@@ -29,4 +29,6 @@ public class VersionControlDto implements BaseEntity{
     private int isUpdate;
 
     private int resourceCode;//0不是 1是
+    
+    private int emotionSwitch;//加号页情绪图谱开关，0关，1开
 }

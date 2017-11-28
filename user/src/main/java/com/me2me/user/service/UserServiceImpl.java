@@ -1993,6 +1993,13 @@ public class UserServiceImpl implements UserService {
 
         VersionControlDto versionControlDto = new VersionControlDto();
 
+        //获取加号页情绪坐标开关配置
+        versionControlDto.setEmotionSwitch(0);//默认关
+        String plusEmotionSwitch = this.getAppConfigByKey("PLUS_EMOTION_SWITCH");
+        if(!StringUtils.isEmpty(plusEmotionSwitch) && "1".equals(plusEmotionSwitch)){
+        	versionControlDto.setEmotionSwitch(1);
+        }
+        
         //春节特定标识
         Map<String ,Object> appUi = activityJdbcDao.getAppUiControl();
         if(appUi != null){
