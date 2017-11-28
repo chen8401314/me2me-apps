@@ -458,7 +458,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 			JSONArray imagesArray = null;
 			JSONObject extraJson = null;
 			for(Map<String, Object> m : list){
-				if(result.getImageInfos().size() >= 5){
+				if(result.getImageInfos().size() >= 6){
 					break;
 				}
 				contentType = (Integer)m.get("content_type");
@@ -489,7 +489,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 								String content = extraJson.getString("content");
 								if(!StringUtils.isEmpty(content)){
 									result.getImageInfos().add(this.drawText(content, main));
-									if(result.getImageInfos().size() >= 5){
+									if(result.getImageInfos().size() >= 6){
 										break;
 									}
 								}
@@ -502,7 +502,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 								e.setType(2);
 								e.setImageUrl(imagesArray.getString(i));
 								result.getImageInfos().add(e);
-								if(result.getImageInfos().size() >= 5){
+								if(result.getImageInfos().size() >= 6){
 									break;
 								}
 							}
