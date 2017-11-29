@@ -428,6 +428,35 @@ public class LiveExtServiceImpl implements LiveExtService {
 		
 		main.setColor(new Color(50,51,51));
 		main.setFont(new Font("苹方 细体", Font.PLAIN, 40*3));
+		if(title.length() > 7){
+			String sub = null;
+			int realLength = 0;
+			for(int i=0;i<title.length();i++){
+				sub = title.substring(i, i+1);
+				if(isLetterOrDigit(sub)){
+					realLength = realLength + 1;
+				}else{
+					realLength = realLength + 2;
+				}
+			}
+			if(realLength>14){
+				int rl = 0;
+				StringBuilder str = new StringBuilder();
+				for(int i=0;i<title.length();i++){
+					sub = title.substring(i, i+1);
+					if(isLetterOrDigit(sub)){
+						rl = rl + 1;
+					}else{
+						rl = rl + 2;
+					}
+					if(rl > 12){
+						break;
+					}
+					str.append(sub);
+				}
+				title = str.toString() + "...";
+			}
+		}
 		main.drawString(title, 150, 270+main.getFontMetrics().getHeight()/3);
 		
 		main.setColor(new Color(185,185,185));
@@ -521,6 +550,15 @@ public class LiveExtServiceImpl implements LiveExtService {
 		
 		return Response.success(result);
 	}
+	
+
+
+	private boolean isLetterOrDigit(String str) {
+		String regex = "^[a-z0-9A-Z]+$";
+		return str.matches(regex);
+	}
+
+
 	
 	private ShareImgInfoDTO.ImageInfoElement drawText(String fragment, Graphics2D main){
 		ShareImgInfoDTO.ImageInfoElement e = new ShareImgInfoDTO.ImageInfoElement();
