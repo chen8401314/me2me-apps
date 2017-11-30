@@ -9879,7 +9879,7 @@ public class ContentServiceImpl implements ContentService {
 		List<Content> contentList = null;
 		List<Map<String, Object>> acImageList = null;
 		if (resultType == 0) {
-			contentList = contentMybatisDao.getAcKingdomList(ceTopicId, page, 10);
+			contentList = contentMybatisDao.getAcKingdomList(ceTopicId, page, 20);
 			String isShowTagsStr = userService.getAppConfigByKey("IS_SHOW_TAGS");
 			int isShowTags = 0;
 			if (!StringUtils.isEmpty(isShowTagsStr)) {
