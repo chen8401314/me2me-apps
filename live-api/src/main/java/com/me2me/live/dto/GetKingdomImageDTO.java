@@ -18,10 +18,13 @@ public class GetKingdomImageDTO implements BaseEntity {
 	public static class ImageElement implements BaseEntity {
 		private static final long serialVersionUID = 548563725757753876L;
 		
+		private long imageId;
 		private int index;
 		private long fid;
 		private String imageName;
 		private String fragmentImage;
 		private String extra;
+		private int likeCount;
+		private int isLike;
 	}
 }

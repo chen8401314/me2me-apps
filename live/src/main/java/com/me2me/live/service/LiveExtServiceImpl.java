@@ -7,6 +7,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.ImageUtil;
@@ -39,7 +41,6 @@ import com.me2me.live.mapper.TopicCategoryMapper;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicCategory;
 import com.me2me.live.model.TopicFragmentLikeHis;
-import com.me2me.live.model.TopicFragmentWithBLOBs;
 import com.me2me.live.model.TopicImage;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
@@ -174,6 +175,8 @@ public class LiveExtServiceImpl implements LiveExtService {
 						e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
 					}
 					e.setExtra(topicImage.getExtra());
+					e.setLikeCount(topicImage.getLikeCount());
+					e.setImageId(topicImage.getId());
 					result.getImageDatas().add(e);
 					if(result.getImageDatas().size() >= pageSize){
 						break;
@@ -203,6 +206,8 @@ public class LiveExtServiceImpl implements LiveExtService {
 							e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
 						}
 						e.setExtra(topicImage.getExtra());
+						e.setLikeCount(topicImage.getLikeCount());
+						e.setImageId(topicImage.getId());
 						result.getImageDatas().add(e);
 					}
 				}
@@ -226,6 +231,8 @@ public class LiveExtServiceImpl implements LiveExtService {
 						e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
 					}
 					e.setExtra(topicImage.getExtra());
+					e.setLikeCount(topicImage.getLikeCount());
+					e.setImageId(topicImage.getId());
 					result.getImageDatas().add(0, e);//往前插入
 					if(result.getImageDatas().size() >= pageSize){
 						break;
@@ -253,6 +260,8 @@ public class LiveExtServiceImpl implements LiveExtService {
 						e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
 					}
 					e.setExtra(topicImage.getExtra());
+					e.setLikeCount(topicImage.getLikeCount());
+					e.setImageId(topicImage.getId());
 					result.getImageDatas().add(0, e);
 				}
 			}
@@ -280,6 +289,8 @@ public class LiveExtServiceImpl implements LiveExtService {
 					e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
 				}
 				e.setExtra(topicImage.getExtra());
+				e.setLikeCount(topicImage.getLikeCount());
+				e.setImageId(topicImage.getId());
 				result.getImageDatas().add(e);
 				currStartCount++;
 			}
@@ -300,6 +311,8 @@ public class LiveExtServiceImpl implements LiveExtService {
 						e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
 					}
 					e.setExtra(topicImage.getExtra());
+					e.setLikeCount(topicImage.getLikeCount());
+					e.setImageId(topicImage.getId());
 					result.getImageDatas().add(0, e);
 					beforeCount--;
 				}
@@ -320,12 +333,33 @@ public class LiveExtServiceImpl implements LiveExtService {
 						e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
 					}
 					e.setExtra(topicImage.getExtra());
+					e.setLikeCount(topicImage.getLikeCount());
+					e.setImageId(topicImage.getId());
 					result.getImageDatas().add(e);
 					currStartCount++;
 				}
 			}
 		}else{
 			return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
+		}
+		
+		if(result.getImageDatas().size() > 0){
+			List<Long> imageIds = new ArrayList<Long>();
+			for(GetKingdomImageDTO.ImageElement ie : result.getImageDatas()){
+				imageIds.add(ie.getImageId());
+			}
+			Map<String, String> likeMap = new HashMap<String, String>();
+			List<TopicFragmentLikeHis> list = liveMybatisDao.getTopicFragmentLikeHisListByUidAndImageIds(uid, imageIds);
+			if(null != list && list.size() > 0){
+				for(TopicFragmentLikeHis his : list){
+					likeMap.put(his.getImageId().toString(), "1");
+				}
+			}
+			for(GetKingdomImageDTO.ImageElement ie : result.getImageDatas()){
+				if(null != likeMap.get(String.valueOf(ie.getImageId()))){
+					ie.setIsLike(1);//当前用户点赞过
+				}
+			}
 		}
 		
 		return Response.success(result);

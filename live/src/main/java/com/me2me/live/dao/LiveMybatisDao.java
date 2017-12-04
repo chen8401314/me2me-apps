@@ -2394,4 +2394,12 @@ public class LiveMybatisDao {
 	public void deleteTopicFragmentLikeHisById(long id){
 		topicFragmentLikeHisMapper.deleteByPrimaryKey(id);
 	}
+	
+	public List<TopicFragmentLikeHis> getTopicFragmentLikeHisListByUidAndImageIds(long uid, List<Long> imageIds){
+		TopicFragmentLikeHisExample example = new TopicFragmentLikeHisExample();
+		TopicFragmentLikeHisExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		criteria.andImageIdIn(imageIds);
+		return topicFragmentLikeHisMapper.selectByExample(example);
+	}
 }
