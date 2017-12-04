@@ -20,6 +20,8 @@ public class ShowAcKingdomDto implements BaseEntity{
 
     private List<AcImageElement> acImageList = Lists.newArrayList();
     
+    private int acCount;
+    
     public static ContentElement createElement(){
         return new ContentElement();
     }

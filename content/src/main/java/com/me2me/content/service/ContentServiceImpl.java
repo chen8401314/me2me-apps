@@ -9878,6 +9878,8 @@ public class ContentServiceImpl implements ContentService {
 
 		List<Content> contentList = null;
 		List<Map<String, Object>> acImageList = null;
+		
+		showAcKingdomDto.setAcCount(liveForContentJdbcDao.getTopicAggregationCountByTopicId(ceTopicId));
 		if (resultType == 0) {
 			contentList = contentMybatisDao.getAcKingdomList(ceTopicId, page, 20);
 			String isShowTagsStr = userService.getAppConfigByKey("IS_SHOW_TAGS");
