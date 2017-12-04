@@ -71,6 +71,7 @@ import com.me2me.web.request.GetMyLivesRequest;
 import com.me2me.web.request.GivenKingdomRequest;
 import com.me2me.web.request.HarvestKingdomCoinRequest;
 import com.me2me.web.request.HarvestKingdomListRequest;
+import com.me2me.web.request.ImageInfoRequest;
 import com.me2me.web.request.ImgDBRequest;
 import com.me2me.web.request.InactiveLiveRequest;
 import com.me2me.web.request.JoinLotteryRequest;
@@ -1333,5 +1334,16 @@ public class Live extends BaseController {
     @RequestMapping(value = "/fragmentLike",method = RequestMethod.POST)
     public Response fragmentLike(FragmentLikeRequest request){
     	return liveExtService.fragmentLike(request.getUid(), request.getTopicId(), request.getFid(), request.getImageName(), request.getAction());
+    }
+    
+    /**
+     * 图片信息查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/imageInfo",method = RequestMethod.POST)
+    public Response imageInfo(ImageInfoRequest request){
+    	return liveExtService.imageInfo(request.getUid(), request.getTopicId(), request.getFid(), request.getImageName());
     }
 }

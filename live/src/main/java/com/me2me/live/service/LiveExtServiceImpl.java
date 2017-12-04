@@ -32,6 +32,7 @@ import com.me2me.live.dao.LiveExtDao;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.CategoryKingdomsDto;
 import com.me2me.live.dto.GetKingdomImageDTO;
+import com.me2me.live.dto.ImageInfoDTO;
 import com.me2me.live.dto.KingdomImageListDTO;
 import com.me2me.live.dto.KingdomImageMonthDTO;
 import com.me2me.live.dto.ShareImgInfoDTO;
@@ -661,6 +662,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 		return e;
 	}
 	
+	@Override
 	public Response fragmentLike(long uid, long topicId, long fid, String imageName, int action){
 		List<TopicImage> topicImageList = liveMybatisDao.getTopicImageByTopicIdAndFidAndImageName(topicId, fid, imageName);
 		if(null == topicImageList){
@@ -692,5 +694,22 @@ public class LiveExtServiceImpl implements LiveExtService {
 		}
 		
 		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
+	}
+	
+	@Override
+	public Response imageInfo(long uid, long topicId, long fid, String imageName){
+		ImageInfoDTO result = new ImageInfoDTO();
+		
+		List<TopicImage> topicImageList = liveMybatisDao.getTopicImageByTopicIdAndFidAndImageName(topicId, fid, imageName);
+		if(null != topicImageList && topicImageList.size() > 0){
+			TopicImage topicImage = topicImageList.get(0);
+			result.setLikeCount(topicImage.getLikeCount());
+			TopicFragmentLikeHis his = liveMybatisDao.getTopicFragmentLikeHisByUidAndImageId(uid, topicImage.getId());
+			if(null != his){
+				result.setIsLike(1);
+			}
+		}
+		
+		return Response.success(result);
 	}
 }

@@ -79,4 +79,14 @@ public interface LiveExtService {
 	 * @return
 	 */
 	Response fragmentLike(long uid, long topicId, long fid, String imageName, int action);
+	
+	/**
+	 * 图片信息查询接口
+	 * @param uid
+	 * @param topicId
+	 * @param fid
+	 * @param imageName
+	 * @return
+	 */
+	Response imageInfo(long uid, long topicId, long fid, String imageName);
 }
