@@ -1290,6 +1290,16 @@ public class LiveServiceImpl implements LiveService {
             			liveMybatisDao.saveTopicImage(topicImage);
             		}
             	}
+            }else if(speakDto.getType() == 12){//视频，也需要入王国图库
+            	TopicImage topicImage = new TopicImage();
+            	topicImage.setCreateTime(new Date());
+            	topicImage.setExtra(topicFragment.getExtra());
+            	topicImage.setFid(topicFragment.getId());
+            	topicImage.setImage(topicFragment.getFragmentImage());
+            	topicImage.setTopicId(topicFragment.getTopicId());
+            	topicImage.setType(2);//视频
+            	topicImage.setVideoUrl(topicFragment.getFragment());
+            	liveMybatisDao.saveTopicImage(topicImage);
             }
             
             //由于系统消息和足迹不参与王国更新排序计算，故这里不需要更新时间

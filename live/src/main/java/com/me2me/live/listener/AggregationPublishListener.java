@@ -124,8 +124,17 @@ public class AggregationPublishListener {
 							topicImage.setImage(newtf.getFragmentImage());
 							topicImage.setTopicId(subTopic.getId());
 							liveMybatisDao.saveTopicImage(topicImage);
+						}else if(newtf.getContentType().intValue() == 62){//视频，也要入图库
+							TopicImage topicImage = new TopicImage();
+							topicImage.setCreateTime(new Date());
+							topicImage.setExtra(obj.toJSONString());
+							topicImage.setFid(newtf.getId());
+							topicImage.setImage(newtf.getFragmentImage());
+							topicImage.setTopicId(subTopic.getId());
+							topicImage.setType(2);
+							topicImage.setVideoUrl(newtf.getFragment());
+							liveMybatisDao.saveTopicImage(topicImage);
 						}
-						
 						
 //						if(this.isInCore(event.getUid(), subTopic.getCoreCircle())){
 							//核心圈的，相当于核心圈发言，需要更新更新时间

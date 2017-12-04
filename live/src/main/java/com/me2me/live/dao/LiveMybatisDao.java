@@ -55,6 +55,7 @@ import com.me2me.live.mapper.TopicCategoryMapper;
 import com.me2me.live.mapper.TopicDataMapper;
 import com.me2me.live.mapper.TopicDroparoundMapper;
 import com.me2me.live.mapper.TopicDroparoundTrailMapper;
+import com.me2me.live.mapper.TopicFragmentLikeHisMapper;
 import com.me2me.live.mapper.TopicFragmentMapper;
 import com.me2me.live.mapper.TopicFragmentTemplateMapper;
 import com.me2me.live.mapper.TopicGivenMapper;
@@ -131,6 +132,8 @@ import com.me2me.live.model.TopicDroparoundTrail;
 import com.me2me.live.model.TopicExample;
 import com.me2me.live.model.TopicFragmentExample;
 import com.me2me.live.model.TopicFragmentExample.Criteria;
+import com.me2me.live.model.TopicFragmentLikeHis;
+import com.me2me.live.model.TopicFragmentLikeHisExample;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentTemplateExample;
 import com.me2me.live.model.TopicFragmentWithBLOBs;
@@ -328,6 +331,9 @@ public class LiveMybatisDao {
 	
 	@Autowired
 	private TopicImageMapper topicImageMapper;
+	
+	@Autowired
+	private TopicFragmentLikeHisMapper topicFragmentLikeHisMapper;
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -2327,11 +2333,14 @@ public class LiveMybatisDao {
 		topicImageMapper.deleteByExample(example);
 	}
 	
-	public List<TopicImage> getTopicImageByTopicIdAndFid(long topicId, long fid){
+	public List<TopicImage> getTopicImageByTopicIdAndFidAndImageName(long topicId, long fid, String imageName){
 		TopicImageExample example = new TopicImageExample();
 		TopicImageExample.Criteria criteria = example.createCriteria();
 		criteria.andFidEqualTo(fid);
 		criteria.andTopicIdEqualTo(topicId);
+		if(!StringUtils.isEmpty(imageName)){
+			criteria.andImageEqualTo(imageName);
+		}
 		return  topicImageMapper.selectByExampleWithBLOBs(example);
 	}
 	
@@ -2364,5 +2373,25 @@ public class LiveMybatisDao {
 		}
 		
 		return topicImageMapper.selectByExampleWithBLOBs(example);
+	}
+	
+	public TopicFragmentLikeHis getTopicFragmentLikeHisByUidAndImageId(long uid, long imageId){
+		TopicFragmentLikeHisExample example = new TopicFragmentLikeHisExample();
+		TopicFragmentLikeHisExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		criteria.andImageIdEqualTo(imageId);
+		List<TopicFragmentLikeHis> list = topicFragmentLikeHisMapper.selectByExample(example);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	public void saveTopicFragmentLikeHis(TopicFragmentLikeHis his){
+		topicFragmentLikeHisMapper.insertSelective(his);
+	}
+	
+	public void deleteTopicFragmentLikeHisById(long id){
+		topicFragmentLikeHisMapper.deleteByPrimaryKey(id);
 	}
 }

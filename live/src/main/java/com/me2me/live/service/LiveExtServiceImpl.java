@@ -38,6 +38,8 @@ import com.me2me.live.dto.TopicCategoryDto.Category;
 import com.me2me.live.mapper.TopicCategoryMapper;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicCategory;
+import com.me2me.live.model.TopicFragmentLikeHis;
+import com.me2me.live.model.TopicFragmentWithBLOBs;
 import com.me2me.live.model.TopicImage;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
@@ -144,7 +146,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 		int totalCount = liveMybatisDao.getTotalTopicImageByTopic(topicId);
 		result.setTotalCount(totalCount);
 		
-		List<TopicImage> currList = liveMybatisDao.getTopicImageByTopicIdAndFid(topicId, fid);
+		List<TopicImage> currList = liveMybatisDao.getTopicImageByTopicIdAndFidAndImageName(topicId, fid, null);
 		if(null == currList){
 			currList = new ArrayList<>();
 		}
@@ -623,5 +625,38 @@ public class LiveExtServiceImpl implements LiveExtService {
 		}
 		e.setImageUrl(ImageUtil.getImageBase64String(image));
 		return e;
+	}
+	
+	public Response fragmentLike(long uid, long topicId, long fid, String imageName, int action){
+		List<TopicImage> topicImageList = liveMybatisDao.getTopicImageByTopicIdAndFidAndImageName(topicId, fid, imageName);
+		if(null == topicImageList){
+			return Response.failure(ResponseStatus.CONTENT_NOT_EXISTS.status, ResponseStatus.CONTENT_NOT_EXISTS.message);
+		}else if(topicImageList.size() > 1){
+			return Response.failure(ResponseStatus.COMMON_ERROR_RESULT.status, "操作失败");
+		}
+
+		TopicImage topicImage = topicImageList.get(0);
+		
+		TopicFragmentLikeHis his = liveMybatisDao.getTopicFragmentLikeHisByUidAndImageId(uid, topicImage.getId());
+		if(action == 1){//点赞
+			if(null == his){
+				extDao.updateTopicImageLikeCount(topicImage.getId(), 0);//+1
+				his = new TopicFragmentLikeHis();
+				his.setCreateTime(new Date());
+//				his.setFid();//暂不需要本字段，先预留
+				his.setImageId(topicImage.getId());
+				his.setUid(uid);
+				liveMybatisDao.saveTopicFragmentLikeHis(his);
+			}//else已经点赞过的就直接成功了
+		}else if(action == 2){//取消点赞
+			if(null != his){
+				extDao.updateTopicImageLikeCount(topicImage.getId(), 1);//-1
+				liveMybatisDao.deleteTopicFragmentLikeHisById(his.getId());
+			}//else未点赞的也直接成功算
+		}else{
+			return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
+		}
+		
+		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
 	}
 }

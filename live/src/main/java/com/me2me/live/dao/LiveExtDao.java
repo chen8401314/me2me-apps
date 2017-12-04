@@ -94,4 +94,15 @@ public class LiveExtDao {
 		}
 		return null;
 	}
+	
+	public void updateTopicImageLikeCount(long imageId, int type){
+		StringBuilder sb = new StringBuilder();
+		sb.append("update topic_image ");
+		if(type==0){//+1
+			sb.append("set like_count=like_count+1 where id=?");
+		}else{//-1
+			sb.append("set like_count=like_count-1 where id=? and like_count>0");
+		}
+		jdbcTemplate.update(sb.toString(), imageId);
+	}
 }

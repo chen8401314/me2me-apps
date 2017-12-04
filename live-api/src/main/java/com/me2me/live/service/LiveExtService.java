@@ -69,4 +69,14 @@ public interface LiveExtService {
 	 * @return
 	 */
 	Response shareImgInfo(long uid, long targetUid, long topicId, long fid);
+	
+	/**
+	 * 王国图片视频点赞接口
+	 * @param uid
+	 * @param fid
+	 * @param imageName
+	 * @param action
+	 * @return
+	 */
+	Response fragmentLike(long uid, long topicId, long fid, String imageName, int action);
 }

@@ -56,6 +56,7 @@ import com.me2me.web.request.FavoriteListRequest;
 import com.me2me.web.request.FinishMyLiveRequest;
 import com.me2me.web.request.ForbidTalkRequest;
 import com.me2me.web.request.FragmentForwardRequest;
+import com.me2me.web.request.FragmentLikeRequest;
 import com.me2me.web.request.GetCreateKingdomInfoRequest;
 import com.me2me.web.request.GetGiftInfoListRequest;
 import com.me2me.web.request.GetJoinLotteryUsersRequest;
@@ -1321,5 +1322,16 @@ public class Live extends BaseController {
     @RequestMapping(value = "/shareImgInfo",method = RequestMethod.POST)
     public Response shareImgInfo(ShareImgInfoRequest request){
     	return liveExtService.shareImgInfo(request.getUid(), request.getTargetUid(), request.getTopicId(), request.getFid());
+    }
+    
+    /**
+     * 王国图片视频点赞接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/fragmentLike",method = RequestMethod.POST)
+    public Response fragmentLike(FragmentLikeRequest request){
+    	return liveExtService.fragmentLike(request.getUid(), request.getTopicId(), request.getFid(), request.getImageName(), request.getAction());
     }
 }
