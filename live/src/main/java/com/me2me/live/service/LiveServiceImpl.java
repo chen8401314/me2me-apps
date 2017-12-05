@@ -159,6 +159,7 @@ import com.me2me.live.model.TopicCategory;
 import com.me2me.live.model.TopicData;
 import com.me2me.live.model.TopicDroparound;
 import com.me2me.live.model.TopicDroparoundTrail;
+import com.me2me.live.model.TopicFragmentLikeHis;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentWithBLOBs;
 import com.me2me.live.model.TopicGiven;
@@ -3288,6 +3289,8 @@ public class LiveServiceImpl implements LiveService {
         liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
         liveDetailDto.getPageInfo().setEnd(getLiveDetailDto.getPageNo());
 
+        List<Long> imageFidList = new ArrayList<Long>();
+        
         List<Long> uidList = new ArrayList<Long>();
         for (TopicFragmentWithBLOBs topicFragment : fragmentList) {
     		if(!uidList.contains(topicFragment.getUid())){
@@ -3301,6 +3304,16 @@ public class LiveServiceImpl implements LiveService {
             			uidList.add(topicFragment.getAtUid());
             		}
             	}
+    		}
+    		//视频和大图需要在这里就返回点赞数和是否点赞过
+    		if(topicFragment.getType().intValue() == 12//视频
+    				|| (topicFragment.getType().intValue() == 54 && topicFragment.getContentType().intValue() == 62)//下发视频
+    				|| (topicFragment.getType().intValue() == 0 && topicFragment.getContentType().intValue() == 1)//主播图片
+    				|| (topicFragment.getType().intValue() == 54 && topicFragment.getContentType().intValue() == 51)//下发图片
+    				|| (topicFragment.getType().intValue() == 55 && topicFragment.getContentType().intValue() == 51)//转发图片
+    				|| topicFragment.getContentType().intValue() == 23//UGC
+    				){
+    			imageFidList.add(topicFragment.getId());
     		}
     	}
 
@@ -3321,11 +3334,33 @@ public class LiveServiceImpl implements LiveService {
         	}
         }
 
-
+        //图片点赞相关信息
+        Map<String, TopicImage> imageLikeCountMap = new HashMap<String, TopicImage>();
+        Map<String, String> imageLikeHisMap = new HashMap<String, String>();
+        if(imageFidList.size() > 0){
+        	List<TopicImage> imageList = liveMybatisDao.getTopicImageListByFids(imageFidList);
+        	if(null != imageList && imageList.size() > 0){
+        		List<Long> topicImageIds = new ArrayList<Long>();
+        		for(TopicImage ti : imageList){
+        			imageLikeCountMap.put(ti.getFid().toString()+"_"+ti.getImage(), ti);
+        			topicImageIds.add(ti.getId());
+        		}
+        		if(topicImageIds.size() > 0){
+        			List<TopicFragmentLikeHis> likeHisList = liveMybatisDao.getTopicFragmentLikeHisListByUidAndImageIds(getLiveDetailDto.getUid(), topicImageIds);
+        			if(null != likeHisList && likeHisList.size() > 0){
+        				for(TopicFragmentLikeHis his : likeHisList){
+        					imageLikeHisMap.put(his.getImageId().toString(), "1");
+        				}
+        			}
+        		}
+        	}
+        }
+        
         int count = 0;
         UserProfile userProfile = null;
         UserProfile atUser = null;
         long pageUpdateTime = 0;
+        TopicImage topicImage = null;
         for (TopicFragmentWithBLOBs topicFragment : fragmentList) {
             long uid = topicFragment.getUid();
 
@@ -3489,12 +3524,30 @@ public class LiveServiceImpl implements LiveService {
 	                }
             	}
             }
+            liveElement.setScore(topicFragment.getScore());
+            
+            //视频和大图相关的需要返回点赞相关信息
+            if(topicFragment.getType().intValue() == 12//视频
+    				|| (topicFragment.getType().intValue() == 54 && topicFragment.getContentType().intValue() == 62)//下发视频
+    				|| (topicFragment.getType().intValue() == 0 && topicFragment.getContentType().intValue() == 1)//主播图片
+    				|| (topicFragment.getType().intValue() == 54 && topicFragment.getContentType().intValue() == 51)//下发图片
+    				|| (topicFragment.getType().intValue() == 55 && topicFragment.getContentType().intValue() == 51)//转发图片
+    				|| topicFragment.getContentType().intValue() == 23//UGC
+    				){
+            	topicImage = imageLikeCountMap.get(topicFragment.getId().toString()+"_"+topicFragment.getFragmentImage());
+            	if(null != topicImage){
+            		liveElement.setLikeCount(topicImage.getLikeCount().intValue());
+            		if(null != imageLikeHisMap.get(topicImage.getId().toString())){
+            			liveElement.setIsLike(1);//点赞过
+            		}
+            	}
+    		}
+            
             if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
             	liveDetailDto.getLiveElements().add(liveElement);
             }else{
             	liveDetailDto.getLiveElements().add(count, liveElement);
             }
-            liveElement.setScore(topicFragment.getScore());
             count++;
         }
         LiveDetailDto.PageDetail pd = new LiveDetailDto.PageDetail();
@@ -3526,6 +3579,8 @@ public class LiveServiceImpl implements LiveService {
         liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
         liveDetailDto.getPageInfo().setEnd(getLiveDetailDto.getPageNo());
 
+        List<Long> imageFidList = new ArrayList<Long>();
+        
         List<Long> uidList = new ArrayList<Long>();
         for (TopicFragmentWithBLOBs topicFragment : fragmentList) {
     		if(!uidList.contains(topicFragment.getUid())){
@@ -3539,6 +3594,16 @@ public class LiveServiceImpl implements LiveService {
             			uidList.add(topicFragment.getAtUid());
             		}
             	}
+    		}
+    		//视频和大图需要在这里就返回点赞数和是否点赞过
+    		if(topicFragment.getType().intValue() == 12//视频
+    				|| (topicFragment.getType().intValue() == 54 && topicFragment.getContentType().intValue() == 62)//下发视频
+    				|| (topicFragment.getType().intValue() == 0 && topicFragment.getContentType().intValue() == 1)//主播图片
+    				|| (topicFragment.getType().intValue() == 54 && topicFragment.getContentType().intValue() == 51)//下发图片
+    				|| (topicFragment.getType().intValue() == 55 && topicFragment.getContentType().intValue() == 51)//转发图片
+    				|| topicFragment.getContentType().intValue() == 23//UGC
+    				){
+    			imageFidList.add(topicFragment.getId());
     		}
     	}
 
@@ -3559,12 +3624,35 @@ public class LiveServiceImpl implements LiveService {
         	}
         }
 
+        //图片点赞相关信息
+        Map<String, TopicImage> imageLikeCountMap = new HashMap<String, TopicImage>();
+        Map<String, String> imageLikeHisMap = new HashMap<String, String>();
+        if(imageFidList.size() > 0){
+        	List<TopicImage> imageList = liveMybatisDao.getTopicImageListByFids(imageFidList);
+        	if(null != imageList && imageList.size() > 0){
+        		List<Long> topicImageIds = new ArrayList<Long>();
+        		for(TopicImage ti : imageList){
+        			imageLikeCountMap.put(ti.getFid().toString()+"_"+ti.getImage(), ti);
+        			topicImageIds.add(ti.getId());
+        		}
+        		if(topicImageIds.size() > 0){
+        			List<TopicFragmentLikeHis> likeHisList = liveMybatisDao.getTopicFragmentLikeHisListByUidAndImageIds(getLiveDetailDto.getUid(), topicImageIds);
+        			if(null != likeHisList && likeHisList.size() > 0){
+        				for(TopicFragmentLikeHis his : likeHisList){
+        					imageLikeHisMap.put(his.getImageId().toString(), "1");
+        				}
+        			}
+        		}
+        	}
+        }
+        
         LiveDetailPageDto.PageDetail pd = new LiveDetailPageDto.PageDetail();
 
         int count = 0;
         UserProfile userProfile = null;
         UserProfile atUser = null;
         long pageUpdateTime = 0;
+        TopicImage topicImage = null;
         for (TopicFragmentWithBLOBs topicFragment : fragmentList) {
         	if(null != topicFragment.getUpdateTime() && topicFragment.getUpdateTime().getTime() > pageUpdateTime){
         		pageUpdateTime = topicFragment.getUpdateTime().getTime();
@@ -3729,9 +3817,24 @@ public class LiveServiceImpl implements LiveService {
             	}
             }
             liveElement.setScore(topicFragment.getScore());
+            //视频和大图相关的需要返回点赞相关信息
+            if(topicFragment.getType().intValue() == 12//视频
+    				|| (topicFragment.getType().intValue() == 54 && topicFragment.getContentType().intValue() == 62)//下发视频
+    				|| (topicFragment.getType().intValue() == 0 && topicFragment.getContentType().intValue() == 1)//主播图片
+    				|| (topicFragment.getType().intValue() == 54 && topicFragment.getContentType().intValue() == 51)//下发图片
+    				|| (topicFragment.getType().intValue() == 55 && topicFragment.getContentType().intValue() == 51)//转发图片
+    				|| topicFragment.getContentType().intValue() == 23//UGC
+    				){
+            	topicImage = imageLikeCountMap.get(topicFragment.getId().toString()+"_"+topicFragment.getFragmentImage());
+            	if(null != topicImage){
+            		liveElement.setLikeCount(topicImage.getLikeCount().intValue());
+            		if(null != imageLikeHisMap.get(topicImage.getId().toString())){
+            			liveElement.setIsLike(1);//点赞过
+            		}
+            	}
+    		}
             
             pd.getLiveElements().add(liveElement);
-            
             count++;
         }
         

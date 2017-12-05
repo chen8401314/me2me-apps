@@ -2375,6 +2375,16 @@ public class LiveMybatisDao {
 		return topicImageMapper.selectByExampleWithBLOBs(example);
 	}
 	
+	public List<TopicImage> getTopicImageListByFids(List<Long> fids){
+		if(null == fids || fids.size() == 0){
+			return null;
+		}
+		TopicImageExample example = new TopicImageExample();
+		TopicImageExample.Criteria criteria = example.createCriteria();
+		criteria.andFidIn(fids);
+		return topicImageMapper.selectByExample(example);
+	}
+	
 	public TopicFragmentLikeHis getTopicFragmentLikeHisByUidAndImageId(long uid, long imageId){
 		TopicFragmentLikeHisExample example = new TopicFragmentLikeHisExample();
 		TopicFragmentLikeHisExample.Criteria criteria = example.createCriteria();

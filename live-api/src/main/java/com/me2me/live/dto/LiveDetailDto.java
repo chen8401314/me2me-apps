@@ -78,6 +78,10 @@ public class LiveDetailDto implements BaseEntity {
         private int score;
         
         private int giftStatus;
+        
+        private int likeCount;
+        
+        private int isLike;
     }
 
     @Data
