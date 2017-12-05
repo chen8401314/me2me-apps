@@ -19,7 +19,6 @@ import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.ImageUtil;
