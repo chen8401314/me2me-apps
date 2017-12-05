@@ -62,14 +62,28 @@ public class LiveExtDao {
 		}
 	}
 	
-	public List<Map<String, Object>> getKingdomImageMonth(long topicId){
-		String sql = "select DATE_FORMAT(t.create_time,'%Y-%m') as mm,count(1) as cc,max(t.fid) as maxfid,min(t.fid) as minfid from topic_image t where t.topic_id=? group by mm order by mm";
-		return jdbcTemplate.queryForList(sql, topicId);
+	public List<Map<String, Object>> getKingdomImageMonth(long topicId, int type){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select DATE_FORMAT(t.create_time,'%Y-%m') as mm,count(1) as cc,");
+		sb.append("max(t.fid) as maxfid,min(t.fid) as minfid ");
+		sb.append("from topic_image t ");
+		sb.append("where t.topic_id=? ");
+		if(type > 0){
+			sb.append("and t.type=").append(type);
+		}
+		sb.append(" group by mm order by mm");
+		return jdbcTemplate.queryForList(sb.toString(), topicId);
 	}
 	
-	public List<Map<String, Object>> getKingdomImageList(long topicId, String month){
-		String sql = "select t.fid,t.image,t.extra from topic_image t where t.topic_id=? and DATE_FORMAT(t.create_time,'%Y-%m')=? order by t.fid,t.id";
-		return jdbcTemplate.queryForList(sql, topicId, month);
+	public List<Map<String, Object>> getKingdomImageList(long topicId, String month, int type){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.fid,t.image,t.extra from topic_image t ");
+		sb.append("where t.topic_id=? and DATE_FORMAT(t.create_time,'%Y-%m')=? ");
+		if(type > 0){
+			sb.append(" and t.type=").append(type);
+		}
+		sb.append(" order by t.fid,t.id");
+		return jdbcTemplate.queryForList(sb.toString(), topicId, month);
 	}
 	
 	public List<Map<String, Object>> getTopicCardImageInfo(long topicId, long uid, long fid){
@@ -77,7 +91,7 @@ public class LiveExtDao {
 		sb.append("select f.fragment,f.fragment_image,f.type,f.content_type,f.extra");
 		sb.append(" from topic_fragment f where f.status=1 and f.topic_id=? and f.id>=?");
 		sb.append(" and f.uid=? and ((f.type=0 and f.content_type in (0,1))");
-		sb.append(" or f.type in (12,23,25)) order by f.id limit 5");
+		sb.append(" or f.content_type in (12,23,25)) order by f.id limit 5");
 		return jdbcTemplate.queryForList(sb.toString(), topicId,fid,uid);
 	}
 	
