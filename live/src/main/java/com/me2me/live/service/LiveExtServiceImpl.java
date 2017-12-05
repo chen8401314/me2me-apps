@@ -664,7 +664,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 	@Override
 	public Response fragmentLike(long uid, long topicId, long fid, String imageName, int action){
 		List<TopicImage> topicImageList = liveMybatisDao.getTopicImageByTopicIdAndFidAndImageName(topicId, fid, imageName, 0);//图片视频的都要
-		if(null == topicImageList){
+		if(null == topicImageList || topicImageList.size() == 0){
 			return Response.failure(ResponseStatus.CONTENT_NOT_EXISTS.status, ResponseStatus.CONTENT_NOT_EXISTS.message);
 		}else if(topicImageList.size() > 1){
 			return Response.failure(ResponseStatus.COMMON_ERROR_RESULT.status, "操作失败");
