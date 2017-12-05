@@ -2333,37 +2333,49 @@ public class LiveMybatisDao {
 		topicImageMapper.deleteByExample(example);
 	}
 	
-	public List<TopicImage> getTopicImageByTopicIdAndFidAndImageName(long topicId, long fid, String imageName){
+	public List<TopicImage> getTopicImageByTopicIdAndFidAndImageName(long topicId, long fid, String imageName, int type){
 		TopicImageExample example = new TopicImageExample();
 		TopicImageExample.Criteria criteria = example.createCriteria();
 		criteria.andFidEqualTo(fid);
 		criteria.andTopicIdEqualTo(topicId);
+		if(type > 0){
+			criteria.andTypeEqualTo(type);
+		}
 		if(!StringUtils.isEmpty(imageName)){
 			criteria.andImageEqualTo(imageName);
 		}
 		return  topicImageMapper.selectByExampleWithBLOBs(example);
 	}
 	
-	public int getTotalTopicImageByTopic(long topicId){
+	public int getTotalTopicImageByTopic(long topicId, int type){
 		TopicImageExample example = new TopicImageExample();
 		TopicImageExample.Criteria criteria = example.createCriteria();
 		criteria.andTopicIdEqualTo(topicId);
+		if(type > 0){
+			criteria.andTypeEqualTo(type);//图片
+		}
 		return topicImageMapper.countByExample(example);
 	}
 	
-	public int countTopicImageBefore(long topicId, long fid){
+	public int countTopicImageBefore(long topicId, long fid, int type){
 		TopicImageExample example = new TopicImageExample();
 		TopicImageExample.Criteria criteria = example.createCriteria();
 		criteria.andTopicIdEqualTo(topicId);
 		criteria.andFidLessThan(fid);
+		if(type > 0){
+			criteria.andTypeEqualTo(type);
+		}
 		return topicImageMapper.countByExample(example);
 	}
 	
 	//searchType  0向后查，其他向前查
-	public List<TopicImage> searchTopicImage(long topicId, long fid, int searchType, int limit){
+	public List<TopicImage> searchTopicImage(long topicId, long fid, int type, int searchType, int limit){
 		TopicImageExample example = new TopicImageExample();
 		TopicImageExample.Criteria criteria = example.createCriteria();
 		criteria.andTopicIdEqualTo(topicId);
+		if(type > 0){
+			criteria.andTypeEqualTo(type);
+		}
 		if(searchType == 0){//向后查
 			criteria.andFidGreaterThan(fid);
 			example.setOrderByClause(" fid,id limit " + limit);

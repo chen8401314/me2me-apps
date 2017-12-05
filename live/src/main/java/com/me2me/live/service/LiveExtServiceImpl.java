@@ -145,15 +145,15 @@ public class LiveExtServiceImpl implements LiveExtService {
 		
 		int pageSize = 10;
 		
-		int totalCount = liveMybatisDao.getTotalTopicImageByTopic(topicId);
+		int totalCount = liveMybatisDao.getTotalTopicImageByTopic(topicId, 1);//目前只要图片
 		result.setTotalCount(totalCount);
 		
-		List<TopicImage> currList = liveMybatisDao.getTopicImageByTopicIdAndFidAndImageName(topicId, fid, null);
+		List<TopicImage> currList = liveMybatisDao.getTopicImageByTopicIdAndFidAndImageName(topicId, fid, null, 1);//目前只要图片
 		if(null == currList){
 			currList = new ArrayList<>();
 		}
 		//该fid前有多少个图片
-		int beforeCount = liveMybatisDao.countTopicImageBefore(topicId, fid);
+		int beforeCount = liveMybatisDao.countTopicImageBefore(topicId, fid, 1);//目前只要图片
 		
 		TopicImage topicImage = null;
 		GetKingdomImageDTO.ImageElement e = null;
@@ -190,7 +190,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 			}
 			
 			if(result.getImageDatas().size() < pageSize){//还需要补充
-				List<TopicImage> list = liveMybatisDao.searchTopicImage(topicId, fid, 0, pageSize-result.getImageDatas().size());
+				List<TopicImage> list = liveMybatisDao.searchTopicImage(topicId, fid, 1, 0, pageSize-result.getImageDatas().size());
 				if(null != list && list.size() > 0){
 					for(int i=0;i<list.size();i++){
 						beforeCount++;
@@ -245,7 +245,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 				}
 			}
 			if(result.getImageDatas().size() < pageSize){//还需要补充
-				List<TopicImage> list = liveMybatisDao.searchTopicImage(topicId, fid, 1, pageSize-result.getImageDatas().size());
+				List<TopicImage> list = liveMybatisDao.searchTopicImage(topicId, fid, 1, 1, pageSize-result.getImageDatas().size());
 				for(int i=0;i<list.size();i++){
 					beforeCount--;
 					topicImage = list.get(i);
@@ -297,7 +297,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 			}
 			
 			if(needBefore > 0){//向前需要额外的
-				List<TopicImage> list = liveMybatisDao.searchTopicImage(topicId, fid, 1, needBefore);
+				List<TopicImage> list = liveMybatisDao.searchTopicImage(topicId, fid, 1, 1, needBefore);
 				for(int i=0;i<list.size();i++){
 					topicImage = list.get(i);
 					e = new GetKingdomImageDTO.ImageElement();
@@ -319,7 +319,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 				}
 			}
 			if(needAfter > 0){//向后需要额外的
-				List<TopicImage> list = liveMybatisDao.searchTopicImage(topicId, fid, 0, needAfter);
+				List<TopicImage> list = liveMybatisDao.searchTopicImage(topicId, fid, 1, 0, needAfter);
 				for(int i=0;i<list.size();i++){
 					topicImage = list.get(i);
 					e = new GetKingdomImageDTO.ImageElement();
@@ -372,7 +372,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 		
 		int monthCount = 0;
 		String showMonth = null;
-		List<Map<String, Object>> list = extDao.getKingdomImageMonth(topicId);
+		List<Map<String, Object>> list = extDao.getKingdomImageMonth(topicId, 1);//目前只要图片
 		if(null != list && list.size() > 0){
 			monthCount = list.size();
 			Map<String, Object> m = null;
@@ -406,7 +406,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 	public Response kingdomImageList(long uid, long topicId, String month){
 		KingdomImageListDTO result = new KingdomImageListDTO();
 		
-		List<Map<String, Object>> list = extDao.getKingdomImageList(topicId, month);
+		List<Map<String, Object>> list = extDao.getKingdomImageList(topicId, month, 1);//目前只要图片
 		if(null != list && list.size() > 0){
 			KingdomImageListDTO.ImageElement e = null;
 			for(Map<String, Object> m : list){
@@ -664,7 +664,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 	
 	@Override
 	public Response fragmentLike(long uid, long topicId, long fid, String imageName, int action){
-		List<TopicImage> topicImageList = liveMybatisDao.getTopicImageByTopicIdAndFidAndImageName(topicId, fid, imageName);
+		List<TopicImage> topicImageList = liveMybatisDao.getTopicImageByTopicIdAndFidAndImageName(topicId, fid, imageName, 0);//图片视频的都要
 		if(null == topicImageList){
 			return Response.failure(ResponseStatus.CONTENT_NOT_EXISTS.status, ResponseStatus.CONTENT_NOT_EXISTS.message);
 		}else if(topicImageList.size() > 1){
@@ -700,7 +700,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 	public Response imageInfo(long uid, long topicId, long fid, String imageName){
 		ImageInfoDTO result = new ImageInfoDTO();
 		
-		List<TopicImage> topicImageList = liveMybatisDao.getTopicImageByTopicIdAndFidAndImageName(topicId, fid, imageName);
+		List<TopicImage> topicImageList = liveMybatisDao.getTopicImageByTopicIdAndFidAndImageName(topicId, fid, imageName, 0);//图片视屏的都要
 		if(null != topicImageList && topicImageList.size() > 0){
 			TopicImage topicImage = topicImageList.get(0);
 			result.setLikeCount(topicImage.getLikeCount());
