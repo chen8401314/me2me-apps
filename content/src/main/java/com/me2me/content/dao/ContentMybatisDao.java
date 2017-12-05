@@ -1089,4 +1089,7 @@ public class ContentMybatisDao {
 		return contentMapper.getAcKingdomImageList(topicId,page,pageSize);
 	}
 	
+	public List<Long> getAcKingdomImageLikeList(long uid,List<Long> imageIdList){
+		return contentMapper.getAcKingdomImageLikeList(uid, imageIdList);
+	}
 }

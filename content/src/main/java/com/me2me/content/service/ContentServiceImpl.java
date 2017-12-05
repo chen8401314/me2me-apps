@@ -10066,6 +10066,7 @@ public class ContentServiceImpl implements ContentService {
 				ShowAcKingdomDto.ContentElement contentElement = ShowAcKingdomDto.createElement();
 
 				contentElement.setId(content.getId());
+				contentElement.setCid(content.getId());
 				contentElement.setUid(content.getUid());
 				// 获取用户信息
 				userProfile = profileMap.get(String.valueOf(content.getUid()));
@@ -10101,6 +10102,7 @@ public class ContentServiceImpl implements ContentService {
 				}
 				contentElement.setTag(content.getFeeling());
 				contentElement.setForwardCid(content.getForwardCid());
+				contentElement.setTopicId(content.getForwardCid());
 				contentElement.setContentType(content.getContentType());
 				contentElement.setFavoriteCount(content.getFavoriteCount() + 1);
 				if (content.getType() == Specification.ArticleType.ORIGIN.index) {
@@ -10345,10 +10347,18 @@ public class ContentServiceImpl implements ContentService {
 		} else {
 			acImageList = contentMybatisDao.getAcKingdomImageList(ceTopicId, page, 20);
 			List<Long> uidList = new ArrayList<Long>();
+			List<Long> idList = new ArrayList<Long>();
 			for (Map<String, Object> acImage : acImageList) {
 				if (!uidList.contains((Long) acImage.get("uid"))) {
 					uidList.add((Long) acImage.get("uid"));
 				}
+				if (!idList.contains((Long) acImage.get("id"))) {
+					idList.add((Long) acImage.get("id"));
+				}
+			}
+			List<Long> likeImageIdList = new ArrayList<Long>();
+			if(idList.size()>0){
+				likeImageIdList = contentMybatisDao.getAcKingdomImageLikeList(uid,idList);
 			}
 			Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
 			List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
@@ -10369,6 +10379,12 @@ public class ContentServiceImpl implements ContentService {
 				e.setTitle((String) acData.get("title"));
 				e.setUid((Long) acData.get("uid"));
 				e.setCreateTime((Date) acData.get("create_time"));
+				e.setLikeCount((Integer) acData.get("like_count"));
+				if(likeImageIdList.contains((Long) acData.get("id"))){
+					e.setIsLike(1);
+				}else{
+					e.setIsLike(0);
+				}
 				UserProfile userProfile = profileMap.get(acData.get("uid").toString());
 				if (userProfile != null) {
 					e.setNickName(userProfile.getNickName());

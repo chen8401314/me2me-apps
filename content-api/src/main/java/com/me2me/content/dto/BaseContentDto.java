@@ -117,4 +117,8 @@ public class BaseContentDto implements BaseEntity{
     private String kcName;//分类名称
     private String kcImage;//分类封面
     private String kcIcon;//分类图标
+    
+    private long cid;
+    
+    private long topicId;
 }

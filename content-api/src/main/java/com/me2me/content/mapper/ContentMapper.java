@@ -200,4 +200,5 @@ public interface ContentMapper {
     
     List<Map<String,Object>> getAcKingdomImageList(@Param("topicId") long topicId,@Param("page") int page,@Param("pageSize") int pageSize);
     
+    List<Long> getAcKingdomImageLikeList(@Param("uid") long uid,@Param("imageIdList") List<Long> imageIdList);
 }
