@@ -666,8 +666,6 @@ public class LiveExtServiceImpl implements LiveExtService {
 		List<TopicImage> topicImageList = liveMybatisDao.getTopicImageByTopicIdAndFidAndImageName(topicId, fid, imageName, 0);//图片视频的都要
 		if(null == topicImageList || topicImageList.size() == 0){
 			return Response.failure(ResponseStatus.CONTENT_NOT_EXISTS.status, ResponseStatus.CONTENT_NOT_EXISTS.message);
-		}else if(topicImageList.size() > 1){
-			return Response.failure(ResponseStatus.COMMON_ERROR_RESULT.status, "操作失败");
 		}
 
 		TopicImage topicImage = topicImageList.get(0);
