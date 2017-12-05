@@ -90,7 +90,7 @@ public class LiveExtDao {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select f.fragment,f.fragment_image,f.type,f.content_type,f.extra");
 		sb.append(" from topic_fragment f where f.status=1 and f.topic_id=? and f.id>=?");
-		sb.append(" and f.uid=? and ((f.type=0 and f.content_type in (0,1))");
+		sb.append(" and f.uid=? and ((f.type in (0,52) and f.content_type in (0,1))");
 		sb.append(" or f.content_type in (12,23,25)) order by f.id limit 5");
 		return jdbcTemplate.queryForList(sb.toString(), topicId,fid,uid);
 	}
