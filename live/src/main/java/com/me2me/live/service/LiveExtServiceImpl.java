@@ -2,15 +2,20 @@ package com.me2me.live.service;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,6 +74,27 @@ public class LiveExtServiceImpl implements LiveExtService {
 	
 	@Value("#{app.live_web}")
     private String live_web;
+	
+	@Value("#{app.emojiFileDirPath}")
+	private String emojiFileDirPath;
+	
+	private Map<String, File> emojiFileMap = new HashMap<String, File>();
+	
+	@PostConstruct
+    public void init(){
+		//加载emoji图片相关信息
+		File emojiFileDir = new File(emojiFileDirPath);
+		if(emojiFileDir.exists()){
+			File[] files = emojiFileDir.listFiles();
+			if(null != files && files.length > 0){
+				String fileName = null;
+				for(File emojiFile : files){
+					fileName = emojiFile.getName();
+					emojiFileMap.put(fileName.split("\\.")[0], emojiFile);
+				}
+			}
+		}
+	}
 	
 	@Override
 	public Response category() {
@@ -594,8 +620,6 @@ public class LiveExtServiceImpl implements LiveExtService {
 		return str.matches(regex);
 	}
 
-
-	
 	private ShareImgInfoDTO.ImageInfoElement drawText(String fragment, Graphics2D main){
 		ShareImgInfoDTO.ImageInfoElement e = new ShareImgInfoDTO.ImageInfoElement();
 		e.setType(1);
@@ -654,11 +678,66 @@ public class LiveExtServiceImpl implements LiveExtService {
 		
 		text.setColor(new Color(50,51,51));
 		text.setFont(new Font("苹方 细体", Font.PLAIN, 24*3));
+		
+		String emojiKey = null;
+		String line = null;
+		String s = null;
 		for(int i=0;i<list.size();i++){
-			text.drawString(list.get(i), 40*3, (int)((i+0.5)*33*3+(double)main.getFontMetrics().getHeight()/3));
+			line = list.get(i);
+			int drawY = (int)((i+0.5)*33*3+(double)main.getFontMetrics().getHeight()/3);
+			int drawX = 40*3;
+			for(int j=0;j<line.length();j++){
+				int cp = line.codePointAt(j);
+				if(cp >= 127462 && cp <= 127487 && j<line.length()-1){//有可能是国旗，双拼的
+					int cp2 = line.codePointAt(j+1);
+					emojiKey = Integer.toHexString(cp) + "-" + Integer.toHexString(cp2);
+					if(emojiFileMap.containsKey(emojiKey)){
+						this.drawImage(image, drawX, drawY, emojiFileMap.get(emojiKey));
+						j++;
+						drawX = drawX + 24*3;
+						continue;
+					}
+				}else if((cp == 42 || cp == 35) && j<line.length()-2){//有可能是#号和*号，3拼的
+					int cp2 = line.codePointAt(j+1);
+					int cp3 = line.codePointAt(j+2);
+					emojiKey = Integer.toHexString(cp) + "-" + Integer.toHexString(cp2) + "-" + Integer.toHexString(cp3);
+					if(emojiFileMap.containsKey(emojiKey)){
+						this.drawImage(image, drawX, drawY, emojiFileMap.get(emojiKey));
+						j++;
+						j++;
+						drawX = drawX + 24*3;
+						continue;
+					}
+				}
+				emojiKey = Integer.toHexString(cp);
+				if(emojiFileMap.containsKey(emojiKey)){
+					this.drawImage(image, drawX, drawY, emojiFileMap.get(emojiKey));
+					drawX = drawX + 24*3;
+					continue;
+				}
+				
+				//其他的都是文字了
+				s = line.substring(j, j+1);
+				text.drawString(s, drawX, (int)((i+0.5)*33*3+(double)main.getFontMetrics().getHeight()/4));
+				drawX = drawX + main.getFontMetrics().stringWidth(s);
+			}
 		}
 		e.setImageUrl(ImageUtil.getImageBase64String(image));
+		
 		return e;
+	}
+
+	private void drawImage(BufferedImage image, int x, int y, File emojiFile){
+		Graphics pic = image.getGraphics();
+		BufferedImage bimg = null;
+		try {
+			bimg = ImageIO.read(emojiFile);
+		} catch (Exception e) {
+		}
+		if(bimg!=null){
+			pic.drawImage(bimg, x, y, 24*3, 24*3, null);
+			pic.dispose();
+		}
 	}
 	
 	@Override
