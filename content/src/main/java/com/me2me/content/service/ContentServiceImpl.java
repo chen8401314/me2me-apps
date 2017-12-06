@@ -10390,6 +10390,7 @@ public class ContentServiceImpl implements ContentService {
 					e.setNickName(userProfile.getNickName());
 					e.setV_lv(userProfile.getvLv());
 					e.setLevel(userProfile.getLevel());
+					e.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 				}
 				showAcKingdomDto.getAcImageList().add(e);
 			}

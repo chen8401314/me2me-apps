@@ -99,6 +99,6 @@ public class ShowAcKingdomDto implements BaseEntity{
 		private int level;
 		private int likeCount;
 		private int isLike;
-		
+		private String avatar;
     }
 }
