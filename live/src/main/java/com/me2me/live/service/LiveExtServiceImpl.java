@@ -519,7 +519,46 @@ public class LiveExtServiceImpl implements LiveExtService {
 				title = str.toString() + "...";
 			}
 		}
-		main.drawString(title, 150, 270+main.getFontMetrics().getHeight()/3);
+		
+		int drawY = 270+main.getFontMetrics().getHeight()/3;
+		int drawX = 50*3;
+		String emojiKey = null;
+		String s = null;
+		for(int j=0;j<title.length();j++){
+			int cp = title.codePointAt(j);
+			if(cp >= 127462 && cp <= 127487 && j<title.length()-1){//有可能是国旗，双拼的
+				int cp2 = title.codePointAt(j+1);
+				emojiKey = Integer.toHexString(cp) + "-" + Integer.toHexString(cp2);
+				if(emojiFileMap.containsKey(emojiKey)){
+					this.drawImage(image, drawX, drawY, emojiFileMap.get(emojiKey));
+					j++;
+					drawX = drawX + 24*3;
+					continue;
+				}
+			}else if((cp == 42 || cp == 35) && j<title.length()-2){//有可能是#号和*号，3拼的
+				int cp2 = title.codePointAt(j+1);
+				int cp3 = title.codePointAt(j+2);
+				emojiKey = Integer.toHexString(cp) + "-" + Integer.toHexString(cp2) + "-" + Integer.toHexString(cp3);
+				if(emojiFileMap.containsKey(emojiKey)){
+					this.drawImage(image, drawX, drawY, emojiFileMap.get(emojiKey));
+					j++;
+					j++;
+					drawX = drawX + 24*3;
+					continue;
+				}
+			}
+			emojiKey = Integer.toHexString(cp);
+			if(emojiFileMap.containsKey(emojiKey)){
+				this.drawImage(image, drawX, drawY, emojiFileMap.get(emojiKey));
+				drawX = drawX + 24*3;
+				continue;
+			}
+			
+			//其他的都是文字了
+			s = title.substring(j, j+1);
+			main.drawString(s, drawX, 270+main.getFontMetrics().getHeight()/4);
+			drawX = drawX + main.getFontMetrics().stringWidth(s);
+		}
 		
 		main.setColor(new Color(185,185,185));
 		main.setFont(new Font("PingFang SC Regular", Font.PLAIN, 14*3));
