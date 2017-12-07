@@ -581,6 +581,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 		result.getImageInfos().add(e);
 		
 		//获取需要的信息
+		int size = 3;
 		List<Map<String, Object>> list = extDao.getTopicCardImageInfo(topicId, targetUid, fid);
 		if(null != list && list.size() > 0){
 			int contentType = 0;
@@ -588,7 +589,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 			JSONArray imagesArray = null;
 			JSONObject extraJson = null;
 			for(Map<String, Object> m : list){
-				if(result.getImageInfos().size() >= 6){
+				if(result.getImageInfos().size() >= size+1){//这里要+1，因为封面也算一张
 					break;
 				}
 				contentType = (Integer)m.get("content_type");
@@ -619,7 +620,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 								String content = extraJson.getString("content");
 								if(!StringUtils.isEmpty(content)){
 									result.getImageInfos().add(this.drawText(content, main));
-									if(result.getImageInfos().size() >= 6){
+									if(result.getImageInfos().size() >= size+1){
 										break;
 									}
 								}
@@ -632,7 +633,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 								e.setType(2);
 								e.setImageUrl(imagesArray.getString(i));
 								result.getImageInfos().add(e);
-								if(result.getImageInfos().size() >= 6){
+								if(result.getImageInfos().size() >= size+1){
 									break;
 								}
 							}

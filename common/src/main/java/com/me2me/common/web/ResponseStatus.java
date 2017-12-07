@@ -354,7 +354,7 @@ public enum  ResponseStatus {
 
     FINISH_LIVE_NO_POWER("您没有权限或者直播已经结束","finish live no power",50012),
 
-    USER_LIVE_IS_OVER("直接已经结束","user live is over",50013),
+    USER_LIVE_IS_OVER("王国更新已结束","user live is over",50013),
 
     USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",50014),
 
