@@ -520,7 +520,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 			}
 		}
 		
-		int drawY = 270+main.getFontMetrics().getHeight()/3;
+		int drawY = 270-main.getFontMetrics().getHeight()/3;
 		int drawX = 50*3;
 		String emojiKey = null;
 		String s = null;
@@ -723,7 +723,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 		String s = null;
 		for(int i=0;i<list.size();i++){
 			line = list.get(i);
-			int drawY = (int)((i+0.5)*33*3+(double)main.getFontMetrics().getHeight()/3);
+			int drawY = (int)((i+0.5)*33*3-(double)main.getFontMetrics().getHeight()/3);
 			int drawX = 40*3;
 			for(int j=0;j<line.length();j++){
 				int cp = line.codePointAt(j);
