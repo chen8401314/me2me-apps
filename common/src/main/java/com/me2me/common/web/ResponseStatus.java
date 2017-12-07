@@ -493,7 +493,7 @@ public enum  ResponseStatus {
     //创建王国余额不足
 	CREATE_KINGDOM_PRICE_LACK("需要消耗#{price}#米汤币,当前余额不足！","create kingdom price lack",500100),
 
-	COMMON_ERROR_RESULT("通用错误返回", "common error result", 500999);
+	COMMON_ERROR_RESULT("通用错误返回,请安具体错误返回详情", "common error result", 500999);
 	
     public final String message;
 
