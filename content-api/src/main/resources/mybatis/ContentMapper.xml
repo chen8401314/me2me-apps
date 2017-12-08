@@ -1291,7 +1291,7 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
 	ti.id,ti.topic_id,ti.fid,tf.fragment_image,tf.fragment,tf.type,tf.content_type,tf.extra,ti.create_time,tf.uid,t.title,ti.like_count
 	from topic_image ti,topic_aggregation ta,topic_fragment tf,topic t
 	where ti.topic_id = ta.sub_topic_id and ta.topic_id=#{topicId} and
-	tf.id=ti.fid and t.id =ti.topic_id order by ti.id,ti.fid desc
+	tf.id=ti.fid and t.id =ti.topic_id order by ti.create_time desc,ti.fid desc
 	limit ${(page-1)*pageSize},#{pageSize}
 </select>
    <select id="getAcKingdomImageLikeList" resultType="java.lang.Long">
