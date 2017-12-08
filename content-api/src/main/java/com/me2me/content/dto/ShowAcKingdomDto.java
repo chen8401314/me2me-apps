@@ -34,7 +34,10 @@ public class ShowAcKingdomDto implements BaseEntity{
 		private double priceRMB;
 		private Integer showRMBBrand;
 		private Integer showPriceBrand;
-		
+	    private long cid;
+	    private long topicId;
+		private int isTop;
+	    
         private List<ReviewElement> reviews = Lists.newArrayList();
 
         private List<OutDataElement> textData = Lists.newArrayList();

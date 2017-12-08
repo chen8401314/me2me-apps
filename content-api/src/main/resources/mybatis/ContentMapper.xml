@@ -1281,10 +1281,10 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
   <select id="getAcKingdomList" resultMap="ResultMapWithBLOBs">
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,c.update_id,c.update_time,
-    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
+    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights,a.is_top
     from content c left join topic t on c.forward_cid = t.id and c.type=3,topic_aggregation a where a.sub_topic_id = c.forward_cid and a.topic_id=#{topicId} and c.status != 1 and c.rights = 1 and (t.sub_type = 0 or t.sub_type is null)
     and  c.type=3
-    order by c.id desc limit  ${(page-1)*pageSize},#{pageSize}
+    order by a.is_top desc,c.id desc limit  ${(page-1)*pageSize},#{pageSize}
   </select>
 	<select id="getAcKingdomImageList" resultType="map">
 	select

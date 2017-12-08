@@ -10092,6 +10092,7 @@ public class ContentServiceImpl implements ContentService {
 				contentElement.setReviewCount(content.getReviewCount());
 				contentElement.setReadCount(content.getReadCountDummy());
 				contentElement.setRights(content.getRights());
+				contentElement.setIsTop(content.getIsTop());
 				if (!StringUtils.isEmpty(cover)) {
 					if (content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index
 							|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index) {
