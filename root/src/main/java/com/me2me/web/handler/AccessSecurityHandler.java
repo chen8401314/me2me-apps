@@ -66,7 +66,8 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         //验证码登录与注册
         WHITE_LIST.add("/api/user/loginByVerify");
         WHITE_LIST.add("/api/user/signUpByVerify");
-
+        WHITE_LIST.add("/api/user/getGuideInfo");
+        
         WHITE_LIST.add("/api/user/getBasicDataByType");
         WHITE_LIST.add("/api/user/versionControl");
         WHITE_LIST.add("/api/user/activityModel");
