@@ -750,7 +750,7 @@ public interface LiveService {
      * @param request
      * @return
      */
-	Response userForbidInfo(long uid, long topicId);
+	Response userForbidInfo(long uid, long forbidUid, long topicId);
 
 
 }
