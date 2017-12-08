@@ -726,12 +726,15 @@ public class LiveExtServiceImpl implements LiveExtService {
 			line = list.get(i);
 			int drawY = (int)((i+0.5)*33*3-(double)main.getFontMetrics().getHeight()/3);
 			int drawX = 40*3;
+			String logstr = "{";
 			for(int j=0;j<line.length();j++){
 				int cp = line.codePointAt(j);
+				logstr = logstr + cp + ",";
 				if(cp >= 127462 && cp <= 127487 && j<line.length()-1){//有可能是国旗，双拼的
 					int cp2 = line.codePointAt(j+1);
 					emojiKey = Integer.toHexString(cp) + "-" + Integer.toHexString(cp2);
 					if(emojiFileMap.containsKey(emojiKey)){
+						logstr = logstr + cp2 + ",";
 						this.drawImage(image, drawX, drawY, emojiFileMap.get(emojiKey));
 						j++;
 						drawX = drawX + 24*3;
@@ -742,6 +745,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 					int cp3 = line.codePointAt(j+2);
 					emojiKey = Integer.toHexString(cp) + "-" + Integer.toHexString(cp2) + "-" + Integer.toHexString(cp3);
 					if(emojiFileMap.containsKey(emojiKey)){
+						logstr = logstr + cp2 + "," + cp3 + ",";
 						this.drawImage(image, drawX, drawY, emojiFileMap.get(emojiKey));
 						j++;
 						j++;
@@ -761,6 +765,8 @@ public class LiveExtServiceImpl implements LiveExtService {
 				text.drawString(s, drawX, (int)((i+0.5)*33*3+(double)main.getFontMetrics().getHeight()/4));
 				drawX = drawX + main.getFontMetrics().stringWidth(s);
 			}
+			logstr = logstr + "}";
+			log.info("===" + logstr);
 		}
 		e.setImageUrl(ImageUtil.getImageBase64String(image));
 		
