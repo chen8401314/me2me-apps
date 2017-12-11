@@ -9485,88 +9485,97 @@ public class LiveServiceImpl implements LiveService {
 	}
 
 	@Override
-	public Response userLike(long uid, long dataId, int isLike, int type,int needNew,String tagIds) {
-		com.me2me.content.dto.UserLikeDto  dto = null;
+	public Response userLike(long uid, long dataId, int isLike, int type, int needNew, String tagIds) {
+		//当用户点击王国的喜欢不喜欢时，检查下，如果是用户自己的王国，则不做操作，直接返回成功
+		if(type == 2){
+			Topic t = liveMybatisDao.getTopicById(dataId);
+			if(null != t && t.getUid().longValue() == uid){
+				return Response.success();
+			}
+		}
+		
+		com.me2me.content.dto.UserLikeDto dto = null;
 		UserDislikeExample example = new UserDislikeExample();
 		example.createCriteria().andUidEqualTo(uid).andDataEqualTo(dataId).andTypeEqualTo(type);
-		boolean exists = dislikeMapper.countByExample(example)>0;
+		boolean exists = dislikeMapper.countByExample(example) > 0;
 		UserDislike dislike = new UserDislike();
 		dislike.setUid(uid);
 		dislike.setData(dataId);
 		dislike.setIsLike(isLike);
 		dislike.setType(type);
 		dislike.setCreateTime(new Date());
-		if(isLike==0 || isLike==1){
-		if(!exists){
-			dislikeMapper.insert(dislike);
-		}else{
-			dislikeMapper.updateByExampleSelective(dislike, example);
-		}
+		if (isLike == 0 || isLike == 1) {
+			if (!exists) {
+				dislikeMapper.insert(dislike);
+			} else {
+				dislikeMapper.updateByExampleSelective(dislike, example);
+			}
 		}
 		// 标签加减分
-		if(dislike.getType()==2){		// 不喜欢标签
-			if(dislike.getIsLike()==0){	// 不喜欢
+		if (dislike.getType() == 2) { // 不喜欢标签
+			if (dislike.getIsLike() == 0) { // 不喜欢
 				TopicTag tag = liveMybatisDao.getTopicTagById(dislike.getData());
-				if(tag!=null){
-				this.liveLocalJdbcDao.updateUserLikeTagScoreTo0(uid,tag.getTag());
+				if (tag != null) {
+					this.liveLocalJdbcDao.updateUserLikeTagScoreTo0(uid, tag.getTag());
 				}
 			}
-		//3.0.5版本处理
+			// 3.0.5版本处理
 			UserTag userTag = userService.getUserTagByUidAndTagid(uid, dataId);
-			int isSave = 0; //1保存 0更新
-			if(userTag==null){
+			int isSave = 0; // 1保存 0更新
+			if (userTag == null) {
 				userTag = new UserTag();
 				userTag.setUid(uid);
 				userTag.setTagId(dataId);
-				isSave  =1;
+				isSave = 1;
 			}
-			if(dislike.getIsLike()==0){	// 不喜欢
+			if (dislike.getIsLike() == 0) { // 不喜欢
 				userTag.setType(2);
 				userTag.setScore(0);
 				userTag.setIsTop(0);
-				if(needNew==1){
+				if (needNew == 1) {
 					dto = contentService.getOtherNormalTag(uid, tagIds);
 				}
 			}
-			if(dislike.getIsLike()==1){	// 喜欢
+			if (dislike.getIsLike() == 1) { // 喜欢
 				userTag.setType(1);
 				userTag.setIsTop(0);
 			}
-			if(dislike.getIsLike()==2){	// 置顶
+			if (dislike.getIsLike() == 2) { // 置顶
 				userTag.setIsTop(1);
 				userTag.setTopTime(new Date());
-			} 
-			if(dislike.getIsLike()==3){	// 移除
+			}
+			if (dislike.getIsLike() == 3) { // 移除
 				userTag.setType(0);
 				userTag.setIsTop(0);
 			}
-			if(dislike.getIsLike()==4){	// 取消置顶
+			if (dislike.getIsLike() == 4) { // 取消置顶
 				userTag.setIsTop(0);
 			}
-			if(isSave==1){
+			if (isSave == 1) {
 				userService.saveUserTag(userTag);
-			}else{
+			} else {
 				userService.updateUserTag(userTag);
 			}
-		}else{		//	王国
+		} else { // 王国
 			List<TopicTagDetail> detailList = liveMybatisDao.getTopicTagDetailsByTopicId(dataId);
-			int score=0;
-			if(dislike.getIsLike()==0){	// 不喜欢
-				score=userService.getIntegerAppConfigByKey("TAG_DISLIKE_SCORE");
-			}else{	//	喜欢
-				score=userService.getIntegerAppConfigByKey("TAG_LIKE_SCORE");
+			int score = 0;
+			if (dislike.getIsLike() == 0) { // 不喜欢
+				score = userService.getIntegerAppConfigByKey("TAG_DISLIKE_SCORE");
+			} else { // 喜欢
+				score = userService.getIntegerAppConfigByKey("TAG_LIKE_SCORE");
 			}
-			for(TopicTagDetail detail:detailList){
-				this.liveLocalJdbcDao.updateUserLikeTagScore(uid,detail.getTag(),score);
-				this.liveLocalJdbcDao.updateUserLikeTagScore(uid,detail.getTagId(),score);
+			for (TopicTagDetail detail : detailList) {
+				this.liveLocalJdbcDao.updateUserLikeTagScore(uid, detail.getTag(), score);
+				this.liveLocalJdbcDao.updateUserLikeTagScore(uid, detail.getTagId(), score);
 			}
 		}
-		if(dto!=null){
+		if (dto != null) {
 			return Response.success(dto);
-		}else{
+		} else {
 			return Response.success();
 		}
 	}
+	
 	public Response badTag(long uid,long topicId,String tag){
 		if(userService.isAdmin(uid)){
 			TopicBadTagExample ex = new TopicBadTagExample();
