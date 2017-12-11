@@ -67,6 +67,7 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         WHITE_LIST.add("/api/user/loginByVerify");
         WHITE_LIST.add("/api/user/signUpByVerify");
         WHITE_LIST.add("/api/user/getGuideInfo");
+        WHITE_LIST.add("/api/user/getLevelList");
         
         WHITE_LIST.add("/api/user/getBasicDataByType");
         WHITE_LIST.add("/api/user/versionControl");
