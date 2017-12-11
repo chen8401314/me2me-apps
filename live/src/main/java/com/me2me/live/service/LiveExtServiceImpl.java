@@ -742,7 +742,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 						drawX = drawX + 24*3;
 						continue;
 					}
-				}else if((cp == 42 || cp == 35) && j<line.length()-2){//有可能是#号和*号，3拼的
+				}else if((cp == 42 || cp == 35 || (cp >= 48 && cp <= 57)) && j<line.length()-2){//有可能是#号和*号，3拼的
 					int cp2 = line.codePointAt(j+1);
 					int cp3 = line.codePointAt(j+2);
 					emojiKey = Integer.toHexString(cp) + "-" + Integer.toHexString(cp2) + "-" + Integer.toHexString(cp3);
