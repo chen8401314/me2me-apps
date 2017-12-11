@@ -10371,7 +10371,7 @@ public class ContentServiceImpl implements ContentService {
 			for (Map<String, Object> acData : acImageList) {
 				ShowAcKingdomDto.AcImageElement e = new ShowAcKingdomDto.AcImageElement();
 				e.setFid((Long) acData.get("fid"));
-				e.setFragmentImage(Constant.QINIU_DOMAIN + "/" + (String) acData.get("fragment_image"));
+				e.setFragmentImage(Constant.QINIU_DOMAIN + "/" + (String) acData.get("image"));
 				e.setFragment((String) acData.get("fragment"));
 				e.setType((Integer) acData.get("type"));
 				e.setContentType((Integer) acData.get("content_type"));
