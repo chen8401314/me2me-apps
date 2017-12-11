@@ -693,8 +693,8 @@ public class LiveExtServiceImpl implements LiveExtService {
 			list.add(str.toString());
 		}
 		if(list.size() > 10){
-			list = list.subList(0, 10);
-			String s = list.get(9);
+			String s = list.get(9);//拿出第10条
+			list = list.subList(0, 9);//把前9条拿出来
 			int le = s.length();
 			if(le > 0){
 				for(int i=0;i<le;i++){
@@ -705,7 +705,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 					}
 				}
 			}
-			list.add(9, s+"...");
+			list.add(9, s+"...");//插入处理后的第10条记录
 		}
 		
 		int height = 3*33*list.size();
