@@ -340,7 +340,7 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 		String dateStr = DateUtil.date2string(new Date(), "yyyy-MM-dd") + " 00:00:00";
 		StringBuilder sb = new StringBuilder();
 		sb.append("select t.id as topic_id from topic t,topic_data d where t.id=d.topic_id");
-		sb.append(" and t.uid!=").append(uid).append(" and d.steal_price>0");
+		sb.append(" and t.uid!=").append(uid).append(" and t.rights!=2 and d.steal_price>0");
 		sb.append(" and t.id not in (SELECT topic_id FROM user_steal_log s WHERE s.uid=").append(uid);
 		sb.append(" and s.create_time>='").append(dateStr).append("')");
 		
@@ -348,7 +348,7 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 	}
 
 	public List<Map<String, Object>> getCanSpeakTopicId(long uid) {
-		String sql = "SELECT id FROM topic WHERE uid != ?  ORDER BY update_time DESC LIMIT 500";
+		String sql = "SELECT id FROM topic WHERE uid != ? and rights!=2  ORDER BY update_time DESC LIMIT 100";
 		return super.query(sql,uid);
 	}
 

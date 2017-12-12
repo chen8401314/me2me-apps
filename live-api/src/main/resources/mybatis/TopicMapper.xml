@@ -590,6 +590,7 @@
     and t.price&gt;=#{minPrice}
     and c.status=0 and c.type=3
     and t.status=0
+    and t.rights!=2
     AND t.uid != #{uid}
     <if test="set != ''">
       and t.id NOT IN (${set})
@@ -602,6 +603,7 @@
     select t.*  from topic t
     where t.price&gt;=#{minPrice}
     and t.status=0
+    and t.rights!=2
     AND t.uid != #{uid}
     <if test="set != ''">
       and t.id NOT IN (${set})
