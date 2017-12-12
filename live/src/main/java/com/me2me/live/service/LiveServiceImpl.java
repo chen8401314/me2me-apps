@@ -3286,6 +3286,8 @@ public class LiveServiceImpl implements LiveService {
     //返回 1：到最后了  2：没到最后
     private int buildLiveDetail(GetLiveDetailDto getLiveDetailDto, LiveDetailDto liveDetailDto, List<TopicFragmentWithBLOBs> fragmentList, Topic topic) {
         log.info("build live detail start ...");
+        int listSize = fragmentList.size();
+        
         if(getLiveDetailDto.getReqType() == 1){//只看发布，则过滤掉非发布的内容
         	TopicFragmentWithBLOBs f = null;
         	for(int i=0;i<fragmentList.size();i++){
@@ -3571,7 +3573,7 @@ public class LiveServiceImpl implements LiveService {
         LiveDetailDto.PageDetail pd = new LiveDetailDto.PageDetail();
         pd.setPage(getLiveDetailDto.getPageNo());
         pd.setRecords(count);
-        pd.setIsFull(fragmentList.size() >= getLiveDetailDto.getOffset()?1:2);
+        pd.setIsFull(listSize >= getLiveDetailDto.getOffset()?1:2);
         pd.setUpdateTime(pageUpdateTime);
         liveDetailDto.getPageInfo().getDetail().add(pd);
         log.info("build live detail end ...");
@@ -3579,7 +3581,7 @@ public class LiveServiceImpl implements LiveService {
         //判断是否到底或到顶
         int result = 2;
         if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){//向下拉，那么返回的数据不满50条说明到底了
-        	if(fragmentList.size() < getLiveDetailDto.getOffset()){
+        	if(listSize < getLiveDetailDto.getOffset()){
         		result = 1;
         	}
         }else{//向上拉，那么page到第一页时说明就到顶了
@@ -3594,6 +3596,8 @@ public class LiveServiceImpl implements LiveService {
     //返回 1：到最后了  2：没到最后
     private int buildLiveDetailPage(GetLiveDetailDto getLiveDetailDto, LiveDetailPageDto liveDetailDto, List<TopicFragmentWithBLOBs> fragmentList, Topic topic) {
         log.info("build live detail start ...");
+        int listSize = fragmentList.size();
+        
         if(getLiveDetailDto.getReqType() == 1){//只看发布，则过滤掉非发布的内容
         	TopicFragmentWithBLOBs f = null;
         	for(int i=0;i<fragmentList.size();i++){
@@ -3876,7 +3880,7 @@ public class LiveServiceImpl implements LiveService {
         
         pd.setPage(getLiveDetailDto.getPageNo());
         pd.setRecords(count);
-        pd.setIsFull(fragmentList.size() >= getLiveDetailDto.getOffset()?1:2);
+        pd.setIsFull(listSize >= getLiveDetailDto.getOffset()?1:2);
         pd.setUpdateTime(pageUpdateTime);
         liveDetailDto.getPageInfo().getDetail().add(pd);
         log.info("build live detail end ...");
@@ -3886,7 +3890,7 @@ public class LiveServiceImpl implements LiveService {
         //判断是否到底或到顶
         int result = 2;
         if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){//向下拉，那么返回的数据不满50条说明到底了
-        	if(fragmentList.size() < getLiveDetailDto.getOffset()){
+        	if(listSize < getLiveDetailDto.getOffset()){
         		result = 1;
         	}
         }else{//向上拉，那么page到第一页时说明就到顶了
