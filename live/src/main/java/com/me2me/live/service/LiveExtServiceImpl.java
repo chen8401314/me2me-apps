@@ -468,6 +468,36 @@ public class LiveExtServiceImpl implements LiveExtService {
 		if(null != targetUser){
 			nickName = targetUser.getNickName();
 		}
+		if(nickName.length() > 8){
+			String sub = null;
+			int realLength = 0;
+			for(int i=0;i<nickName.length();i++){
+				sub = nickName.substring(i, i+1);
+				if(isLetterOrDigit(sub)){
+					realLength = realLength + 1;
+				}else{
+					realLength = realLength + 2;
+				}
+			}
+			if(realLength>16){
+				int rl = 0;
+				StringBuilder str = new StringBuilder();
+				for(int i=0;i<nickName.length();i++){
+					sub = nickName.substring(i, i+1);
+					if(isLetterOrDigit(sub)){
+						rl = rl + 1;
+					}else{
+						rl = rl + 2;
+					}
+					if(rl > 14){
+						break;
+					}
+					str.append(sub);
+				}
+				nickName = str.toString() + "...";
+			}
+		}
+		
 		//获取王国名
 		Topic topic = liveMybatisDao.getTopicById(topicId);
 		if(null == topic){
