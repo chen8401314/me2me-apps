@@ -3374,8 +3374,8 @@ public class ContentServiceImpl implements ContentService {
             			contentElement.setV_lv(lastUserProfile.getvLv());
             			contentElement.setLevel(lastUserProfile.getLevel());
             			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
-            			if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
-                        	contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+            			if(!StringUtils.isEmpty(lastUserProfile.getAvatarFrame())){
+                        	contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatarFrame());
                         }else{
                         	contentElement.setAvatarFrame(null);
                         }
@@ -10229,9 +10229,9 @@ public class ContentServiceImpl implements ContentService {
 							contentElement.setV_lv(lastUserProfile.getvLv());
 							contentElement.setLevel(lastUserProfile.getLevel());
 							contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
-							if (!StringUtils.isEmpty(userProfile.getAvatarFrame())) {
+							if (!StringUtils.isEmpty(lastUserProfile.getAvatarFrame())) {
 								contentElement
-										.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+										.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatarFrame());
 							} else {
 								contentElement.setAvatarFrame(null);
 							}

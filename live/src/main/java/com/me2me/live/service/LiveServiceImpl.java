@@ -3286,6 +3286,24 @@ public class LiveServiceImpl implements LiveService {
     //返回 1：到最后了  2：没到最后
     private int buildLiveDetail(GetLiveDetailDto getLiveDetailDto, LiveDetailDto liveDetailDto, List<TopicFragmentWithBLOBs> fragmentList, Topic topic) {
         log.info("build live detail start ...");
+        if(getLiveDetailDto.getReqType() == 1){//只看发布，则过滤掉非发布的内容
+        	TopicFragmentWithBLOBs f = null;
+        	for(int i=0;i<fragmentList.size();i++){
+        		f = fragmentList.get(i);
+        		if(f.getUid().longValue() == getLiveDetailDto.getUid()){
+        			continue;
+        		}
+        		if(f.getType().intValue() == 0 || f.getType().intValue() == 3
+        				|| f.getType().intValue() == 12 || f.getType().intValue() == 13
+        				|| f.getType().intValue() == 52 || f.getType().intValue() == 54
+        				|| f.getType().intValue() == 55){
+        			continue;
+        		}
+        		fragmentList.remove(i);
+        		i--;
+        	}
+        }
+        
         liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
         liveDetailDto.getPageInfo().setEnd(getLiveDetailDto.getPageNo());
 
@@ -3576,6 +3594,24 @@ public class LiveServiceImpl implements LiveService {
     //返回 1：到最后了  2：没到最后
     private int buildLiveDetailPage(GetLiveDetailDto getLiveDetailDto, LiveDetailPageDto liveDetailDto, List<TopicFragmentWithBLOBs> fragmentList, Topic topic) {
         log.info("build live detail start ...");
+        if(getLiveDetailDto.getReqType() == 1){//只看发布，则过滤掉非发布的内容
+        	TopicFragmentWithBLOBs f = null;
+        	for(int i=0;i<fragmentList.size();i++){
+        		f = fragmentList.get(i);
+        		if(f.getUid().longValue() == getLiveDetailDto.getUid()){
+        			continue;
+        		}
+        		if(f.getType().intValue() == 0 || f.getType().intValue() == 3
+        				|| f.getType().intValue() == 12 || f.getType().intValue() == 13
+        				|| f.getType().intValue() == 52 || f.getType().intValue() == 54
+        				|| f.getType().intValue() == 55){
+        			continue;
+        		}
+        		fragmentList.remove(i);
+        		i--;
+        	}
+        }
+        
         liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
         liveDetailDto.getPageInfo().setEnd(getLiveDetailDto.getPageNo());
 
