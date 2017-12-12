@@ -4,15 +4,20 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Author: 马秀成
@@ -95,11 +100,43 @@ public class HttpUtil {
     }
     
     public static void main(String[] args){
-    	String url = "http://app.me-to-me.com/meapp/content/recommendWeb.do";
-    	String json = "{\"uid\":\"446\",\"token\":\"123\",\"version\":\"2.2.4\",\"emotion\":\"\"}";
-    	
-    	String result = post(url, json);
-    	
-    	System.out.println(result);
+    	HttpPost httppost = new HttpPost("http://test2.me-to-me.com/api/live/shareImgInfo");
+    	CloseableHttpClient httpclient = null;
+        CloseableHttpResponse response = null;
+        String responseContent = null;
+        try {
+        	httpclient = HttpClients.createDefault();
+        	List<BasicNameValuePair> rp = new ArrayList<BasicNameValuePair>();
+        	rp.add(new BasicNameValuePair("is_skip", "ok"));
+        	rp.add(new BasicNameValuePair("uid", "446"));
+        	rp.add(new BasicNameValuePair("token", "fd4c3445358c4b44866fd045d3bde95d"));
+        	rp.add(new BasicNameValuePair("topicId", "6992"));
+        	rp.add(new BasicNameValuePair("fid", "256910"));
+        	rp.add(new BasicNameValuePair("targetUid", "446"));
+    		HttpEntity reqEntity= new UrlEncodedFormEntity(rp, "utf-8");
+        	
+            httppost.setEntity(reqEntity);
+            response = httpclient.execute(httppost);
+            HttpEntity respEntity = response.getEntity();
+            responseContent = EntityUtils.toString(respEntity, "UTF-8");
+            System.out.println("post responseContent message:"+responseContent);
+        } catch (Exception e) {
+        	e.printStackTrace();
+        } finally {
+        	if(null != response){
+        		try {
+					response.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        	if(null != httpclient){
+        		try {
+					httpclient.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	} 
+        } 
     }
 }
