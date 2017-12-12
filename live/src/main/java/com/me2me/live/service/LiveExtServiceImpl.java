@@ -624,7 +624,29 @@ public class LiveExtServiceImpl implements LiveExtService {
 		
 		//获取需要的信息
 		int size = 3;
-		List<Map<String, Object>> list = extDao.getTopicCardImageInfo(topicId, targetUid, fid);
+		
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		
+		List<Map<String, Object>> fList = extDao.getTopicCardImageInfo(topicId, fid);
+		if(null != fList && fList.size() > 0){
+			for(Map<String, Object> f : fList){
+				long fuid = (Long)f.get("uid");
+				int ftype = (Integer)f.get("type");
+				int fcontentType = (Integer)f.get("content_type");
+				if(fuid == targetUid){
+					if(((ftype == 0 || ftype == 52) && (fcontentType==0 || fcontentType==1))//主播发言或发图
+							|| fcontentType == 12 //视频
+							|| fcontentType == 23 //UGC
+							|| fcontentType == 25 //图组
+							){
+						list.add(f);
+						continue;
+					}
+				}
+				break;
+			}
+		}
+		
 		if(null != list && list.size() > 0){
 			int contentType = 0;
 			String extra = null;

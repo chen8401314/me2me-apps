@@ -86,13 +86,12 @@ public class LiveExtDao {
 		return jdbcTemplate.queryForList(sb.toString(), topicId, month);
 	}
 	
-	public List<Map<String, Object>> getTopicCardImageInfo(long topicId, long uid, long fid){
+	public List<Map<String, Object>> getTopicCardImageInfo(long topicId, long fid){
 		StringBuilder sb = new StringBuilder();
-		sb.append("select f.fragment,f.fragment_image,f.type,f.content_type,f.extra");
+		sb.append("select f.uid,f.fragment,f.fragment_image,f.type,f.content_type,f.extra");
 		sb.append(" from topic_fragment f where f.status=1 and f.topic_id=? and f.id>=?");
-		sb.append(" and f.uid=? and ((f.type in (0,52) and f.content_type in (0,1))");
-		sb.append(" or f.content_type in (12,23,25)) order by f.id limit 3");
-		return jdbcTemplate.queryForList(sb.toString(), topicId,fid,uid);
+		sb.append(" order by f.id limit 3");
+		return jdbcTemplate.queryForList(sb.toString(), topicId, fid);
 	}
 	
 	public Map<String, Object> getTopicFragmentInfo(long topicId, long uid, long fid){
