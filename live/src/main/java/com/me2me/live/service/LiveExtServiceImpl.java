@@ -166,6 +166,10 @@ public class LiveExtServiceImpl implements LiveExtService {
 
 	@Override
 	public Response getKingdomImage(long uid,long topicId,long fid,String imageName,int type){
+		if(imageName.startsWith("http")){//兼容前端不愿意转换传递整串图片路径
+			imageName = imageName.substring(imageName.indexOf("/", 9)+1);
+		}
+		
 		GetKingdomImageDTO result = new GetKingdomImageDTO();
 		
 		int pageSize = 10;
@@ -194,7 +198,8 @@ public class LiveExtServiceImpl implements LiveExtService {
 					e.setFid(topicImage.getFid());
 					image = topicImage.getImage();
 					if(image.startsWith("http")){
-						e.setImageName(image.substring(image.lastIndexOf("/")+1));
+						
+						e.setImageName(image.substring(image.indexOf("/", 9)+1));
 						e.setFragmentImage(image);
 					}else{
 						e.setImageName(image);
@@ -225,7 +230,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 						e.setFid(topicImage.getFid());
 						image = topicImage.getImage();
 						if(image.startsWith("http")){
-							e.setImageName(image.substring(image.lastIndexOf("/")+1));
+							e.setImageName(image.substring(image.indexOf("/", 9)+1));
 							e.setFragmentImage(image);
 						}else{
 							e.setImageName(image);
@@ -250,7 +255,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 					e.setFid(topicImage.getFid());
 					image = topicImage.getImage();
 					if(image.startsWith("http")){
-						e.setImageName(image.substring(image.lastIndexOf("/")+1));
+						e.setImageName(image.substring(image.indexOf("/", 9)+1));
 						e.setFragmentImage(image);
 					}else{
 						e.setImageName(image);
@@ -279,7 +284,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 					e.setFid(topicImage.getFid());
 					image = topicImage.getImage();
 					if(image.startsWith("http")){
-						e.setImageName(image.substring(image.lastIndexOf("/")+1));
+						e.setImageName(image.substring(image.indexOf("/", 9)+1));
 						e.setFragmentImage(image);
 					}else{
 						e.setImageName(image);
@@ -308,7 +313,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 				e.setFid(topicImage.getFid());
 				image = topicImage.getImage();
 				if(image.startsWith("http")){
-					e.setImageName(image.substring(image.lastIndexOf("/")+1));
+					e.setImageName(image.substring(image.indexOf("/", 9)+1));
 					e.setFragmentImage(image);
 				}else{
 					e.setImageName(image);
@@ -330,7 +335,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 					e.setFid(topicImage.getFid());
 					image = topicImage.getImage();
 					if(image.startsWith("http")){
-						e.setImageName(image.substring(image.lastIndexOf("/")+1));
+						e.setImageName(image.substring(image.indexOf("/", 9)+1));
 						e.setFragmentImage(image);
 					}else{
 						e.setImageName(image);
@@ -352,7 +357,7 @@ public class LiveExtServiceImpl implements LiveExtService {
 					e.setFid(topicImage.getFid());
 					image = topicImage.getImage();
 					if(image.startsWith("http")){
-						e.setImageName(image.substring(image.lastIndexOf("/")+1));
+						e.setImageName(image.substring(image.indexOf("/", 9)+1));
 						e.setFragmentImage(image);
 					}else{
 						e.setImageName(image);
@@ -434,11 +439,18 @@ public class LiveExtServiceImpl implements LiveExtService {
 		List<Map<String, Object>> list = extDao.getKingdomImageList(topicId, month, 1);//目前只要图片
 		if(null != list && list.size() > 0){
 			KingdomImageListDTO.ImageElement e = null;
+			String image = null;
 			for(Map<String, Object> m : list){
 				e = new KingdomImageListDTO.ImageElement();
 				e.setFid((Long)m.get("fid"));
-				e.setImageName((String)m.get("image"));
-				e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+(String)m.get("image"));
+				image = (String)m.get("image");
+				if(image.startsWith("http")){
+					e.setImageName(image.substring(image.indexOf("/", 9)+1));
+					e.setFragmentImage(image);
+				}else{
+					e.setImageName(image);
+					e.setFragmentImage(Constant.QINIU_DOMAIN+"/"+image);
+				}
 				e.setExtra((String)m.get("extra"));
 				result.getImageDatas().add(e);
 			}
@@ -787,6 +799,10 @@ public class LiveExtServiceImpl implements LiveExtService {
 	
 	@Override
 	public Response fragmentLike(long uid, long topicId, long fid, String imageName, int action){
+		if(!StringUtils.isEmpty(imageName) && imageName.startsWith("http")){//兼容前端不愿意转换传递整串图片路径
+			imageName = imageName.substring(imageName.indexOf("/", 9)+1);
+		}
+		
 		List<TopicImage> topicImageList = liveMybatisDao.getTopicImageByTopicIdAndFidAndImageName(topicId, fid, imageName, 0);//图片视频的都要
 		if(null == topicImageList || topicImageList.size() == 0){
 			return Response.failure(ResponseStatus.CONTENT_NOT_EXISTS.status, ResponseStatus.CONTENT_NOT_EXISTS.message);
