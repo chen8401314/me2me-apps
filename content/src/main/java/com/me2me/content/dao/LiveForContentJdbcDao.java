@@ -1334,7 +1334,6 @@ public class LiveForContentJdbcDao {
     			}
     		}
     	}
-    	
     	return result;
     }
     
