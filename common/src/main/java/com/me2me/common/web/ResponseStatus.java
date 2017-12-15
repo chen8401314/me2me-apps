@@ -124,7 +124,7 @@ public enum  ResponseStatus {
 
     FORWARD_SUCCESS("转发成功","user publish article success",20052),
 
-    GET_LIVE_COVER_SUCCESS("直播封面获取成功","get live cover success",20053),
+    GET_LIVE_COVER_SUCCESS("王国封面获取成功","get live cover success",20053),
 
     GET_LIVE_BARRAGE_SUCCESS("直播弹幕获取成功","get live barrage success",20054),
 
