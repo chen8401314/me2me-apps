@@ -1092,4 +1092,11 @@ public class ContentMybatisDao {
 	public List<Long> getAcKingdomImageLikeList(long uid,List<Long> imageIdList){
 		return contentMapper.getAcKingdomImageLikeList(uid, imageIdList);
 	}
+	public List<Map<String,Object>> getAttentionAndLikeTag(long uid,long updateTime,int pageSize){
+		return contentMapper.getAttentionAndLikeTag(uid,updateTime,pageSize);
+	}
+	public List<Content> getContentListByIds(List<Long> idList){
+		return contentMapper.getContentListByIds(idList);
+	}
+	
 }
