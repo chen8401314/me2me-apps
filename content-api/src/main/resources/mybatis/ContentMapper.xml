@@ -1361,7 +1361,7 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
       </if>
 		 and t1.topic_id =t2.topic_id
 		and t1.tag_id = t3.id and t4.id = t2.fid
-		order by t1.tag_id desc,t2.create_time desc )m
+		order by t1.tag_id desc,t2.create_time desc )m,(select @preVal:=null,@curVal:=null) r
 		) s where s.rowno<4
 	</select>
 
