@@ -1315,7 +1315,7 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
 	f.source_uid=#{uid})
 	) and c.status != 1 and c.rights = 1
 	<if test="updateTime != 0">
-		and t.long_time<#{updateTime}
+		and t.long_time<![CDATA[<]]>#{updateTime}
 	</if>
 	UNION
 	select u.tag_id,0,UNIX_TIMESTAMP(MAX(t2.out_time))*1000 as longtime
@@ -1325,9 +1325,9 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
 	and d.status=0
 	and d.topic_id=t2.id
 	group by u.tag_id
-	having COUNT(d.topic_id)>0
+	having COUNT(d.topic_id)<![CDATA[>]]>0
 	<if test="updateTime != 0">
-		and UNIX_TIMESTAMP(MAX(t2.out_time))*1000<#{updateTime}
+		and UNIX_TIMESTAMP(MAX(t2.out_time))*1000<![CDATA[<]]>#{updateTime}
 	</if>
 	order by longtime desc
 	limit #{pageSize}
@@ -1362,7 +1362,7 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
 		 and t1.topic_id =t2.topic_id
 		and t1.tag_id = t3.id and t4.id = t2.fid
 		order by t1.tag_id desc,t2.create_time desc )m,(select @preVal:=null,@curVal:=null) r
-		) s where s.rowno<4
+		) s where s.rowno<![CDATA[<]]>4
 	</select>
 
 </mapper>
