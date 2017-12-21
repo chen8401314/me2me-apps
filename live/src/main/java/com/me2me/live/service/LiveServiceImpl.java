@@ -309,6 +309,13 @@ public class LiveServiceImpl implements LiveService {
             return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
         }
         
+        //私密王国处理
+        if(topic.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
+        	if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())){
+				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,"此王国需要经过国王邀请才允许进入");
+			}
+        }
+        
         //王国是否可见
         if(topic.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
         	liveCoverDto.setRights(Specification.KingdomRights.PRIVATE_KINGDOM.index);
@@ -719,11 +726,18 @@ public class LiveServiceImpl implements LiveService {
         String visited =  cacheService.get(KINGDOM_VIEW_KEY);
         showLiveDto.setIsFirstView(visited==null?1:0);
         
+        //如果是私密王国则只有国王和核心圈成员可以进入 
+        if(topic.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
+        	if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())){
+				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,"此王国需要经过国王邀请才允许进入");
+			}
+        }
+        
         //私密属性
         if(topic.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
         	showLiveDto.setRights(Specification.KingdomRights.PRIVATE_KINGDOM.index);
         }else{
-        	showLiveDto.setReadCount(Specification.KingdomRights.PUBLIC_KINGDOM.index);
+        	showLiveDto.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);
         }
         
         Content content = contentService.getContentByTopicId(cid);
