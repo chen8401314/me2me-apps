@@ -1568,6 +1568,23 @@ public interface Specification {
             this.index = index;
         }
     }
+    
+    /**
+     * 当前用户是否可见
+     *
+     */
+    enum CanViewStatus{
+    	CAN_VIEW("对当前用户可见",1),
+    	NOT_CAN_VIEW("对当前用户不可见",0);
+    	
+    	public final String name;
+    	public final int index;
+    	
+    	CanViewStatus(String name,int index){
+    		this.name = name;
+    		this.index = index;
+    	}
+    }
 }
 
     

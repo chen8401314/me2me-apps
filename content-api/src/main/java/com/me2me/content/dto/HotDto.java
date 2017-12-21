@@ -110,6 +110,8 @@ public class HotDto implements BaseEntity {
 		private String kcName;
 		private String kcIcon;
 		private String kcImage;
+		private int rights;
+		private int canView;
         private List<OutDataElement> textData = Lists.newArrayList();
         private List<OutDataElement> audioData = Lists.newArrayList();
         private List<OutDataElement> imageData = Lists.newArrayList();

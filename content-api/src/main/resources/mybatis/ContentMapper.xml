@@ -1355,7 +1355,7 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
 		from topic_tag_detail t1,topic_image t2,topic_tag t3,topic_fragment t4
 		where t1.status = 0 and t1.tag_id in
 		 <if test="idList!=null and idList.size() &gt; 0">
-      <foreach close=")" collection=idList item="ids" open="(" separator=",">
+      <foreach close=")" collection="idList" item="ids" open="(" separator=",">
         #{ids}
       </foreach>
       </if>

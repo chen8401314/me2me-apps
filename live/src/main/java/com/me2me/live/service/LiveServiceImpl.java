@@ -309,11 +309,18 @@ public class LiveServiceImpl implements LiveService {
             return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
         }
         
-        //私密王国处理
+        //王国是否可见
         if(topic.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
-        	if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())){
-				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,"此王国需要经过国王邀请才允许进入");
-			}
+        	liveCoverDto.setRights(Specification.KingdomRights.PRIVATE_KINGDOM.index);
+        }else{
+        	liveCoverDto.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);
+        }
+        
+        //当前用户是否可见
+        if(isInCore(uid, topic.getCoreCircle())){
+        	liveCoverDto.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+        }else{
+        	liveCoverDto.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
         }
         
         liveCoverDto.setTitle(topic.getTitle());
@@ -712,11 +719,11 @@ public class LiveServiceImpl implements LiveService {
         String visited =  cacheService.get(KINGDOM_VIEW_KEY);
         showLiveDto.setIsFirstView(visited==null?1:0);
         
-        //如果是私密王国则只有国王和核心圈成员可以进入 
+        //私密属性
         if(topic.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
-        	if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())){
-				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,"此王国需要经过国王邀请才允许进入");
-			}
+        	showLiveDto.setRights(Specification.KingdomRights.PRIVATE_KINGDOM.index);
+        }else{
+        	showLiveDto.setReadCount(Specification.KingdomRights.PUBLIC_KINGDOM.index);
         }
         
         Content content = contentService.getContentByTopicId(cid);
@@ -770,6 +777,13 @@ public class LiveServiceImpl implements LiveService {
         	if(liveFavorite != null){
         		internalStatus=Specification.SnsCircle.IN.index;
         	}
+        }
+        
+        //当前用户是否可见
+        if(internalStatus==Specification.SnsCircle.CORE.index){
+        	showLiveDto.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+        }else{
+        	showLiveDto.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
         }
         showLiveDto.setInternalStatus(internalStatus);
         showLiveDto.setContentType(topic.getType());
@@ -3909,6 +3923,13 @@ public class LiveServiceImpl implements LiveService {
         	log.info("liveImage or title is empty");
         	return Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, ResponseStatus.KINGDOM_CREATE_FAILURE.message);
         }
+		//判断王国名数字是否超过限制
+		String str=createKingdomDto.getTitle();
+	    byte[] bytes=str.getBytes();
+		if(bytes.length>60){
+			return Response.failure(ResponseStatus.KINGDM_NAME_OVER_LIMIT.status, ResponseStatus.KINGDM_NAME_OVER_LIMIT.message);
+		}
+		
 		//特殊用户创建王国无需耗费米汤币
         String freeUser = userService.getAppConfigByKey("FREE_CREATEKINGDOM_USER");
         int needPrice = StringUtils.isEmpty(userService.getAppConfigByKey("CREATE_KINGDOM_PRICE")) ? 168
@@ -4527,6 +4548,12 @@ public class LiveServiceImpl implements LiveService {
 				log.info("update AcPublishType success");
 				return Response.success();
 			}else if(dto.getAction() == Specification.SettingModify.LIVE_NAME.index){
+				//判断王国名数字是否超过限制
+				String str=dto.getParams();
+			    byte[] bytes=str.getBytes();
+				if(bytes.length>60){
+					return Response.failure(ResponseStatus.KINGDM_NAME_OVER_LIMIT.status, ResponseStatus.KINGDM_NAME_OVER_LIMIT.message);
+				}
                 topic.setTitle(dto.getParams());
                 liveMybatisDao.updateTopic(topic);
                 liveLocalJdbcDao.updateTopicContentTitle(topic.getId(), dto.getParams());

@@ -485,6 +485,8 @@ public enum  ResponseStatus {
     
     CONTENT_NOT_EXISTS("内容不存在","content not exists",50075),
     
+    KINGDM_NAME_OVER_LIMIT("王国名称字数超过限制","kingdom name over limit",50076),
+    
     
     
     

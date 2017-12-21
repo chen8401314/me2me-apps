@@ -94,6 +94,8 @@ public class ShowLiveDto implements BaseEntity {
     private String kcImage;
     private String kcIcon;
     private String kcName;
+    private int rights;
+    private int canView;
     
     private int isForbid;//是否被禁言  0 否 1 是
     

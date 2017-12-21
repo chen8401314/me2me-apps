@@ -96,6 +96,10 @@ public class LiveCoverDto implements BaseEntity{
     private String kcIcon;
     private String kcName;
     
+    private int rights;
+    
+    private int canView;
+    
 	private List<GiftElement> giftList = Lists.newArrayList();//为播放礼物列表
     
     //跑马灯信息列表

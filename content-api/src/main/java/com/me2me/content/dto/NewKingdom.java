@@ -57,6 +57,8 @@ public class NewKingdom implements Serializable{
 	private int kcid;
 	private String kcIcon;
 	private String kcName;
+	private int rights;
+	private int canView;
 	private List<OutDataElement> audioData = new ArrayList<OutDataElement>();
 	private List<OutDataElement> imageData = new ArrayList<OutDataElement>();
 	private List<OutDataElement> textData = new ArrayList<OutDataElement>();
