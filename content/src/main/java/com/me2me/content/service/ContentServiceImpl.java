@@ -1600,10 +1600,14 @@ public class ContentServiceImpl implements ContentService {
                     	}
                     }
                     //当前用户是否可见
-                    if(internalStatust==Specification.SnsCircle.CORE.index){
-                    	contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+                    if(contentElement.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
+                    	if(internalStatust==Specification.SnsCircle.CORE.index){
+                    		contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+                    	}else{
+                    		contentElement.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+                    	}
                     }else{
-                    	contentElement.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+                    	contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
                     }
                     
                     contentElement.setInternalStatus(internalStatust);
@@ -3327,10 +3331,14 @@ public class ContentServiceImpl implements ContentService {
                     	}
                     }
                     //当前用户是否可见
-                    if(internalStatust==Specification.SnsCircle.CORE.index){
-                    	contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+                    if(contentElement.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
+                    	if(internalStatust==Specification.SnsCircle.CORE.index){
+                    		contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+                    	}else{
+                    		contentElement.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+                    	}
                     }else{
-                    	contentElement.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+                    	contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
                     }
                     
                     contentElement.setInternalStatus(internalStatust);
@@ -8857,18 +8865,18 @@ public class ContentServiceImpl implements ContentService {
 				contentElement.setForwardCid(c.getForwardCid());
 				topic = topicMap.get(c.getForwardCid().toString());
 				if (null != topic) {
-					//王国是否可见
+					//私密王国
 					if((int)topic.get("rights")==Specification.KingdomRights.PRIVATE_KINGDOM.index){
 						contentElement.setRights(Specification.KingdomRights.PRIVATE_KINGDOM.index);
+						//当前用户是否可见
+						if(isInCore(uid, (String)topic.get("core_circle"))){
+							contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+						}else{
+							contentElement.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+						}
 					}else{
 						contentElement.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);
-					}
-					
-					//当前用户是否可见
-					if(isInCore(uid, (String)topic.get("core_circle"))){
 						contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
-					}else{
-						contentElement.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
 					}
 					
 					contentElement.setContentType((Integer) topic.get("type"));
@@ -9733,6 +9741,7 @@ public class ContentServiceImpl implements ContentService {
 	                        	}
 	                    	}
 	                    }
+	                	//私密属性
 	                	if((int)topic.get("rights")==Specification.KingdomRights.PRIVATE_KINGDOM.index){
 	                		contentElement.setRights(Specification.KingdomRights.PRIVATE_KINGDOM.index);
 	                	}else{
@@ -9746,10 +9755,15 @@ public class ContentServiceImpl implements ContentService {
 	                    		internalStatust=Specification.SnsCircle.IN.index;
 	                    	}
 	                    }
-	                    if(internalStatust==Specification.SnsCircle.CORE.index){
-	                    	contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+	                    //当前用户是否可见
+	                    if(contentElement.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
+	                    	if(internalStatust==Specification.SnsCircle.CORE.index){
+	                    		contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+	                    	}else{
+	                    		contentElement.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+	                    	}
 	                    }else{
-	                    	contentElement.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+	                    	contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
 	                    }
 	                    contentElement.setInternalStatus(internalStatust);
 	                    contentElement.setContentType((Integer)topic.get("type"));
@@ -10141,6 +10155,7 @@ public class ContentServiceImpl implements ContentService {
 				String cover = content.getConverImage();
 				contentElement.setReviewCount(content.getReviewCount());
 				contentElement.setReadCount(content.getReadCountDummy());
+				//王国私密属性
 				if(content.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
 					contentElement.setRights(Specification.KingdomRights.PRIVATE_KINGDOM.index);
 				}else{
@@ -10216,10 +10231,14 @@ public class ContentServiceImpl implements ContentService {
 						}
 						
 						//当前用户是否可见
-						if(internalStatust==Specification.SnsCircle.CORE.index){
-							contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+						if(contentElement.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
+							if(internalStatust==Specification.SnsCircle.CORE.index){
+								contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+							}else{
+								contentElement.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+							}
 						}else{
-							contentElement.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+							contentElement.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
 						}
 						contentElement.setInternalStatus(internalStatust);
 						contentElement.setContentType((Integer) topic.get("type"));

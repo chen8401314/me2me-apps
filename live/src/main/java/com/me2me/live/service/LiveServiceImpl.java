@@ -319,16 +319,18 @@ public class LiveServiceImpl implements LiveService {
         //王国是否可见
         if(topic.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
         	liveCoverDto.setRights(Specification.KingdomRights.PRIVATE_KINGDOM.index);
+        	//当前用户是否可见
+            if(isInCore(uid, topic.getCoreCircle())){
+            	liveCoverDto.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+            }else{
+            	liveCoverDto.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+            }
         }else{
         	liveCoverDto.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);
-        }
-        
-        //当前用户是否可见
-        if(isInCore(uid, topic.getCoreCircle())){
-        	liveCoverDto.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
-        }else{
         	liveCoverDto.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
         }
+        
+        
         
         liveCoverDto.setTitle(topic.getTitle());
         liveCoverDto.setSummary(topic.getSummary());
@@ -794,11 +796,16 @@ public class LiveServiceImpl implements LiveService {
         }
         
         //当前用户是否可见
-        if(internalStatus==Specification.SnsCircle.CORE.index){
-        	showLiveDto.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+        if(showLiveDto.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){//如果是私密王国
+        	if(internalStatus==Specification.SnsCircle.CORE.index){
+        		showLiveDto.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+        	}else{
+        		showLiveDto.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+        	}
         }else{
-        	showLiveDto.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+        	showLiveDto.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
         }
+        
         showLiveDto.setInternalStatus(internalStatus);
         showLiveDto.setContentType(topic.getType());
 

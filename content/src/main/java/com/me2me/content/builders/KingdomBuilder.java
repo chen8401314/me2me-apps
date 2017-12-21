@@ -521,16 +521,18 @@ public class KingdomBuilder {
 			//王国可见类型
 			if((int)topic.get("rights")==Specification.KingdomRights.PRIVATE_KINGDOM.index){
 				data.setRights(Specification.KingdomRights.PRIVATE_KINGDOM.index);
+				//当前用户是否可见
+				int internalStatus = getInternalStatus(topic, currentUid, isJoin);
+				if(internalStatus==Specification.SnsCircle.CORE.index){
+					data.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
+				}else{
+					data.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+				}
 			}else{
 				data.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);
-			}
-			//当前用户是否可见
-			int internalStatus = getInternalStatus(topic, currentUid, isJoin);
-			if(internalStatus==Specification.SnsCircle.CORE.index){
-				data.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
-			}else{
 				data.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
 			}
+			
 			topicContent = topicContentMap.get(String.valueOf(topicId));
 			if (null == topicContent) {
 				continue;
