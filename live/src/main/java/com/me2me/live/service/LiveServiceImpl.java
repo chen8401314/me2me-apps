@@ -729,7 +729,7 @@ public class LiveServiceImpl implements LiveService {
         showLiveDto.setIsFirstView(visited==null?1:0);
         
         //如果是私密王国则只有国王和核心圈成员可以进入 
-        if(topic.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index){
+        if(topic.getRights()==Specification.KingdomRights.PRIVATE_KINGDOM.index ){
         	if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())){
 				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,"此王国需要经过国王邀请才允许进入");
 			}
