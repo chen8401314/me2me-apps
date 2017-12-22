@@ -1338,17 +1338,7 @@ public class ContentServiceImpl implements ContentService {
         if(!StringUtils.isEmpty(v)){
         	limitMinute = Integer.valueOf(v).intValue();
         }
-        List<Long> privateTopicIds = new ArrayList<Long>();
-        String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
-        if(!StringUtils.isEmpty(specialTopicIds)){
-        	String[] tmp = specialTopicIds.split(",");
-        	for(String a : tmp){
-        		if(!StringUtils.isEmpty(a)){
-        			privateTopicIds.add(Long.valueOf(a));
-        		}
-        	}
-        }
-        List<Map<String,Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute, privateTopicIds);
+        List<Map<String,Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute);
         if(null != topicOutList && topicOutList.size() > 0){
         	Long topicId = null;
         	List<Map<String, Object>> toList = null;
@@ -3087,17 +3077,7 @@ public class ContentServiceImpl implements ContentService {
         if(!StringUtils.isEmpty(v)){
         	limitMinute = Integer.valueOf(v).intValue();
         }
-        List<Long> privateTopicIds = new ArrayList<Long>();
-        String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
-        if(!StringUtils.isEmpty(specialTopicIds)){
-        	String[] tmp = specialTopicIds.split(",");
-        	for(String a : tmp){
-        		if(!StringUtils.isEmpty(a)){
-        			privateTopicIds.add(Long.valueOf(a));
-        		}
-        	}
-        }
-        List<Map<String,Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute, privateTopicIds);
+        List<Map<String,Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute);
         if(null != topicOutList && topicOutList.size() > 0){
         	Long topicId = null;
         	Long atUid = null;
@@ -3575,17 +3555,7 @@ public class ContentServiceImpl implements ContentService {
         if(!StringUtils.isEmpty(v)){
         	limitMinute = Integer.valueOf(v).intValue();
         }
-        List<Long> privateTopicIds = new ArrayList<Long>();
-        String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
-        if(!StringUtils.isEmpty(specialTopicIds)){
-        	String[] tmp = specialTopicIds.split(",");
-        	for(String a : tmp){
-        		if(!StringUtils.isEmpty(a)){
-        			privateTopicIds.add(Long.valueOf(a));
-        		}
-        	}
-        }
-        List<Map<String,Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute, privateTopicIds);
+        List<Map<String,Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute);
         if(null != topicOutList && topicOutList.size() > 0){
         	Long topicId = null;
         	Long atUid = null;
@@ -8597,18 +8567,7 @@ public class ContentServiceImpl implements ContentService {
 		if (!StringUtils.isEmpty(v)) {
 			limitMinute = Integer.valueOf(v).intValue();
 		}
-		List<Long> privateTopicIds = new ArrayList<Long>();
-		String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
-		if (!StringUtils.isEmpty(specialTopicIds)) {
-			String[] tmp = specialTopicIds.split(",");
-			for (String a : tmp) {
-				if (!StringUtils.isEmpty(a)) {
-					privateTopicIds.add(Long.valueOf(a));
-				}
-			}
-		}
-		List<Map<String, Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute,
-				privateTopicIds);
+		List<Map<String, Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute);
 		if (null != topicOutList && topicOutList.size() > 0) {
 			Long topicId = null;
 			List<Map<String, Object>> toList = null;
@@ -9478,17 +9437,7 @@ public class ContentServiceImpl implements ContentService {
 	        if(!StringUtils.isEmpty(v)){
 	        	limitMinute = Integer.valueOf(v).intValue();
 	        }
-	        List<Long> privateTopicIds = new ArrayList<Long>();
-	        String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
-	        if(!StringUtils.isEmpty(specialTopicIds)){
-	        	String[] tmp = specialTopicIds.split(",");
-	        	for(String a : tmp){
-	        		if(!StringUtils.isEmpty(a)){
-	        			privateTopicIds.add(Long.valueOf(a));
-	        		}
-	        	}
-	        }
-	        List<Map<String,Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute, privateTopicIds);
+	        List<Map<String,Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute);
 	        if(null != topicOutList && topicOutList.size() > 0){
 	        	Long topicId = null;
 	        	List<Map<String, Object>> toList = null;
@@ -9978,18 +9927,7 @@ public class ContentServiceImpl implements ContentService {
 			if (!StringUtils.isEmpty(v)) {
 				limitMinute = Integer.valueOf(v).intValue();
 			}
-			List<Long> privateTopicIds = new ArrayList<Long>();
-			String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
-			if (!StringUtils.isEmpty(specialTopicIds)) {
-				String[] tmp = specialTopicIds.split(",");
-				for (String a : tmp) {
-					if (!StringUtils.isEmpty(a)) {
-						privateTopicIds.add(Long.valueOf(a));
-					}
-				}
-			}
-			List<Map<String, Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute,
-					privateTopicIds);
+			List<Map<String, Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute);
 			if (null != topicOutList && topicOutList.size() > 0) {
 				Long topicId = null;
 				Long atUid = null;

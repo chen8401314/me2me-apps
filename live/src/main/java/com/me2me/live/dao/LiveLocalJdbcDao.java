@@ -1254,7 +1254,7 @@ public class LiveLocalJdbcDao {
     	return result;
     }
     
-    public Map<String,Object> getMaxFragment(String strDate,long uid,int startNum,int endNum,String specialTopicIds){
+    public Map<String,Object> getMaxFragment(String strDate,long uid,int startNum,int endNum){
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT t.*,tp.title FROM topic_fragment t,topic tp WHERE t.status = 1  AND  t.topic_id = tp.id AND t.content_type = 0 and t.type in(0,1,51,52,57) ");
     	sb.append(" AND t.fragment <> tp.summary ");
@@ -1266,15 +1266,13 @@ public class LiveLocalJdbcDao {
     	if(endNum!=0){
             sb.append("  AND LENGTH(t.fragment)<=").append(endNum);
       	}
-    	if(!StringUtils.isEmpty(specialTopicIds)){
-    		 sb.append("  AND tp.id not in(").append(specialTopicIds).append(") ");
-    	}
+    	sb.append(" and tp.rights!=2 ");
     	sb.append("  ORDER BY LENGTH(t.fragment) DESC LIMIT 1 ");
     	String sql = sb.toString();
     	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		return list.size()>0?list.get(0):null;
     }
-    public Map<String,Object> getMaxFragmentByType(String strDate,long uid,int startNum,int endNum,int type,String specialTopicIds){
+    public Map<String,Object> getMaxFragmentByType(String strDate,long uid,int startNum,int endNum,int type){
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT t.*,tp.title FROM topic_fragment t,topic tp WHERE t.status = 1  AND  t.topic_id = tp.id AND t.content_type = 0   and t.type in(0,1,51,52,57) ");
     	sb.append( " and t.type =").append(type);
@@ -1287,17 +1285,15 @@ public class LiveLocalJdbcDao {
     	if(endNum!=0){
             sb.append("  AND LENGTH(t.fragment)<=").append(endNum);
       	}
-    	if(!StringUtils.isEmpty(specialTopicIds)){
-   		 sb.append("  AND tp.id not in(").append(specialTopicIds).append(") ");
-      	}
+    	sb.append(" and tp.rights!=2 ");
     	sb.append("  ORDER BY LENGTH(t.fragment) DESC LIMIT 1 ");
     	String sql = sb.toString();
     	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		return list.size()>0?list.get(0):null;
     }
-    public Map<String,Object> getFragmentImage(String strDate,long uid,long topicId,String specialTopicIds){
+    public Map<String,Object> getFragmentImage(String strDate,long uid,long topicId){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("SELECT t.* FROM topic_fragment t WHERE t.status = 1  and  t.type in(0,1,51,57) and t.content_type in(1,51) ");
+    	sb.append("SELECT t.* FROM topic_fragment t,topic tp WHERE t.topic_id=tp.id and t.status = 1  and  t.type in(0,1,51,57) and t.content_type in(1,51) ");
     	sb.append(" AND t.create_time >='").append(strDate).append(" 00:00:00' AND t.create_time <='").append(strDate).append(" 23:59:59'");
     	sb.append(" AND t.uid = ").append(uid);
     	if(topicId!=0){
@@ -1305,9 +1301,7 @@ public class LiveLocalJdbcDao {
       	}
     	sb.append(" and fn_Json_getKeyValue(t.extra,1,'w')>300 ");
     	sb.append(" AND (fn_Json_getKeyValue(t.extra,1,'type') IS  NULL  OR fn_Json_getKeyValue(t.extra,1,'type')  <> 'image_daycard') ");
-    	if(!StringUtils.isEmpty(specialTopicIds)){
-   		 sb.append("  AND t.topic_id not in(").append(specialTopicIds).append(") ");
-       	}
+    	sb.append(" and tp.rights!=2 ");
     	sb.append("  ORDER BY fn_Json_getKeyValue(t.extra,1,'length')  DESC LIMIT 1 ");
     	String sql = sb.toString();
     	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
@@ -1533,21 +1527,9 @@ public class LiveLocalJdbcDao {
 		jdbcTemplate.execute(sql);
 	}
 	
-	public List<Map<String, Object>> getLastOutFragment(List<Long> topicIds, int limitMinute, List<Long> privateTopicIds){
+	public List<Map<String, Object>> getLastOutFragment(List<Long> topicIds, int limitMinute){
 		if(null == topicIds || topicIds.size() == 0 || limitMinute<=0){
     		return null;
-    	}else{
-    		if(null != privateTopicIds && privateTopicIds.size() > 0){
-    			for(int i=0;i<topicIds.size();i++){
-    				if(privateTopicIds.contains(topicIds.get(i))){
-    					topicIds.remove(i);
-    					i--;
-    				}
-    			}
-    			if(topicIds.size() == 0){
-    				return null;
-    			}
-    		}
     	}
 		
 		StringBuilder sb = new StringBuilder();
@@ -1559,7 +1541,7 @@ public class LiveLocalJdbcDao {
     		}
     		sb.append(topicIds.get(i).toString());
     	}
-		sb.append(") and f.status=1 and f.out_type=1");
+		sb.append(") and f.status=1 and f.out_type=1 and t.rights!=2");
 		sb.append(" and f.create_time>=date_add(t.out_time, interval -").append(limitMinute);
 		sb.append(" minute) group by f.topic_id) m where f2.id=m.maxid");
 		

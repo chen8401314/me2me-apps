@@ -20,6 +20,7 @@ public class HotDto implements BaseEntity {
 	private List<Object> data = Lists.newArrayList();
 
 	private int openPushPositions;
+	private int bootFromFollowing;
 
 	@Data
 	public static class BaseContentElement implements BaseEntity {
