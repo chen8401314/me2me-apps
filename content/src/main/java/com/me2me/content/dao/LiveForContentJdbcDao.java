@@ -1277,21 +1277,9 @@ public class LiveForContentJdbcDao {
      * @param privateTopicIds	私密王国ID
      * @return
      */
-    public List<Map<String, Object>> getOutFragments(List<Long> topicIds, int limitMinute, List<Long> privateTopicIds){
+    public List<Map<String, Object>> getOutFragments(List<Long> topicIds, int limitMinute){
     	if(null == topicIds || topicIds.size() == 0 || limitMinute<=0){
     		return null;
-    	}else{
-    		if(null != privateTopicIds && privateTopicIds.size() > 0){
-    			for(int i=0;i<topicIds.size();i++){
-    				if(privateTopicIds.contains(topicIds.get(i))){
-    					topicIds.remove(i);
-    					i--;
-    				}
-    			}
-    			if(topicIds.size() == 0){
-    				return null;
-    			}
-    		}
     	}
     	
     	StringBuilder sb = new StringBuilder();
@@ -1303,7 +1291,7 @@ public class LiveForContentJdbcDao {
     		}
     		sb.append(topicIds.get(i).toString());
     	}
-    	sb.append(") and f.status=1 and f.out_type=1");
+    	sb.append(") and f.status=1 and f.out_type=1 and t.rights!=2");
     	sb.append(" and f.create_time>=date_add(t.out_time, interval -").append(limitMinute).append(" minute)");
     	sb.append(" order by f.topic_id,f.id desc");
 

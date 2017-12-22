@@ -2868,17 +2868,7 @@ public class LiveServiceImpl implements LiveService {
                 if(!StringUtils.isEmpty(v)){
                 	limitMinute = Integer.valueOf(v).intValue();
                 }
-                List<Long> privateTopicIds = new ArrayList<Long>();
-                String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
-                if(!StringUtils.isEmpty(specialTopicIds)){
-                	String[] tmp = specialTopicIds.split(",");
-                	for(String a : tmp){
-                		if(!StringUtils.isEmpty(a)){
-                			privateTopicIds.add(Long.valueOf(a));
-                		}
-                	}
-                }
-        		List<Map<String, Object>> list = liveLocalJdbcDao.getLastOutFragment(topicIdList, limitMinute, privateTopicIds);
+        		List<Map<String, Object>> list = liveLocalJdbcDao.getLastOutFragment(topicIdList, limitMinute);
         		if(null != list && list.size() > 0){
         			for(Map<String, Object> m : list){
         				lastOutUidMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("uid"));
@@ -8278,14 +8268,13 @@ public class LiveServiceImpl implements LiveService {
 			dto.setIsFirstDay(1);
 		} else {
 			dto.setIsFirstDay(0);
-	        String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
-			Map<String, Object> maxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, uid, 60, 90,specialTopicIds);
+			Map<String, Object> maxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, uid, 60, 90);
 			if (maxFragment == null) {
-				maxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, uid, 1, 0,specialTopicIds);
+				maxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, uid, 1, 0);
 			}
 			// 判断是否有文字发言
 			if (maxFragment == null) {
-				Map<String, Object> imageData =liveLocalJdbcDao.getFragmentImage(yesterDay, uid, 0,specialTopicIds);
+				Map<String, Object> imageData =liveLocalJdbcDao.getFragmentImage(yesterDay, uid, 0);
 				if (imageData != null) {
 					Topic topic = liveMybatisDao.getTopicById(Long.parseLong(imageData.get("topic_id").toString()));
 					dto.setStatus(2);
@@ -8308,23 +8297,21 @@ public class LiveServiceImpl implements LiveService {
 							if (recommendUser != null) {
 								long ruid = recommendUser.getUid();
 								UserProfile ruserProfile = userService.getUserProfileByUid(ruid);
-								Map<String, Object> rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 60,
-										90,0,specialTopicIds);
+								Map<String, Object> rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 60, 90,0);
 								if (rmaxFragment == null) {
-									rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 1, 0,0,specialTopicIds);
+									rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 1, 0,0);
 								}
 								if(rmaxFragment == null){
-									 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 60,
-											90,1,specialTopicIds);
+									 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 60, 90,1);
 									 if(rmaxFragment == null){
-										 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 1, 0,1,specialTopicIds);
+										 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 1, 0,1);
 									 }
 								}
 								if (rmaxFragment == null) {
 									continue;
 								} else {
 									Map<String, Object> rtopicData = liveLocalJdbcDao.getFragmentImage(yesterDay, ruid,
-											Long.parseLong(rmaxFragment.get("topic_id").toString()),specialTopicIds);
+											Long.parseLong(rmaxFragment.get("topic_id").toString()));
 									Topic topic = liveMybatisDao.getTopicById(Long.parseLong(rmaxFragment.get("topic_id").toString()));
 									dto.setNickName(ruserProfile.getNickName());
 									dto.setAvatar(Constant.QINIU_DOMAIN + "/" + ruserProfile.getAvatar());
@@ -8367,7 +8354,7 @@ public class LiveServiceImpl implements LiveService {
 				}
 			} else {
 				Map<String, Object> imageData =liveLocalJdbcDao.getFragmentImage(yesterDay, uid,
-						Long.parseLong(maxFragment.get("topic_id").toString()),specialTopicIds); 
+						Long.parseLong(maxFragment.get("topic_id").toString())); 
 				Topic topic = liveMybatisDao.getTopicById(Long.parseLong(maxFragment.get("topic_id").toString()));
 				dto.setNickName(userProfile.getNickName());
 				dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
