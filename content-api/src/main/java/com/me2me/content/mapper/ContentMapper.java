@@ -202,11 +202,8 @@ public interface ContentMapper {
     
     List<Long> getAcKingdomImageLikeList(@Param("uid") long uid,@Param("imageIdList") List<Long> imageIdList);
     
-    List<Map<String,Object>> getAttentionAndLikeTag(@Param("uid") long uid,@Param("updateTime") long updateTime,@Param("pageSize") int pageSize);
+    int getAttentionAndLikeTagCount(@Param("uid") long uid); 
     
-    List<Content> getContentListByIds(@Param("idList") List<Long> idList); 
-    
-    List<Map<String,Object>> geTagOutList(@Param("idList") List<Long> idList); 
-    
+    List<Map<String,Object>> getTagTopicInfo(@Param("idList") List<Long> idList);
     
 }

@@ -1264,7 +1264,7 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
 	FROM content c,(
 	SELECT distinct t.id,t.out_time
 	FROM topic t,topic_tag_detail td,topic_tag tt
-	WHERE t.id =td.topic_id AND tt.id = td.tag_id AND td.status=0 and t.status = 0  and (tt.id = #{tagId} or tt.pid = #{tagId})
+	WHERE t.id =td.topic_id AND tt.id = td.tag_id AND td.status=0 and t.status = 0  and tt.id = #{tagId} 
 	      <if test="blacklistUids!=null and blacklistUids.size() &gt; 0">
       and t.uid not in
       <foreach close=")" collection="blacklistUids" item="bid" open="(" separator=",">
@@ -1305,64 +1305,103 @@ and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t2.core_circle FROM 2 FOR LENGTH(t
 </select>
 
 
-	<select id="getAttentionAndLikeTag" resultType="map">
-	select
-	c.id,c.type,t.long_time as longtime
-	from content c,topic t
-	where c.forward_cid=t.id and c.type=3
-	and (c.uid = #{uid}
-	or c.uid in (select f.target_uid from user_follow f where
-	f.source_uid=#{uid})
-	) and c.status != 1 and c.rights = 1
-	<if test="updateTime != 0">
-		and t.long_time<![CDATA[<]]>#{updateTime}
-	</if>
-	UNION
-	select u.tag_id,0,UNIX_TIMESTAMP(MAX(t2.out_time))*1000 as longtime
-	from user_tag u,topic_tag_detail d,topic t2
-	where u.uid=#{uid} and u.type=1
-	and u.tag_id=d.tag_id
-	and d.status=0
-	and d.topic_id=t2.id
-	group by u.tag_id
-	having COUNT(d.topic_id)<![CDATA[>]]>0
-	<if test="updateTime != 0">
-		and UNIX_TIMESTAMP(MAX(t2.out_time))*1000<![CDATA[<]]>#{updateTime}
-	</if>
-	order by longtime desc
-	limit #{pageSize}
+	<select id="getAttentionAndLikeTagCount" resultType="java.lang.Integer">
+	select COUNT(*) as count from(select
+		c.id,c.type
+		from content c,topic t
+		where
+		c.forward_cid=t.id and c.type=3
+		and (c.uid = #{uid}
+		or c.uid in (select
+		f.target_uid from user_follow f where
+		f.source_uid=#{uid})
+		) and
+		c.status != 1 and c.rights = 1
+		UNION
+		select u.tag_id,16
+		from user_tag u,topic_tag_detail d,topic t2
+		where u.uid=#{uid}
+		and u.type=1
+		and u.tag_id=d.tag_id
+		and d.status=0
+		and d.topic_id=t2.id
+		group by u.tag_id
+		having COUNT(d.topic_id)>0
+            ) m
 </select>
-
-  <select id="getContentListByIds" parameterType="java.util.Map" resultMap="ResultMapWithBLOBs">
-    select
-      <include refid="Base_Column_List" />,
-      <include refid="Blob_Column_List" />
-     from  content 
-     	  <if test="idList!=null and idList.size() &gt; 0">
-       where id in
-      <foreach close=")" collection="idList" item="ids" open="(" separator=",">
-        #{ids}
-      </foreach>
-      </if>
-  </select>
-
-	<select id="geTagOutList" parameterType="java.util.Map"
-		resultType="map">
-		select s.* from(select m.*,CASE when @preVal = m.tag_id then @curVal :=
-		@curVal+1 when @preVal := m.tag_id then @curVal := 1 end as rowno
-		from( select
-		t1.tag_id,t4.uid,t3.tag,t2.fid,t2.image,t4.fragment,t4.type,t4.content_type,t2.extra,t2.topic_id
-		from topic_tag_detail t1,topic_image t2,topic_tag t3,topic_fragment t4
-		where t1.status = 0 and t1.tag_id in
-		 <if test="idList!=null and idList.size() &gt; 0">
-      <foreach close=")" collection="idList" item="ids" open="(" separator=",">
-        #{ids}
-      </foreach>
-      </if>
-		 and t1.topic_id =t2.topic_id
-		and t1.tag_id = t3.id and t4.id = t2.fid
-		order by t1.tag_id desc,t2.create_time desc )m,(select @preVal:=null,@curVal:=null) r
-		) s where s.rowno<![CDATA[<]]>4
-	</select>
+	<select id="getTagTopicInfo" resultType="java.util.Map"  >
+			select
+		o1.tag_id,
+		SUM(o1.topic_count) kingdomCount,
+		SUM(o1.price_sum) tagPrice,
+		o2.uid_count tagPersons
+		FROM
+		(SELECT
+		t4.id tag_id,
+		COUNT(DISTINCT t1.id) topic_count,
+		SUM(DISTINCT t1.price) price_sum
+		FROM
+		topic t1,
+		content t2,
+		topic_tag_detail t3,
+		topic_tag t4
+		WHERE t1.id = t2.forward_cid
+		AND t4.id = t3.tag_id
+		AND t2.type = 3
+		AND t1.id = t3.topic_id
+		AND t1.status = 0
+		AND t3.status = 0
+		and t4.id in
+		<if test="idList!=null and idList.size() &gt; 0">
+			<foreach close=")" collection="idList" item="ids" open="("
+				separator=",">
+				#{ids}
+			</foreach>
+		</if>
+		GROUP BY t4.id) o1,
+		(SELECT x.tag_id,<![CDATA[x.userCount+FLOOR(y.readcount / 20)]]> uid_count
+		FROM (
+		SELECT m2.id as tag_id,COUNT(DISTINCT t1.uid) AS userCount
+		FROM (
+		SELECT t2.topic_id,t4.id
+		FROM topic_tag_detail t2,topic_tag t4
+		WHERE t2.status=0
+		AND t2.tag_id=t4.id
+		and t4.id in
+		<if test="idList!=null and idList.size() &gt; 0">
+			<foreach close=")" collection="idList" item="ids" open="("
+				separator=",">
+				#{ids}
+			</foreach>
+		</if>
+		GROUP BY t4.id,t2.topic_id
+		) m2,topic_fragment t1
+		WHERE m2.topic_id=t1.topic_id
+		AND t1.status=1
+		GROUP BY m2.id
+		) X,(
+		SELECT m.id as tag_id,SUM(t3.read_count) AS readcount
+		FROM (
+		SELECT t2.topic_id,t4.id
+		FROM topic_tag_detail t2,topic_tag t4
+		WHERE t2.status=0
+		AND t2.tag_id=t4.id
+		and t4.id IN
+		<if test="idList!=null and idList.size() &gt; 0">
+			<foreach close=")" collection="idList" item="ids" open="("
+				separator=",">
+				#{ids}
+			</foreach>
+		</if>
+		GROUP BY t4.id,t2.topic_id
+		) m,content t3
+		WHERE m.topic_id=t3.forward_cid AND t3.type=3
+		GROUP BY m.id
+		) Y
+		WHERE x.tag_id=y.tag_id) o2
+		WHERE o1.tag_id = o2.tag_id
+		GROUP BY o1.tag_id
+</select>
+  
 
 </mapper>

@@ -110,6 +110,7 @@ import com.me2me.content.dto.TagMgmtQueryDto;
 import com.me2me.content.dto.UserContentSearchDTO;
 import com.me2me.content.dto.UserGroupDto;
 import com.me2me.content.dto.WriteTagDto;
+import com.me2me.content.mapper.ContentMapper;
 import com.me2me.content.mapper.EmotionPackDetailMapper;
 import com.me2me.content.mapper.EmotionPackMapper;
 import com.me2me.content.mapper.TopicTagSearchMapper;
@@ -4880,7 +4881,10 @@ public class ContentServiceImpl implements ContentService {
         	tagIds.add(info.getTagId());
        }
        //一次性查询出所有标签王国信息
-       List<Map<String,Object>> listTagTopicInfo = liveForContentJdbcDao.getTagTopicInfo(tagIds);
+       List<Map<String,Object>> listTagTopicInfo = new ArrayList<Map<String,Object>>();
+       if(tagIds.size()>0){
+           listTagTopicInfo = contentMybatisDao.getTagTopicInfo(tagIds); 
+       }
        Map<String,Map<String,Object>> tagTopicMap = new HashMap<String,Map<String,Object>>();
        if(listTagTopicInfo!=null){
        for (Map<String, Object> map : listTagTopicInfo) {
@@ -8431,6 +8435,18 @@ public class ContentServiceImpl implements ContentService {
 			if (!StringUtils.isEmpty(openPushPositionsStr)) {
 				openPushPositions = Integer.parseInt(openPushPositionsStr);
 			}
+			
+			int bootFromFollowing = 0;
+			int showAttentionListNumber = 10;
+			String showAttentionListNumberStr = userService.getAppConfigByKey("SHOW_ATTENTION_LIST_NUMBER");
+			if (!StringUtils.isEmpty(showAttentionListNumberStr)) {
+				showAttentionListNumber = Integer.parseInt(showAttentionListNumberStr);
+			}
+			int attentionListCount = contentMybatisDao.getAttentionAndLikeTagCount(uid);
+			if(attentionListCount>=showAttentionListNumber){
+				bootFromFollowing=1;
+			}
+			dto.setBootFromFollowing(bootFromFollowing);
 			dto.setOpenPushPositions(openPushPositions);
 
 			// 其他栏目位置信息
@@ -9330,7 +9346,7 @@ public class ContentServiceImpl implements ContentService {
 		   	Map<String,List<Map<String,String>>> adPositionMap = new HashMap<String,List<Map<String,String>>>();
 			if (page == 1) {
 				//处理标签详情页头部
-				List<Map<String,Object>> stagList = liveForContentJdbcDao.getTopicTagByPid(tagId);
+/*				List<Map<String,Object>> stagList = liveForContentJdbcDao.getTopicTagByPid(tagId);
 			    for (Map<String, Object> stag : stagList) {
 			    	TagDetailDto.CoverElement cover = new TagDetailDto.CoverElement();
 			    	cover.setType(15);
@@ -9352,8 +9368,8 @@ public class ContentServiceImpl implements ContentService {
 			    	if(dto.getCoverList().size()==5){
 			    		break;
 			    	}
-				}
-			    //如果没填满5个标签查王国
+				}*/
+			    //如果没填满5个标签王国
 			    if(dto.getCoverList().size()<5){
 			    	List<Map<String, Object>> listTagTopic = liveForContentJdbcDao.getTopicByTagId(tagId, 5);
 			    	for (Map<String, Object> tagTopic : listTagTopic) {
