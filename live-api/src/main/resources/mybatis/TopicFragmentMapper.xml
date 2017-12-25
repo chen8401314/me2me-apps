@@ -572,18 +572,21 @@
     ) m
     where f.topic_id=m.topic_id and f.topic_id=#{topicId,jdbcType=BIGINT}
   </select>
+  
   <select id="getTopicFragmentForPage" parameterType="com.me2me.live.dto.GetLiveDetailDto" resultMap="ResultMapWithBLOBs">
     <if test="sinceId&gt;0">
       select * from (
     </if>
-    select
+   select * from (
+   select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
     from topic_fragment f
     where f.topic_id=#{topicId,jdbcType=BIGINT}
-    order by id asc limit #{startIndex,jdbcType=INTEGER},#{offset,jdbcType=INTEGER}
-    <if test="sinceId&gt;0">
+   ) m
+   order by m.id asc limit #{startIndex,jdbcType=INTEGER},#{offset,jdbcType=INTEGER}
+   <if test="sinceId&gt;0">
       )a where a.id&gt;#{sinceId,jdbcType=BIGINT}
     </if>
   </select>
