@@ -613,20 +613,24 @@
     limit 1;
   </select>
   <select id="getMyLivesByUpdateTimeNew" parameterType="java.util.Map" resultMap="BaseResultMap2">
-  	select 	t.*,
+  	SELECT 	t.*,
 			CASE WHEN t5.is_top=1 THEN 1 ELSE 0 END AS istop,
 			CASE WHEN t5.is_top=1 THEN t3.long_time*100 ELSE t3.long_time END AS longtimes
-	from (
-    	select t1.id, t1.long_time
-    	from topic t1 join live_favorite t2 on ( t1.id = t2.topic_id and t2.uid = #{uid})
-    	union
-    	select t1.id, t1.long_time
+	FROM ( 
+   		SELECT 	t1.id,
+   				t1.long_time
+   		FROM topic t1 JOIN live_favorite t2 ON (t1.id = t2.topic_id AND t2.uid = #{uid} )
+   		UNION 
+   		SELECT 	t1.id,
+   				t1.long_time
    		FROM topic t1
-    	WHERE FIND_IN_SET(#{uid}, SUBSTR(t1.core_circle FROM 2 FOR LENGTH(t1.core_circle)-2))
-	) t3 LEFT JOIN topic_user_config t5 on (t3.id = t5.topic_id and t5.uid = #{uid}) 
-	JOIN topic t on (t.id = t3.id)
-	where not exists (select 1 from block_topic where uid=#{uid} and topic_id = t3.id)
-	and t3.long_time &lt; #{updateTime}
+   		WHERE FIND_IN_SET(#{uid}, SUBSTR(t1.core_circle FROM 2 FOR LENGTH(t1.core_circle)-2)) 
+	) t3
+	LEFT JOIN topic_user_config t5 ON (t3.id = t5.topic_id AND t5.uid = #{uid})
+	LEFT JOIN block_topic t6 ON (t6.uid=#{uid} AND t6.topic_id = t3.id)
+	JOIN topic t ON (t.id = t3.id)
+	WHERE t6.topic_id IS NULL
+  	AND t3.long_time &lt; #{updateTime}
 	ORDER BY t3.long_time DESC
     LIMIT 10
   </select>
