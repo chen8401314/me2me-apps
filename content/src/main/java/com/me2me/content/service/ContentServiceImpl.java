@@ -8781,8 +8781,15 @@ public class ContentServiceImpl implements ContentService {
 							if(CommonUtils.isNewVersion(version, "3.0.5")){//305版本以后的为该配置的3倍
 								tagCount = tagCount * 3;
 							}
+							if(CommonUtils.isNewVersion(version, "3.1.0")){//305版本以后的为该配置的3倍
+								tagCount = tagCount * 2;
+							}
 							tagContentElement.setSize(tagCount);
 							tagContentElement.setTitle("推荐标签在这里");
+							String tagTitle = userService.getAppConfigByKey("LIKE_TAG_TITLE");
+							String tagImage = Constant.QINIU_DOMAIN + "/" + userService.getAppConfigByKey("LIKE_TAG_IMAGE");
+							tagContentElement.setNickName(tagTitle);
+							tagContentElement.setAvatar(tagImage);
 							dto.getData().add(tagContentElement);
 							break;
 						default:
