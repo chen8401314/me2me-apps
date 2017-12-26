@@ -327,7 +327,7 @@ public class LiveServiceImpl implements LiveService {
             }
         }else{
         	liveCoverDto.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);
-        	liveCoverDto.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+        	liveCoverDto.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
         }
         
         

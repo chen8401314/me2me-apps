@@ -520,7 +520,7 @@ public class KingdomBuilder {
 				}
 			}else{
 				data.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);
-				data.setCanView(Specification.CanViewStatus.NOT_CAN_VIEW.index);
+				data.setCanView(Specification.CanViewStatus.CAN_VIEW.index);
 			}
 			
 			topicContent = topicContentMap.get(String.valueOf(topicId));
