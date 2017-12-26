@@ -8781,7 +8781,7 @@ public class ContentServiceImpl implements ContentService {
 							if(CommonUtils.isNewVersion(version, "3.0.5")){//305版本以后的为该配置的3倍
 								tagCount = tagCount * 3;
 							}
-							if(CommonUtils.isNewVersion(version, "3.1.0")){//305版本以后的为该配置的3倍
+							if(CommonUtils.isNewVersion(version, "3.1.0")){//310版本以后的为该配置的2倍
 								tagCount = tagCount * 2;
 							}
 							tagContentElement.setSize(tagCount);
