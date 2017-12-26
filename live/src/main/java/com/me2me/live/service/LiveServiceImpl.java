@@ -2843,64 +2843,69 @@ public class LiveServiceImpl implements LiveService {
     }
 
     @Override
-    public Response getMyTopic(long uid, long updateTime) {
+    public Response getMyTopic(long uid, long updateTime, String version) {
         log.info("getMyLives start ...");
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
-        //查询5个用户关注
-        List<Content> attentionList = contentService.getAttention(Integer.MAX_VALUE ,uid, 1);
-        if (attentionList.size() > 0 && attentionList != null) {
-        	int count = 4;
-        	List<Long> topicIdList = new ArrayList<Long>();
-        	Content idx = null;
-        	for(int i=0;i<attentionList.size()&&i<count;i++){
-        		idx = attentionList.get(i);
-        		if(idx.getType() == Specification.ArticleType.LIVE.index){//王国
-                    if(!topicIdList.contains(idx.getForwardCid())){
-                        topicIdList.add(idx.getForwardCid());
+        
+        //310版本以上的不需要这个朋友圈了
+        if(StringUtils.isEmpty(version) || !CommonUtils.isNewVersion(version, "3.1.0")){
+        	//查询5个用户关注
+            List<Content> attentionList = contentService.getAttention(Integer.MAX_VALUE ,uid, 1);
+            if (attentionList.size() > 0 && attentionList != null) {
+            	int count = 4;
+            	List<Long> topicIdList = new ArrayList<Long>();
+            	Content idx = null;
+            	for(int i=0;i<attentionList.size()&&i<count;i++){
+            		idx = attentionList.get(i);
+            		if(idx.getType() == Specification.ArticleType.LIVE.index){//王国
+                        if(!topicIdList.contains(idx.getForwardCid())){
+                            topicIdList.add(idx.getForwardCid());
+                        }
                     }
-                }
-        	}
-        	//一次性获取所有王国外露内容最后一个发言人
-        	Map<String, Long> lastOutUidMap = new HashMap<String, Long>();
-        	if(topicIdList.size() > 0){
-        		String v = userService.getAppConfigByKey("KINGDOM_OUT_MINUTE");
-                int limitMinute = 3;
-                if(!StringUtils.isEmpty(v)){
-                	limitMinute = Integer.valueOf(v).intValue();
-                }
-        		List<Map<String, Object>> list = liveLocalJdbcDao.getLastOutFragment(topicIdList, limitMinute);
-        		if(null != list && list.size() > 0){
-        			for(Map<String, Object> m : list){
-        				lastOutUidMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("uid"));
-        			}
-        		}
-        	}
-        	
-            int size = 0;
-            for (Content content : attentionList) {
-                size++;
-                ShowTopicListDto.AttentionElement attentionElement = ShowTopicListDto.createAttentionElement();
-                long fuid = content.getUid();
-                if(content.getType() == Specification.ArticleType.LIVE.index){
-                	if(null != lastOutUidMap.get(content.getForwardCid().toString())){
-                		fuid = lastOutUidMap.get(content.getForwardCid().toString()).longValue();
-                	}
-                }
-                
-                UserProfile userProfile = userService.getUserProfileByUid(fuid);
-                attentionElement.setAvatar(Constant.QINIU_DOMAIN+"/"+userProfile.getAvatar());
-                attentionElement.setUid(content.getUid());
-                attentionElement.setV_lv(userProfile.getvLv());
-                attentionElement.setLevel(userProfile.getLevel());
-                if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
-                	attentionElement.setAvatarFrame(Constant.QINIU_DOMAIN+"/"+userProfile.getAvatarFrame());
-                }
-                showTopicListDto.getAttentionData().add(attentionElement);
-                if(size >= 5){
-                    break;
+            	}
+            	//一次性获取所有王国外露内容最后一个发言人
+            	Map<String, Long> lastOutUidMap = new HashMap<String, Long>();
+            	if(topicIdList.size() > 0){
+            		String v = userService.getAppConfigByKey("KINGDOM_OUT_MINUTE");
+                    int limitMinute = 3;
+                    if(!StringUtils.isEmpty(v)){
+                    	limitMinute = Integer.valueOf(v).intValue();
+                    }
+            		List<Map<String, Object>> list = liveLocalJdbcDao.getLastOutFragment(topicIdList, limitMinute);
+            		if(null != list && list.size() > 0){
+            			for(Map<String, Object> m : list){
+            				lastOutUidMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("uid"));
+            			}
+            		}
+            	}
+            	
+                int size = 0;
+                for (Content content : attentionList) {
+                    size++;
+                    ShowTopicListDto.AttentionElement attentionElement = ShowTopicListDto.createAttentionElement();
+                    long fuid = content.getUid();
+                    if(content.getType() == Specification.ArticleType.LIVE.index){
+                    	if(null != lastOutUidMap.get(content.getForwardCid().toString())){
+                    		fuid = lastOutUidMap.get(content.getForwardCid().toString()).longValue();
+                    	}
+                    }
+                    
+                    UserProfile userProfile = userService.getUserProfileByUid(fuid);
+                    attentionElement.setAvatar(Constant.QINIU_DOMAIN+"/"+userProfile.getAvatar());
+                    attentionElement.setUid(content.getUid());
+                    attentionElement.setV_lv(userProfile.getvLv());
+                    attentionElement.setLevel(userProfile.getLevel());
+                    if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                    	attentionElement.setAvatarFrame(Constant.QINIU_DOMAIN+"/"+userProfile.getAvatarFrame());
+                    }
+                    showTopicListDto.getAttentionData().add(attentionElement);
+                    if(size >= 5){
+                        break;
+                    }
                 }
             }
         }
+        
         if (updateTime == 0) {
             updateTime = Long.MAX_VALUE;
         }

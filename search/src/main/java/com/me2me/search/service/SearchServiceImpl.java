@@ -634,6 +634,7 @@ public class SearchServiceImpl implements SearchService {
 		hotkeywordMapper.deleteByPrimaryKey(id);
 	}
 
+	@Override
 	public Response recommendUser(long uid,int page,int pageSize){
 		UserProfile profile = userService.getUserProfileByUid(uid);
 		String hobby = StringUtils.join(searchMapper.getUserHobbyIds(uid),",");
@@ -765,8 +766,57 @@ public class SearchServiceImpl implements SearchService {
 		}
 	};
 	
-	
+	@Override
 	public Response recommendIndex(long uid,int page, String token, String version){
+		if(!CommonUtils.isNewVersion(version, "3.1.0")){//310前的还调原来的方法
+			return this.recommendIndexOld(uid, page, token, version);
+		}
+		List<Long> blacklistUids = contentForSearchJdbcDao.getBlacklist(uid);
+		//310后的只返回列表
+		RecommendListDto indexData = new RecommendListDto();
+		// 查内容推荐（取10条王国数据，再取10条文章数据）
+		List<Long> dislistTopicIds = new ArrayList<Long>();
+		List<SearchUserDislike> dislikeList = searchMybatisDao.getSearchUserDislikesByUidsAndType(uid, 3);
+		if(null != dislikeList && dislikeList.size() > 0){
+			for(SearchUserDislike sud : dislikeList){
+				dislistTopicIds.add(sud.getCid());
+			}
+		}
+		List<TopicEsMapping> kingdoms = this.searchService.getTopicEsMappingList(uid, dislistTopicIds, page, 10, blacklistUids);
+		this.builderRecKingdomInfo(indexData, kingdoms, uid);
+		//再取10条文章
+		ShowRecContentDTO recContent = fileTransferService.getRecContents(String.valueOf(uid), token, version, "");
+		if(null != recContent && "0".equals(recContent.getResultCode()) 
+				&& null != recContent.getContents() && recContent.getContents().size() > 0){
+			RecommendListDto.ContentData contentData = null;
+			for(ShowRecContentDTO.RecContentElement rc : recContent.getContents()){
+				if(rc.getContentType() > 1){//只要文章和音乐
+					continue;
+				}
+				contentData = new RecommendListDto.ContentData();
+				contentData.setType(5);//文章
+				contentData.setContentType(rc.getContentType());
+				contentData.setContentId(rc.getContentId());
+				contentData.setTitle(rc.getTitle());
+				contentData.setLinkUrl(rc.getLinkUrl());
+				contentData.setCoverImage(rc.getCoverImage());
+				contentData.setUpdateTime(rc.getUpdateTime());
+				contentData.setReason("智能推荐");
+				contentData.setReadCount(rc.getReadCount());
+				contentData.setLikeCount(rc.getLikeCount());
+				contentData.setReviewCount(rc.getReviewCount());
+				indexData.getRecContentData().add(contentData);
+			}
+		}
+		
+		if(indexData.getRecContentData().size() > 1){
+			Collections.shuffle(indexData.getRecContentData());
+		}
+		
+		return Response.success(indexData);
+	}
+	
+	private Response recommendIndexOld(long uid,int page, String token, String version){
 		RecommendListDto indexData = new RecommendListDto();
 		List<Long> blacklistUids = contentForSearchJdbcDao.getBlacklist(uid);
 		

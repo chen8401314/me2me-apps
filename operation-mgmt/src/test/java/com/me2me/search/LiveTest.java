@@ -44,7 +44,7 @@ public class LiveTest extends AbstractJUnit4SpringContextTests {
 	}
 	@Test
 	public void testMyTopic(){
-		Response response = liveService.getMyTopic(204481, System.currentTimeMillis());
+		Response response = liveService.getMyTopic(204481, System.currentTimeMillis(), null);
 		System.out.println(response);
 	}
 	//@Test

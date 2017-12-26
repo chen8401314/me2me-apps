@@ -100,43 +100,11 @@ public class HttpUtil {
     }
     
     public static void main(String[] args){
-    	HttpPost httppost = new HttpPost("http://test2.me-to-me.com/api/live/shareImgInfo");
-    	CloseableHttpClient httpclient = null;
-        CloseableHttpResponse response = null;
-        String responseContent = null;
-        try {
-        	httpclient = HttpClients.createDefault();
-        	List<BasicNameValuePair> rp = new ArrayList<BasicNameValuePair>();
-        	rp.add(new BasicNameValuePair("is_skip", "ok"));
-        	rp.add(new BasicNameValuePair("uid", "446"));
-        	rp.add(new BasicNameValuePair("token", "fd4c3445358c4b44866fd045d3bde95d"));
-        	rp.add(new BasicNameValuePair("topicId", "6992"));
-        	rp.add(new BasicNameValuePair("fid", "256910"));
-        	rp.add(new BasicNameValuePair("targetUid", "446"));
-    		HttpEntity reqEntity= new UrlEncodedFormEntity(rp, "utf-8");
-        	
-            httppost.setEntity(reqEntity);
-            response = httpclient.execute(httppost);
-            HttpEntity respEntity = response.getEntity();
-            responseContent = EntityUtils.toString(respEntity, "UTF-8");
-            System.out.println("post responseContent message:"+responseContent);
-        } catch (Exception e) {
-        	e.printStackTrace();
-        } finally {
-        	if(null != response){
-        		try {
-					response.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-        	}
-        	if(null != httpclient){
-        		try {
-					httpclient.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-        	} 
-        } 
+    	com.alibaba.fastjson.JSONObject obj = new com.alibaba.fastjson.JSONObject();
+    	obj.put("uid", 446);
+    	obj.put("token", "abcdefg");
+    	obj.put("version", "3.1.0");
+    	String result = post("https://app.me-to-me.com/meapp/content/recommendWeb.do",obj.toJSONString());
+    	System.out.println(result);
     }
 }

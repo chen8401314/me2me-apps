@@ -459,7 +459,7 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getMyTopic",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getMyTopic(GetMyLivesRequest request){
-        return liveService.getMyTopic(request.getUid(),request.getUpdateTime());
+        return liveService.getMyTopic(request.getUid(),request.getUpdateTime(), request.getVersion());
     }
 
     /**
