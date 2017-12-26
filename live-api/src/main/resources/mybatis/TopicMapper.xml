@@ -613,24 +613,22 @@
     limit 1;
   </select>
   <select id="getMyLivesByUpdateTimeNew" parameterType="java.util.Map" resultMap="BaseResultMap2">
-    SELECT * FROM (
-    SELECT m.*,CASE WHEN c.is_top=1 THEN 1 ELSE 0 END AS istop,
-    CASE WHEN c.is_top=1 THEN m.long_time*100 ELSE m.long_time END AS longtimes
-    FROM
-    (SELECT t.*
-    FROM topic t,live_favorite f
-    WHERE t.id=f.topic_id
-    AND f.uid=#{uid}
-    UNION
-    SELECT t1.*
-    FROM topic t1
-    WHERE FIND_IN_SET(#{uid}, SUBSTR(t1.core_circle FROM 2 FOR LENGTH(t1.core_circle)-2))
-    ) m LEFT JOIN topic_user_config c ON m.id=c.topic_id AND c.uid=#{uid}
-    ) n
-    WHERE n.longtimes &lt; #{updateTime}
-   	and n.id not in(select topic_id from block_topic where uid=#{uid})
-    ORDER BY n.longtimes DESC
-    LIMIT 10;
+  	select 	t.*,
+			CASE WHEN t5.is_top=1 THEN 1 ELSE 0 END AS istop,
+			CASE WHEN t5.is_top=1 THEN t3.long_time*100 ELSE t3.long_time END AS longtimes
+	from (
+    	select t1.id, t1.long_time
+    	from topic t1 join live_favorite t2 on ( t1.id = t2.topic_id and t2.uid = #{uid})
+    	union
+    	select t1.id, t1.long_time
+   		FROM topic t1
+    	WHERE FIND_IN_SET(#{uid}, SUBSTR(t1.core_circle FROM 2 FOR LENGTH(t1.core_circle)-2))
+	) t3 LEFT JOIN topic_user_config t5 on (t3.id = t5.topic_id and t5.uid = #{uid}) 
+	JOIN topic t on (t.id = t3.id)
+	where not exists (select 1 from block_topic where uid=#{uid} and topic_id = t3.id)
+	and t3.long_time &lt; #{updateTime}
+	ORDER BY t3.long_time DESC
+    LIMIT 10
   </select>
    <resultMap id="searchTopicDtoMap" type="com.me2me.live.dto.SearchTopicDto">
   		<result column="nick_name" property="nickName" />

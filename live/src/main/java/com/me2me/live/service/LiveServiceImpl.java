@@ -2920,7 +2920,7 @@ public class LiveServiceImpl implements LiveService {
         } else {
             showTopicListDto.setIsUpdate(0);
         }
-     // 赠送王国
+        // 赠送王国
         List<TopicGiven> givenKingdomList = liveMybatisDao.getMyGivenKingdoms(uid);
         UserProfile myProfile= this.userService.getUserProfileByUid(uid);
         for(TopicGiven given:givenKingdomList){
