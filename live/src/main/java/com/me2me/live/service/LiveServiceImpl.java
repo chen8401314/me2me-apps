@@ -2136,6 +2136,7 @@ public class LiveServiceImpl implements LiveService {
             }
             showTopicElement.setInternalStatus(internalStatust);
             showTopicElement.setContentType(topic.getType());
+            showTopicElement.setIsTop(topic.getIsTop());
             if(topic.getType() == 1000){
                 if(null != acCountMap.get(String.valueOf(topic.getId()))){
                     showTopicElement.setAcCount(acCountMap.get(String.valueOf(topic.getId())).intValue());
@@ -2154,7 +2155,6 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastStatus((Integer)lastFragment.get("status"));
                 showTopicElement.setLastExtra((String)lastFragment.get("extra"));
                 showTopicElement.setLastAtUid((Long)lastFragment.get("at_uid"));
-                showTopicElement.setIsTop(topic.getIsTop());
                 showTopicElement.setLastUid((Long)lastFragment.get("uid"));
                 if(null != lastFragment.get("create_time")){
                     showTopicElement.setLastUpdateTime(((Date)lastFragment.get("create_time")).getTime());
