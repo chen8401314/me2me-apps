@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.me2me.user.model.UserProfile;
-
 @Repository
 public class ContentForSearchJdbcDao {
 
@@ -526,6 +524,13 @@ public class ContentForSearchJdbcDao {
 		if(null == uidList || uidList.size() == 0){
 			return null;
 		}
+		//先查王国
+		String sql1 = "select f.topic_id from live_favorite f where f.uid=?";
+		List<Map<String, Object>> list1 = jdbcTemplate.queryForList(sql1, sourceUid);
+		if(null == list1 || list1.size() == 0){
+			return null;
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("select f2.uid,count(1) as cc from live_favorite f2");
 		sb.append(" where f2.uid in (");
@@ -535,8 +540,15 @@ public class ContentForSearchJdbcDao {
 			}
 			sb.append(uidList.get(i).toString());
 		}
-		sb.append(") and f2.topic_id in (select f.topic_id from live_favorite f");
-		sb.append(" where f.uid=").append(sourceUid);
+		sb.append(") and f2.topic_id in (");
+		Map<String, Object> mm = null;
+		for(int i=0;i<list1.size();i++){
+			mm = list1.get(i);
+			if(i>0){
+				sb.append(",");
+			}
+			sb.append(((Long)mm.get("topic_id")).toString());
+		}
 		sb.append(") group by f2.uid");
 		
 		List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
