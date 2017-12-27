@@ -1312,6 +1312,7 @@ public class ContentServiceImpl implements ContentService {
         } else{
         	contents = new ArrayList<Content>();
         }
+        int exchangeRate = userService.getIntegerAppConfigByKey("EXCHANGE_RATE")==null?100:userService.getIntegerAppConfigByKey("EXCHANGE_RATE");
         List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
         List<Long> forwardTopicIdList = new ArrayList<Long>();
@@ -1608,6 +1609,7 @@ public class ContentServiceImpl implements ContentService {
                         contentElement.setAcCount(acCount);
                     }
                     contentElement.setPrice((Integer)topic.get("price"));
+                    contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(), exchangeRate));
                 }
                 if(null != liveFavouriteMap.get(content.getForwardCid().toString())){
                 	contentElement.setFavorite(1);
@@ -3078,6 +3080,7 @@ public class ContentServiceImpl implements ContentService {
         if(!StringUtils.isEmpty(v)){
         	limitMinute = Integer.valueOf(v).intValue();
         }
+        int exchangeRate = userService.getIntegerAppConfigByKey("EXCHANGE_RATE")==null?100:userService.getIntegerAppConfigByKey("EXCHANGE_RATE");
         List<Map<String,Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute);
         if(null != topicOutList && topicOutList.size() > 0){
         	Long topicId = null;
@@ -3326,7 +3329,7 @@ public class ContentServiceImpl implements ContentService {
                         contentElement.setAcCount(acCount);
                     }
 					contentElement.setPrice((Integer) topic.get("price"));
-//					contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
+					contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(),exchangeRate));
 //					contentElement.setShowPriceBrand(0); // 首页只显示RMB吊牌
 //					contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
                 }
@@ -10432,5 +10435,14 @@ public class ContentServiceImpl implements ContentService {
 		}
 		return Response.success(showAcKingdomDto);
 	}
-
+	/**
+	 * 米汤币兑换人名币
+	 * 
+	 * @param price
+	 * @return
+	 */
+	public double exchangeKingdomPrice(int price,int exchangeRate) {
+		BigDecimal exchangeRateBigDecimal = new BigDecimal(exchangeRate);
+		return new BigDecimal(price).divide(exchangeRateBigDecimal, 2, RoundingMode.HALF_UP).doubleValue();
+	}
 }
