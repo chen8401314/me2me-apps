@@ -10086,8 +10086,8 @@ public class ContentServiceImpl implements ContentService {
 				}
 			}
 
-			// double minRmb = Double.parseDouble((String)
-			// userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
+			double minRmb = Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
+			int exchangeRate = userService.getIntegerAppConfigByKey("EXCHANGE_RATE")==null?100:userService.getIntegerAppConfigByKey("EXCHANGE_RATE");
 			UserProfile userProfile = null;
 			Map<String, Object> topicUserProfile = null;
 			List<Map<String, Object>> topicOutDataList = null;
@@ -10214,9 +10214,9 @@ public class ContentServiceImpl implements ContentService {
 							contentElement.setAcCount(acCount);
 						}
 						contentElement.setPrice((Integer) topic.get("price"));
-						// contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
-						// contentElement.setShowPriceBrand(0); // 首页只显示RMB吊牌
-						// contentElement.setShowRMBBrand(contentElement.getPriceRMB()
+						 contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(),exchangeRate));
+						 contentElement.setShowPriceBrand(0); // 首页只显示RMB吊牌
+							contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
 						// >= minRmb ? 1 : 0);// 显示吊牌
 					}
 					contentElement.setLiveStatus(0);
