@@ -1312,6 +1312,7 @@ public class ContentServiceImpl implements ContentService {
         } else{
         	contents = new ArrayList<Content>();
         }
+		double minRmb = Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
         int exchangeRate = userService.getIntegerAppConfigByKey("EXCHANGE_RATE")==null?100:userService.getIntegerAppConfigByKey("EXCHANGE_RATE");
         List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
@@ -1610,6 +1611,8 @@ public class ContentServiceImpl implements ContentService {
                     }
                     contentElement.setPrice((Integer)topic.get("price"));
                     contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(), exchangeRate));
+					contentElement.setShowPriceBrand(0); //
+					contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
                 }
                 if(null != liveFavouriteMap.get(content.getForwardCid().toString())){
                 	contentElement.setFavorite(1);
@@ -3081,6 +3084,7 @@ public class ContentServiceImpl implements ContentService {
         	limitMinute = Integer.valueOf(v).intValue();
         }
         int exchangeRate = userService.getIntegerAppConfigByKey("EXCHANGE_RATE")==null?100:userService.getIntegerAppConfigByKey("EXCHANGE_RATE");
+		double minRmb = Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
         List<Map<String,Object>> topicOutList = liveForContentJdbcDao.getOutFragments(topicIdList, limitMinute);
         if(null != topicOutList && topicOutList.size() > 0){
         	Long topicId = null;
@@ -3330,8 +3334,8 @@ public class ContentServiceImpl implements ContentService {
                     }
 					contentElement.setPrice((Integer) topic.get("price"));
 					contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(),exchangeRate));
-//					contentElement.setShowPriceBrand(0); // 首页只显示RMB吊牌
-//					contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
+					contentElement.setShowPriceBrand(0); // 首页只显示RMB吊牌
+					contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
                 }
                 contentElement.setLiveStatus(0);
                 if(null != reviewCountMap.get(content.getForwardCid().toString())){
@@ -9587,8 +9591,9 @@ public class ContentServiceImpl implements ContentService {
 					topicTagMap.put(String.valueOf(tid), tags);
 				}
 			}
-	        
-	        UserProfile userProfile = null;
+			int exchangeRate = userService.getIntegerAppConfigByKey("EXCHANGE_RATE")==null?100:userService.getIntegerAppConfigByKey("EXCHANGE_RATE");
+			double minRmb = Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
+			UserProfile userProfile = null;
 	        Map<String, Object> topicUserProfile = null;
 	        List<Map<String, Object>> topicOutDataList = null;
 	        Map<String, Object> topicOutData = null;
@@ -9744,6 +9749,9 @@ public class ContentServiceImpl implements ContentService {
 	                        contentElement.setAcCount(acCount);
 	                    }
 	                    contentElement.setPrice((Integer)topic.get("price"));
+	                    contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(), exchangeRate));
+	                    contentElement.setShowPriceBrand(0);
+	        			contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
 	                }
 	                if(null != liveFavouriteMap.get(content.getForwardCid().toString())){
 	                	contentElement.setFavorite(1);

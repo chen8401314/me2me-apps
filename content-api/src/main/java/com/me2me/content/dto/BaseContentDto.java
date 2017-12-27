@@ -113,6 +113,10 @@ public class BaseContentDto implements BaseEntity{
     
     private double priceRMB;
     
+    private int showPriceBrand;
+    
+    private int showRMBBrand;
+    
     private String tags;
     
     private int kcid;//分类ID

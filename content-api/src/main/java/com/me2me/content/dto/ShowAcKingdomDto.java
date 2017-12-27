@@ -30,10 +30,6 @@ public class ShowAcKingdomDto implements BaseEntity{
     @Data
     public static class ContentElement extends  BaseContentDto implements BaseEntity {
           
-		private int price;
-		private double priceRMB;
-		private Integer showRMBBrand;
-		private Integer showPriceBrand;
 	    private long cid;
 	    private long topicId;
 		private int isTop;

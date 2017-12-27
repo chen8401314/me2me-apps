@@ -26,10 +26,6 @@ public class ShowNewestDto implements BaseEntity{
     @Data
     public static class ContentElement extends  BaseContentDto implements BaseEntity {
           
-		private int price;
-		private double priceRMB;
-		private Integer showRMBBrand;
-		private Integer showPriceBrand;
 		
         private List<ReviewElement> reviews = Lists.newArrayList();
 
