@@ -613,6 +613,8 @@
     limit 1;
   </select>
   <select id="getMyLivesByUpdateTimeNew" parameterType="java.util.Map" resultMap="BaseResultMap2">
+  select *
+  from (
   	SELECT 	t.*,
 			CASE WHEN t5.is_top=1 THEN 1 ELSE 0 END AS istop,
 			CASE WHEN t5.is_top=1 THEN t3.long_time*100 ELSE t3.long_time END AS longtimes
@@ -630,8 +632,9 @@
 	LEFT JOIN block_topic t6 ON (t6.uid=#{uid} AND t6.topic_id = t3.id)
 	JOIN topic t ON (t.id = t3.id)
 	WHERE t6.topic_id IS NULL
-  	AND t3.long_time &lt; #{updateTime}
-	ORDER BY t3.long_time DESC
+  ) m
+  where m.longtimes &lt; #{updateTime}
+	ORDER BY m.longtimes DESC
     LIMIT 10
   </select>
    <resultMap id="searchTopicDtoMap" type="com.me2me.live.dto.SearchTopicDto">
