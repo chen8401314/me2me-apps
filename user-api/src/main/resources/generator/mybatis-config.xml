@@ -74,5 +74,6 @@
 		<!-- <table tableName="user_invitation_his" domainObjectName="UserInvitationHis"/> -->
 		<!-- <table tableName="user_tag" domainObjectName="UserTag"/> -->
 		<!-- <table tableName="user_last_channel" domainObjectName="UserLastChannel"/> -->
+		<!-- <table tableName="app_http_access" domainObjectName="AppHttpAccess"/> -->
     </context>
 </generatorConfiguration>

@@ -166,6 +166,9 @@ public class UserMybatisDao {
     @Autowired
     private UserLastChannelMapper userLastChannelMapper;
     
+    @Autowired
+    private AppHttpAccessMapper appHttpAccessMapper;
+    
     /**
      * 保存用户注册信息
      * @param user
@@ -1588,5 +1591,9 @@ public class UserMybatisDao {
     
     public void updateUserLastChannel(UserLastChannel ulc){
     	userLastChannelMapper.updateByPrimaryKeySelective(ulc);
+    }
+    
+    public void saveAppHttpAccess(AppHttpAccess aha){
+    	appHttpAccessMapper.insertSelective(aha);
     }
 }

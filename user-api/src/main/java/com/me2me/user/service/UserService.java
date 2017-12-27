@@ -629,5 +629,7 @@ public interface UserService {
     public void updateUserTag(UserTag userTag);
 	
     public UserTag getUserTagByUidAndTagid(long uid,long tagId);
+    
+    void saveUserHttpAccess(AppHttpAccessDTO dto);
 	
 }

@@ -5383,4 +5383,17 @@ public class UserServiceImpl implements UserService {
     public UserTag getUserTagByUidAndTagid(long uid,long tagId){
 		return userMybatisDao.getUserTagByUidAndTagid(uid, tagId);
 	}
+	
+	@Override
+	public void saveUserHttpAccess(AppHttpAccessDTO dto){
+		AppHttpAccess httpAccess = new AppHttpAccess();
+		httpAccess.setUid(dto.getUid());
+		httpAccess.setRequestUri(dto.getRequestUri());
+		httpAccess.setRequestMethod(dto.getRequestMethod());
+		httpAccess.setRequestParams(dto.getRequestParams());
+		httpAccess.setStartTime(dto.getStartTime());
+		httpAccess.setEndTime(dto.getEndTime());
+		httpAccess.setCreateTime(new Date());
+		userMybatisDao.saveAppHttpAccess(httpAccess);
+	}
 }

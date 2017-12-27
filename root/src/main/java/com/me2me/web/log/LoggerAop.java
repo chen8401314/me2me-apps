@@ -6,7 +6,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.me2me.monitor.dto.AccessLoggerDto;
 import com.me2me.monitor.service.MonitorService;
+import com.me2me.user.dto.AppHttpAccessDTO;
+import com.me2me.user.service.UserService;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.apache.http.HttpResponse;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +20,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,12 +38,34 @@ public class LoggerAop {
     private ThreadLocal<Long> startTime = new ThreadLocal<Long>();
 
     @Autowired
-    private MonitorService monitorService;
+    private UserService userService;
 
     public void before(JoinPoint joinPoint){
         startTime.set(System.currentTimeMillis());
+    }
+    public void after(JoinPoint joinPoint){
+    	
+        
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = servletRequestAttributes.getRequest();
+        
+        String uid = "0";
+		Map<String, String> paramMap = new HashMap<>();
+		Enumeration<String> em = request.getParameterNames();
+		String paramName = null;
+		while (em.hasMoreElements()) {
+			paramName = em.nextElement();
+			if("uid".equals(paramName)){
+				uid = request.getParameter(paramName);
+			}
+			paramMap.put(paramName, request.getParameter(paramName));
+		}
+		
+		String httpParams = JSON.toJSONString(paramMap);
+		long currentTime = System.currentTimeMillis();
+        long execTime = currentTime - startTime.get();
+        log.info("[{}]-[{}]-[{}], EXECUTE TIME : [{}ms]", uid, request.getRequestURI(), httpParams, execTime);
+        
         // 过滤一下接口
         if(request.getRequestURI().startsWith("/api/console")
                 ||request.getRequestURI().startsWith("/api/home/initSquareUpdateId")
@@ -45,49 +73,20 @@ public class LoggerAop {
                 || request.getRequestURI().startsWith("/api/spread")){
             return;
         }
-        StringBuilder headers = new StringBuilder();
-        Enumeration<String> enumeration = request.getHeaderNames();
-        Map<String,Object> map = Maps.newConcurrentMap();
-        while (enumeration.hasMoreElements()){
-            String header = enumeration.nextElement();
-            headers.append(header).append(":").append(request.getHeader(header)).append("\n");
-            map.put(header,request.getHeader(header));
-        }
-        log.info("========================================================================================");
-        log.info("= REQUEST HEADERS : \n" + headers);
-        log.info("= REQUEST URL : " + request.getRequestURL());
-        log.info("= REQUEST METHOD : " + request.getMethod());
-        log.info("= REQUEST INVOKE METHOD : " +joinPoint.getSignature().getDeclaringTypeName()+"."+ joinPoint.getSignature().getName());
-        log.info("= REQUEST ARGUMENTS : " + Arrays.toString(joinPoint.getArgs()));
-        AccessLoggerDto accessLoggerDto = new AccessLoggerDto();
-        accessLoggerDto.setHeaders(JSON.toJSONString(map));
-        accessLoggerDto.setMethod(request.getMethod());
-        List<Object> args = Lists.newArrayList();
-        Object[] os = joinPoint.getArgs();
-        for(Object o : os) {
-            args.add(o);
-        }
-        try{
-            String origin = JSON.toJSONString(args);
-            List<Map> paramsMap = JSON.parseArray(origin,Map.class);
-            for(Map m : paramsMap) {
-                if(m.get("uid")!=null) {
-                    long uid = Long.valueOf(m.get("uid").toString());
-                    accessLoggerDto.setUid(uid);
-                    break;
-                }
-            }
-            accessLoggerDto.setUri(request.getRequestURI());
-            accessLoggerDto.setParams(JSON.toJSONString(joinPoint.getArgs()));
-//            monitorService.saveAccessLog(accessLoggerDto);
-        }catch (Exception e){
-            log.info("ex ignore :"+e.getMessage());
-        }
-    }
-    public void after(JoinPoint joinPoint){
-        long execTime = System.currentTimeMillis() - startTime.get();
-        log.info("= EXECUTE TIME IS : " + execTime);
-        log.info("========================================================================================");
+        
+        long longuid = 0;
+		try{
+			longuid = Long.valueOf(uid);
+		}catch(Exception ignore){}
+		
+		AppHttpAccessDTO dto = new AppHttpAccessDTO();
+		dto.setUid(longuid);
+		dto.setRequestUri(request.getRequestURI());
+		dto.setRequestMethod(request.getMethod());
+		dto.setRequestParams(httpParams);
+		dto.setStartTime(startTime.get());
+		dto.setEndTime(currentTime);
+		userService.saveUserHttpAccess(dto);
     }
 
 
