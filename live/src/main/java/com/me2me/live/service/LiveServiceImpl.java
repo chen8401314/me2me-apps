@@ -2907,7 +2907,7 @@ public class LiveServiceImpl implements LiveService {
         }
         
         if (updateTime == 0) {
-            updateTime = Long.MAX_VALUE;
+            updateTime = Long.MAX_VALUE; 
         }
         List<Topic2> topicList = liveMybatisDao.getMyLivesByUpdateTimeNew(uid ,updateTime);
         log.info("getMyLives data success");
