@@ -577,16 +577,14 @@
     <if test="sinceId&gt;0">
       select * from (
     </if>
-   select * from (
-   select
+    select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from topic_fragment f
+    from topic_fragment f use index (idx_topic_id)
     where f.topic_id=#{topicId,jdbcType=BIGINT}
-   ) m
-   order by m.id asc limit #{startIndex,jdbcType=INTEGER},#{offset,jdbcType=INTEGER}
-   <if test="sinceId&gt;0">
+    order by id asc limit #{startIndex,jdbcType=INTEGER},#{offset,jdbcType=INTEGER}
+    <if test="sinceId&gt;0">
       )a where a.id&gt;#{sinceId,jdbcType=BIGINT}
     </if>
   </select>
