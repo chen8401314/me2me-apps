@@ -53,7 +53,7 @@
     </mvc:interceptors>
 
 
-
+<!-- 
     <bean id="loggerAop" class="com.me2me.web.log.LoggerAop"/>
 
     <aop:config proxy-target-class="true">
@@ -63,5 +63,5 @@
             <aop:after pointcut-ref="log" method="after"/>
         </aop:aspect>
     </aop:config>
-
+ -->
 </beans>
