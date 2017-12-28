@@ -110,7 +110,6 @@ import com.me2me.content.dto.TagMgmtQueryDto;
 import com.me2me.content.dto.UserContentSearchDTO;
 import com.me2me.content.dto.UserGroupDto;
 import com.me2me.content.dto.WriteTagDto;
-import com.me2me.content.mapper.ContentMapper;
 import com.me2me.content.mapper.EmotionPackDetailMapper;
 import com.me2me.content.mapper.EmotionPackMapper;
 import com.me2me.content.mapper.TopicTagSearchMapper;
@@ -4664,21 +4663,17 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(result);
     }
 
-    private void loadTopData() {
-    }
-
 
     /**
      * 米汤币兑换人名币
      * @param price
      * @return
      */
-    public double exchangeKingdomPrice(int price) {
-        String  result =  userService.getAppConfigByKey("EXCHANGE_RATE");
-        if(StringUtils.isEmpty(result)){
+    public double exchangeKingdomPrice(int price, String exchangeRateConfig) {
+        if(StringUtils.isEmpty(exchangeRateConfig)){
             return 0;
         }
-        BigDecimal exchangeRate = new BigDecimal(result);
+        BigDecimal exchangeRate = new BigDecimal(exchangeRateConfig);
         return new BigDecimal(price).divide(exchangeRate, 2, RoundingMode.HALF_UP).doubleValue();
     }
     private List<HotTagElement> buildHotTagKingdoms(long uid, List<Long> blacklistUids,List<String> blackTags){
@@ -4733,6 +4728,8 @@ public class ContentServiceImpl implements ContentService {
         
         List<String> allTags= Arrays.asList(finalTags);
        
+        String exchangeRateConfig =  userService.getAppConfigByKey("EXCHANGE_RATE");
+        
         for(String label:allTags){
         	if(label==null) continue;
         	TagInfo info=topicTagMapper.getTagInfo(label);
@@ -4810,7 +4807,7 @@ public class ContentServiceImpl implements ContentService {
             element.setPersonCount(tagPersons);
             element.setTagName(label);
             element.setTagId(tagId);
-            double rmbPrice = exchangeKingdomPrice(tagPrice);
+            double rmbPrice = exchangeKingdomPrice(tagPrice, exchangeRateConfig);
             //element.setShowRMBBrand(rmbPrice>=TAG_SHOW_PRICE_BRAND_MIN?1:0); 首页不显示标签吊牌。
             element.setShowRMBBrand(0);
             element.setTagPrice(rmbPrice);
@@ -5220,102 +5217,7 @@ public class ContentServiceImpl implements ContentService {
                 result.getFamousUserData().add(famousUserElement);
             }
         }
-		/*
-		 * 聚合王国不处理
-		List<Map<String, Object>> acTopList = null;
-		List<Map<String, Object>> membersList = null;
-		if(null != ceKingdomList && ceKingdomList.size() > 0){
-			ShowHotListDTO.HotCeKingdomElement ceKingdomElement = null;
-			ShowHotListDTO.AcTopElement acTopElement = null;
-			ShowHotListDTO.MemberElement memberElement = null;
-			for(Content2Dto ce : ceKingdomList){
-				ceKingdomElement = new ShowHotListDTO.HotCeKingdomElement();
-				ceKingdomElement.setUid(ce.getUid());
-				userProfile = userProfileMap.get(ce.getUid().toString());
-				ceKingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-				ceKingdomElement.setNickName(userProfile.getNickName());
-				ceKingdomElement.setV_lv(userProfile.getvLv());
-                ceKingdomElement.setLevel(userProfile.getLevel());
-
-
-				if(null != followMap.get(uid+"_"+ce.getUid())){
-					ceKingdomElement.setIsFollowed(1);
-				}else{
-					ceKingdomElement.setIsFollowed(0);
-				}
-				if(null != followMap.get(ce.getUid()+"_"+uid)){
-					ceKingdomElement.setIsFollowMe(1);
-				}else{
-					ceKingdomElement.setIsFollowMe(0);
-				}
-				if(null != liveFavouriteMap.get(ce.getForwardCid().toString())){
-					ceKingdomElement.setFavorite(1);
-				}else{
-					ceKingdomElement.setFavorite(0);
-				}
-				ceKingdomElement.setTopicId(ce.getForwardCid());
-				ceKingdomElement.setForwardCid(ce.getForwardCid());
-				ceKingdomElement.setCid(ce.getId());
-				ceKingdomElement.setId(ce.getId());
-				topic = topicMap.get(ce.getForwardCid().toString());
-
-				if(null != topic){
-					ceKingdomElement.setTitle((String)topic.get("title"));
-					ceKingdomElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
-					ceKingdomElement.setCreateTime(((Date)topic.get("create_time")).getTime());
-					ceKingdomElement.setUpdateTime((Long)topic.get("long_time"));
-					ceKingdomElement.setLastUpdateTime((Long)topic.get("long_time"));
-					ceKingdomElement.setContentType((Integer)topic.get("type"));
-					ceKingdomElement.setInternalStatus(this.getInternalStatus(topic, uid));
-					ceKingdomElement.setPrice((Integer)topic.get("price"));		//--2.2.7 王国价值
-				}
-				if(null == topicMemberCountMap.get(ce.getForwardCid().toString())){
-					ceKingdomElement.setFavoriteCount(1);//默认只有国王一个成员
-				}else{
-					ceKingdomElement.setFavoriteCount(topicMemberCountMap.get(ce.getForwardCid().toString()).intValue()+1);
-				}
-				if(null != acCountMap.get(ce.getForwardCid().toString())){
-					ceKingdomElement.setAcCount(acCountMap.get(ce.getForwardCid().toString()).intValue());
-				}else{
-					ceKingdomElement.setAcCount(0);
-				}
-				acTopList = acTopMap.get(ce.getForwardCid().toString());
-				if(null != acTopList && acTopList.size() > 0){
-					for(Map<String, Object> acTop : acTopList){
-						acTopElement = new ShowHotListDTO.AcTopElement();
-						acTopElement.setTopicId((Long)acTop.get("id"));
-						topicContent = topicContentMap.get(((Long)acTop.get("id")).toString());
-						if(null != topicContent){
-							acTopElement.setCid(topicContent.getId());
-						}
-						acTopElement.setTitle((String)acTop.get("title"));
-						acTopElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)acTop.get("live_image"));
-						acTopElement.setContentType((Integer)acTop.get("type"));
-						acTopElement.setInternalStatus(this.getInternalStatus(acTop, uid));
-						ceKingdomElement.getAcTopList().add(acTopElement);
-					}
-				}
-				membersList = membersMap.get(ce.getForwardCid().toString());
-				if(null != membersList && membersList.size() > 0){
-					for(Map<String, Object> members : membersList){
-						memberElement = new ShowHotListDTO.MemberElement();
-						memberElement.setUid((Long)members.get("uid"));
-						memberElement.setNickName((String)members.get("nick_name"));
-						memberElement.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)members.get("avatar"));
-						memberElement.setV_lv((Integer)members.get("v_lv"));
-                        memberElement.setLevel((Integer)members.get("level"));
-						ceKingdomElement.getMemberList().add(memberElement);
-					}
-				}
-				if(null != topicTagMap.get(ce.getForwardCid().toString())){
-					ceKingdomElement.setTags(topicTagMap.get(ce.getForwardCid().toString()));
-	            }else{
-	            	ceKingdomElement.setTags("");
-	            }
-				result.getHottestCeKingdomData().add(ceKingdomElement);
-			}
-		}
-		*/
+        String exchangeRateConfig =  userService.getAppConfigByKey("EXCHANGE_RATE");
         if(null != contentList && contentList.size() > 0){
             ShowHotListDTO.HotContentElement contentElement = null;
             String lastFragmentImage = null;
@@ -5373,7 +5275,7 @@ public class ContentServiceImpl implements ContentService {
                         }
                         contentElement.setInternalStatus(internalStatust);
                         contentElement.setPrice((Integer)topic.get("price"));
-                        contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
+                        contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(), exchangeRateConfig));
                         contentElement.setShowPriceBrand(0);		//首页只显示RMB吊牌
                         contentElement.setShowRMBBrand(contentElement.getPriceRMB()>=minRmb?1:0);// 显示吊牌
 
@@ -5481,7 +5383,7 @@ public class ContentServiceImpl implements ContentService {
                         }
                         contentElement.setInternalStatus(internalStatust);
                         contentElement.setPrice((Integer)topic.get("price"));
-                        contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
+                        contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(), exchangeRateConfig));
                         contentElement.setShowPriceBrand(0);		//首页只显示RMB吊牌
                         contentElement.setShowRMBBrand(contentElement.getPriceRMB()>=minRmb?1:0);// 显示吊牌
 
@@ -5783,7 +5685,7 @@ public class ContentServiceImpl implements ContentService {
             searchType = 1;//找谁
         }
         double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
-        double minRmb =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
+//        double minRmb =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
         List<BillBoardDetails> showList = contentMybatisDao.getShowListPageByType((int)sinceId, searchType);
         if(null != showList && showList.size() > 0){
             //为减少在for循环里查询sql，这里统一将一些数据一次性查出使用
@@ -5940,6 +5842,8 @@ public class ContentServiceImpl implements ContentService {
             		kingdomCategoryMap.put(String.valueOf(m.get("id")), m);
             	}
             }
+            
+            String exchangeRateConfig =  userService.getAppConfigByKey("EXCHANGE_RATE");
 
             BillBoard billBoard = null;
             BangDanDto.BangDanData bangDanData = null;
@@ -6031,7 +5935,7 @@ public class ContentServiceImpl implements ContentService {
                                 }
                                 bangDanInnerData.setPrice((Integer)topic.get("price"));
 
-                                bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice()));
+                                bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice(), exchangeRateConfig));
                                 bangDanInnerData.setShowPriceBrand(bangDanInnerData.getPrice()!=null && bangDanInnerData.getPrice()>=minPrice?1:0);
                                 bangDanInnerData.setShowRMBBrand(0);// 显示吊牌不显示RMB吊牌。
 
@@ -6281,6 +6185,8 @@ public class ContentServiceImpl implements ContentService {
 
         double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
 
+        String exchangeRateConfig =  userService.getAppConfigByKey("EXCHANGE_RATE");
+        
         // 加载榜单基本信息
         billBoardDetailsDto.setSummary(billBoard.getSummary());
         billBoardDetailsDto.setTitle(billBoard.getName());
@@ -6495,7 +6401,7 @@ public class ContentServiceImpl implements ContentService {
                             bangDanInnerData.setTags("");
                         }
                         bangDanInnerData.setPrice((Integer)topic.get("price"));
-                        bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice()));
+                        bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice(), exchangeRateConfig));
                         bangDanInnerData.setShowPriceBrand(bangDanInnerData.getPrice()!=null && bangDanInnerData.getPrice()>=minPrice?1:0);
                         bangDanInnerData.setShowRMBBrand(0);// 显示吊牌不显示RMB吊牌。
                         
@@ -6948,6 +6854,8 @@ public class ContentServiceImpl implements ContentService {
             	}
             }
 
+            String exchangeRateConfig =  userService.getAppConfigByKey("EXCHANGE_RATE");
+            
             BangDanDto.BangDanData.BangDanInnerData bangDanInnerData = null;
             Map<String,Object> topic = null;
             UserProfile userProfile = null;
@@ -7028,7 +6936,7 @@ public class ContentServiceImpl implements ContentService {
                         bangDanInnerData.setTags("");
                     }
                     bangDanInnerData.setPrice((Integer)topic.get("price"));
-                    bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice()));
+                    bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice(), exchangeRateConfig));
                     bangDanInnerData.setShowPriceBrand(bangDanInnerData.getPrice()!=null && bangDanInnerData.getPrice()>=minPrice?1:0);
                     bangDanInnerData.setShowRMBBrand(0);// 显示吊牌不显示RMB吊牌。
                     int categoryId = (Integer)topic.get("category_id");
@@ -7190,6 +7098,8 @@ public class ContentServiceImpl implements ContentService {
             		kingdomCategoryMap.put(String.valueOf(m.get("id")), m);
             	}
             }
+            
+            String exchangeRateConfig =  userService.getAppConfigByKey("EXCHANGE_RATE");
 
             BillBoardDetailsDto.InnerDetailData bangDanInnerData = null;
             Map<String, Object> topic = null;
@@ -7241,7 +7151,7 @@ public class ContentServiceImpl implements ContentService {
                         continue;
                     }
                     bangDanInnerData.setPrice((Integer)topic.get("price"));
-                    bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice()));
+                    bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice(), exchangeRateConfig));
                     bangDanInnerData.setShowPriceBrand(bangDanInnerData.getPrice()!=null && bangDanInnerData.getPrice()>=minPrice?1:0);
                     bangDanInnerData.setShowRMBBrand(0);// 显示吊牌不显示RMB吊牌。
                     bangDanInnerData.setId(topicContent.getId());
