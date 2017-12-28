@@ -210,6 +210,17 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
 		long execTime = currentTime - startTime.get();
 		log.info("[{}]-[{}]-[{}], EXECUTE TIME : [{}ms]", uid, request.getRequestURI(), httpParams, execTime);
 		
+		// 过滤一下接口
+        if(request.getRequestURI().startsWith("/api/console")//ims接口
+                || request.getRequestURI().startsWith("/api/home/initSquareUpdateId")//技术后门，初始化updateid
+                || request.getRequestURI().startsWith("/api/mobile")//无效接口
+                || request.getRequestURI().startsWith("/api/spread")//无效接口
+                || request.getRequestURI().startsWith("/api/live/getUpdate")//王国详情轮询接口
+                || request.getRequestURI().startsWith("/api/user/noticeReddotQuery")//通知红点轮询接口
+                ){
+            return;
+        }
+		
 		long longuid = 0;
 		try{
 			longuid = Long.valueOf(uid);
