@@ -3931,6 +3931,16 @@ public class LiveServiceImpl implements LiveService {
 
         return result;
     }
+    
+    private boolean isLetterOrDigit(String str) {
+		String regex = "^[a-z0-9A-Z]+$";
+		return str.matches(regex);
+	}
+    
+    private boolean isSymbol(String str){
+    	String regex = "^[,.?'\"\\[\\]+-\\\\(\\\\)!@#$%^&*:;<>]+$";
+		return str.matches(regex);
+    }
 
 	@Override
 	public Response<SpeakDto> createKingdom(CreateKingdomDto createKingdomDto) {
@@ -3941,9 +3951,20 @@ public class LiveServiceImpl implements LiveService {
         }
 		//判断王国名数字是否超过限制
 		String str=createKingdomDto.getTitle();
-	    byte[] bytes=str.getBytes();
-		if(bytes.length>60){
-			return Response.failure(ResponseStatus.KINGDM_NAME_OVER_LIMIT.status, ResponseStatus.KINGDM_NAME_OVER_LIMIT.message);
+		if(str.length() > 30){
+			int titleLength = 0;
+			String s = null;
+			for(int i=0; i<str.length();i++){
+				s = str.substring(i,i+1);
+				if(this.isLetterOrDigit(s) || this.isSymbol(s)){
+					titleLength = titleLength + 1;
+				}else{
+					titleLength = titleLength + 2;
+				}
+			}
+			if(titleLength > 60){
+				return Response.failure(ResponseStatus.KINGDM_NAME_OVER_LIMIT.status, ResponseStatus.KINGDM_NAME_OVER_LIMIT.message);
+			}
 		}
 		
 		//特殊用户创建王国无需耗费米汤币
@@ -4566,9 +4587,20 @@ public class LiveServiceImpl implements LiveService {
 			}else if(dto.getAction() == Specification.SettingModify.LIVE_NAME.index){
 				//判断王国名数字是否超过限制
 				String str=dto.getParams();
-			    byte[] bytes=str.getBytes();
-				if(bytes.length>60){
-					return Response.failure(ResponseStatus.KINGDM_NAME_OVER_LIMIT.status, ResponseStatus.KINGDM_NAME_OVER_LIMIT.message);
+				if(str.length() > 30){
+					int titleLength = 0;
+					String s = null;
+					for(int i=0; i<str.length();i++){
+						s = str.substring(i,i+1);
+						if(this.isLetterOrDigit(s) || this.isSymbol(s)){
+							titleLength = titleLength + 1;
+						}else{
+							titleLength = titleLength + 2;
+						}
+					}
+					if(titleLength > 60){
+						return Response.failure(ResponseStatus.KINGDM_NAME_OVER_LIMIT.status, ResponseStatus.KINGDM_NAME_OVER_LIMIT.message);
+					}
 				}
                 topic.setTitle(dto.getParams());
                 liveMybatisDao.updateTopic(topic);
