@@ -6017,15 +6017,14 @@ public class ContentServiceImpl implements ContentService {
                         }
                     }
                 }
-
-                //榜单集合
-                List<Map<String,Object>> topicList = this.liveForContentJdbcDao.getTopPricedKingdomList( 1, 3, blacklistUids);
-                List<BasicKingdomInfo> buildResult = this.kingdomBuider.buildKingdoms(topicList, currentUid);
-                bangDanDto.setListPricedTopic(buildResult);
-
                 bangDanDto.getListData().add(bangDanData);
             }
         }
+        
+        //榜单集合
+        List<Map<String,Object>> topicList = this.liveForContentJdbcDao.getTopPricedKingdomList(1, 3, blacklistUids);
+        List<BasicKingdomInfo> buildResult = this.kingdomBuider.buildKingdoms(topicList, currentUid);
+        bangDanDto.setListPricedTopic(buildResult);
 
         if(vflag == 0){
             if(bangDanDto.getListData().size() > 0){
