@@ -1407,6 +1407,7 @@ public class LiveServiceImpl implements LiveService {
 					}
                 }
                 
+                /* 去除留言机器人 3.2.0版本修改
                 //王国创建3天内，国王的前两条发言触发机器人回复
                 String robotSwitch = userService.getAppConfigByKey("KINGDOMROBOT_AUTO_REPLY");
             	if(!StringUtils.isEmpty(robotSwitch) && "on".equals(robotSwitch) && speakDto.getQuotationInfoId() == 0 && needRobot){//自动回复开关开 并且 不是机器人的回复
@@ -1426,6 +1427,7 @@ public class LiveServiceImpl implements LiveService {
                     	}
                     }
             	}
+            	*/
                 
                 log.info("updateTopic updateTime");
             }
@@ -4250,6 +4252,7 @@ public class LiveServiceImpl implements LiveService {
         }
         //add kingdom tags -- end --
 
+        /* 去除留言机器人 3.2.0版本修改
         // 机器人自动回复开始 -- start --
         //目前机器人逻辑如下，所有新建王国新建时，触发机器人，并且3天内的国王前两条更新，有机器人触发
         String robotSwitch = userService.getAppConfigByKey("KINGDOMROBOT_AUTO_REPLY");
@@ -4258,6 +4261,7 @@ public class LiveServiceImpl implements LiveService {
     		applicationEventBus.post(new AutoReplyEvent(topic.getUid(), topic.getId(), topic.getCreateTime()));
     	}
         // 机器人自动回复结束 -- end --
+         */
         log.info("createKingdom end");
         speakDto2.setCurrentLevel(userProfile.getLevel());
         speakDto2.setUpgrade(0);
