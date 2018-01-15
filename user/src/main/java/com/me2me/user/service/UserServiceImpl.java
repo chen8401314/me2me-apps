@@ -3265,6 +3265,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserIndustry> getUserIndustryListByIds(List<Long> ids) {
+    	if(null == ids || ids.size() == 0){
+    		return new ArrayList<UserIndustry>();
+    	}
+        return userMybatisDao.getUserIndustryListByIds(ids);
+    }
+    
+    @Override
     public Response gag(GagDto dto) {
         log.info("gag start ... request:"+JSON.toJSONString(dto));
         UserGag gag = (UserGag) CommonUtils.copyDto(dto, new UserGag());
@@ -5395,5 +5403,9 @@ public class UserServiceImpl implements UserService {
 		httpAccess.setEndTime(dto.getEndTime());
 		httpAccess.setCreateTime(new Date());
 		userMybatisDao.saveAppHttpAccess(httpAccess);
+	}
+	@Override
+	public List<UserFriend> getUserFriendBySourceUidListAndTargetUid(List<Long>  sourceUidList, long targetUid){
+		return userMybatisDao.getUserFriendBySourceUidListAndTargetUid(sourceUidList, targetUid);
 	}
 }

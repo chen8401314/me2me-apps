@@ -2,10 +2,10 @@ package com.me2me.user.dao;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
-
-import com.me2me.common.utils.Lists;
-import com.me2me.user.model.Dictionary;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import com.me2me.common.page.PageBean;
 import com.me2me.common.utils.FirstCharUtils;
+import com.me2me.common.utils.Lists;
 import com.me2me.common.web.Specification;
 import com.me2me.sms.dto.PushLogDto;
 import com.me2me.user.dto.BasicDataDto;
@@ -26,8 +27,139 @@ import com.me2me.user.dto.UserFansDto;
 import com.me2me.user.dto.UserFollowDto;
 import com.me2me.user.dto.UserNoticeDto;
 import com.me2me.user.dto.VersionDto;
-import com.me2me.user.mapper.*;
-import com.me2me.user.model.*;
+import com.me2me.user.mapper.AppConfigMapper;
+import com.me2me.user.mapper.AppHttpAccessMapper;
+import com.me2me.user.mapper.ApplicationSecurityMapper;
+import com.me2me.user.mapper.DictionaryMapper;
+import com.me2me.user.mapper.DictionaryTypeMapper;
+import com.me2me.user.mapper.EmotionInfoMapper;
+import com.me2me.user.mapper.EmotionRecordMapper;
+import com.me2me.user.mapper.EntryPageConfigMapper;
+import com.me2me.user.mapper.ImConfigMapper;
+import com.me2me.user.mapper.IosWapxMapper;
+import com.me2me.user.mapper.JpushTokenMapper;
+import com.me2me.user.mapper.MbtiMappingMapper;
+import com.me2me.user.mapper.OpenDeviceCountMapper;
+import com.me2me.user.mapper.PermissionDetailsMapper;
+import com.me2me.user.mapper.SystemConfigMapper;
+import com.me2me.user.mapper.ThirdPartUserMapper;
+import com.me2me.user.mapper.UserBlackListMapper;
+import com.me2me.user.mapper.UserDeviceInfoMapper;
+import com.me2me.user.mapper.UserDeviceMapper;
+import com.me2me.user.mapper.UserFamousMapper;
+import com.me2me.user.mapper.UserFirstLogMapper;
+import com.me2me.user.mapper.UserFollowMapper;
+import com.me2me.user.mapper.UserFriendMapper;
+import com.me2me.user.mapper.UserGagMapper;
+import com.me2me.user.mapper.UserHobbyMapper;
+import com.me2me.user.mapper.UserIndustryMapper;
+import com.me2me.user.mapper.UserInvitationHisMapper;
+import com.me2me.user.mapper.UserLastChannelMapper;
+import com.me2me.user.mapper.UserMapper;
+import com.me2me.user.mapper.UserMbtiHistoryMapper;
+import com.me2me.user.mapper.UserMobileListMapper;
+import com.me2me.user.mapper.UserNoMapper;
+import com.me2me.user.mapper.UserNoticeMapper;
+import com.me2me.user.mapper.UserNoticeUnreadMapper;
+import com.me2me.user.mapper.UserProfileMapper;
+import com.me2me.user.mapper.UserReportMapper;
+import com.me2me.user.mapper.UserSeekFollowMapper;
+import com.me2me.user.mapper.UserTagMapper;
+import com.me2me.user.mapper.UserTagsDetailsMapper;
+import com.me2me.user.mapper.UserTagsMapper;
+import com.me2me.user.mapper.UserTagsRecordMapper;
+import com.me2me.user.mapper.UserTipsMapper;
+import com.me2me.user.mapper.UserTokenMapper;
+import com.me2me.user.mapper.VersionChannelDownloadMapper;
+import com.me2me.user.mapper.VersionControlMapper;
+import com.me2me.user.mapper.XingePushLogMapper;
+import com.me2me.user.model.AppConfig;
+import com.me2me.user.model.AppConfigExample;
+import com.me2me.user.model.AppHttpAccess;
+import com.me2me.user.model.ApplicationSecurity;
+import com.me2me.user.model.ApplicationSecurityExample;
+import com.me2me.user.model.Dictionary;
+import com.me2me.user.model.DictionaryExample;
+import com.me2me.user.model.DictionaryType;
+import com.me2me.user.model.DictionaryTypeExample;
+import com.me2me.user.model.EmotionInfo;
+import com.me2me.user.model.EmotionInfoExample;
+import com.me2me.user.model.EmotionRecord;
+import com.me2me.user.model.EmotionRecordExample;
+import com.me2me.user.model.EntryPageConfig;
+import com.me2me.user.model.EntryPageConfigExample;
+import com.me2me.user.model.ImConfig;
+import com.me2me.user.model.ImConfigExample;
+import com.me2me.user.model.IosWapx;
+import com.me2me.user.model.IosWapxExample;
+import com.me2me.user.model.JpushToken;
+import com.me2me.user.model.JpushTokenExample;
+import com.me2me.user.model.MbtiMapping;
+import com.me2me.user.model.MbtiMappingExample;
+import com.me2me.user.model.OpenDeviceCount;
+import com.me2me.user.model.PermissionDetails;
+import com.me2me.user.model.PermissionDetailsExample;
+import com.me2me.user.model.SystemConfig;
+import com.me2me.user.model.SystemConfigExample;
+import com.me2me.user.model.ThirdPartUser;
+import com.me2me.user.model.ThirdPartUserExample;
+import com.me2me.user.model.User;
+import com.me2me.user.model.UserBlackList;
+import com.me2me.user.model.UserBlackListExample;
+import com.me2me.user.model.UserDevice;
+import com.me2me.user.model.UserDeviceExample;
+import com.me2me.user.model.UserDeviceInfo;
+import com.me2me.user.model.UserExample;
+import com.me2me.user.model.UserFamous;
+import com.me2me.user.model.UserFamousExample;
+import com.me2me.user.model.UserFirstLog;
+import com.me2me.user.model.UserFirstLogExample;
+import com.me2me.user.model.UserFollow;
+import com.me2me.user.model.UserFollowExample;
+import com.me2me.user.model.UserFriend;
+import com.me2me.user.model.UserFriendExample;
+import com.me2me.user.model.UserGag;
+import com.me2me.user.model.UserGagExample;
+import com.me2me.user.model.UserHobby;
+import com.me2me.user.model.UserHobbyExample;
+import com.me2me.user.model.UserIndustry;
+import com.me2me.user.model.UserIndustryExample;
+import com.me2me.user.model.UserInvitationHis;
+import com.me2me.user.model.UserInvitationHisExample;
+import com.me2me.user.model.UserLastChannel;
+import com.me2me.user.model.UserLastChannelExample;
+import com.me2me.user.model.UserMbtiHistory;
+import com.me2me.user.model.UserMbtiHistoryExample;
+import com.me2me.user.model.UserMobileList;
+import com.me2me.user.model.UserMobileListExample;
+import com.me2me.user.model.UserNo;
+import com.me2me.user.model.UserNoExample;
+import com.me2me.user.model.UserNotice;
+import com.me2me.user.model.UserNoticeExample;
+import com.me2me.user.model.UserNoticeUnread;
+import com.me2me.user.model.UserNoticeUnreadExample;
+import com.me2me.user.model.UserProfile;
+import com.me2me.user.model.UserProfileExample;
+import com.me2me.user.model.UserReport;
+import com.me2me.user.model.UserSeekFollow;
+import com.me2me.user.model.UserSeekFollowExample;
+import com.me2me.user.model.UserTag;
+import com.me2me.user.model.UserTagExample;
+import com.me2me.user.model.UserTags;
+import com.me2me.user.model.UserTagsDetails;
+import com.me2me.user.model.UserTagsDetailsExample;
+import com.me2me.user.model.UserTagsExample;
+import com.me2me.user.model.UserTagsRecord;
+import com.me2me.user.model.UserTagsRecordExample;
+import com.me2me.user.model.UserTips;
+import com.me2me.user.model.UserTipsExample;
+import com.me2me.user.model.UserToken;
+import com.me2me.user.model.UserTokenExample;
+import com.me2me.user.model.VersionChannelDownload;
+import com.me2me.user.model.VersionChannelDownloadExample;
+import com.me2me.user.model.VersionControl;
+import com.me2me.user.model.VersionControlExample;
+import com.me2me.user.model.XingePushLog;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -168,6 +300,12 @@ public class UserMybatisDao {
     
     @Autowired
     private AppHttpAccessMapper appHttpAccessMapper;
+    
+    @Autowired
+    private UserFriendMapper userFriendMapper;
+    
+    @Autowired
+    private UserIndustryMapper userIndustryMapper;
     
     /**
      * 保存用户注册信息
@@ -340,6 +478,13 @@ public class UserMybatisDao {
         criteria.andUidIn(uids);
         example.setOrderByClause(" id desc ");
         return userProfileMapper.selectByExample(example);
+    }
+    public List<UserIndustry> getUserIndustryListByIds(List<Long> ids) {
+    	UserIndustryExample example = new UserIndustryExample();
+    	UserIndustryExample.Criteria criteria = example.createCriteria();
+        criteria.andIdIn(ids);
+        example.setOrderByClause(" id desc ");
+        return userIndustryMapper.selectByExample(example);
     }
     
     public List<UserProfile> getUserProfilesByMobiles(List<String> mobile){
@@ -1595,5 +1740,16 @@ public class UserMybatisDao {
     
     public void saveAppHttpAccess(AppHttpAccess aha){
     	appHttpAccessMapper.insertSelective(aha);
+    }
+    public List<UserFriend> getUserFriendBySourceUidListAndTargetUid(List<Long>  sourceUidList, long targetUid){
+    	if(null == sourceUidList || sourceUidList.size() == 0){
+    		return null;
+    	}
+    	UserFriendExample example = new UserFriendExample();
+    	UserFriendExample.Criteria criteria = example.createCriteria();
+    	criteria.andTargetUidEqualTo(targetUid);
+    	criteria.andSourceUidIn(sourceUidList);
+    	criteria.andStatusEqualTo(0);
+    	return userFriendMapper.selectByExample(example);
     }
 }

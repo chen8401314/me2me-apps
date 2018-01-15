@@ -124,4 +124,16 @@ public class BaseContentDto implements BaseEntity{
     private String kcImage;//分类封面
     private String kcIcon;//分类图标
     private int canView;//当前用户是否可见
+    
+	private String reason;
+	
+	private int isFriend;
+	
+	private int isFriend2King;
+	
+	private int onlyFriend;
+
+	private long industryId;
+	
+	private String industry;
 }

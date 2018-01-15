@@ -631,5 +631,9 @@ public interface UserService {
     public UserTag getUserTagByUidAndTagid(long uid,long tagId);
     
     void saveUserHttpAccess(AppHttpAccessDTO dto);
+    
+    public List<UserFriend> getUserFriendBySourceUidListAndTargetUid(List<Long>  sourceUidList, long targetUid);
+    
+    public List<UserIndustry> getUserIndustryListByIds(List<Long> ids);
 	
 }

@@ -158,6 +158,8 @@ import com.me2me.user.model.JpushToken;
 import com.me2me.user.model.SystemConfig;
 import com.me2me.user.model.UserFamous;
 import com.me2me.user.model.UserFollow;
+import com.me2me.user.model.UserFriend;
+import com.me2me.user.model.UserIndustry;
 import com.me2me.user.model.UserInvitationHis;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserNoticeUnread;
@@ -1368,14 +1370,39 @@ public class ContentServiceImpl implements ContentService {
         		}
         	}
         }
-        
-        Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
-        List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
-        if(null != profileList && profileList.size() > 0){
-            for(UserProfile up : profileList){
-                profileMap.put(String.valueOf(up.getUid()), up);
-            }
-        }
+
+		// 一次性查询所有好友关系
+		Map<String, UserFriend> userFriendMap = new HashMap<String, UserFriend>();
+		List<UserFriend> userFriendList = userService.getUserFriendBySourceUidListAndTargetUid(uidList, uid);
+		if (null != userFriendList && userFriendList.size() > 0) {
+			for (UserFriend up : userFriendList) {
+				userFriendMap.put(up.getSourceUid().toString(), up);
+				if (up.getFromUid() != 0 && !uidList.contains(up.getFromUid())) {
+					uidList.add(up.getFromUid());
+				}
+			}
+		}
+
+		List<Long> userIndustryIds = new ArrayList<Long>();
+		Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+		List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+		if (null != profileList && profileList.size() > 0) {
+			for (UserProfile up : profileList) {
+				profileMap.put(String.valueOf(up.getUid()), up);
+				if (up.getIndustryId() != 0) {
+					userIndustryIds.add(up.getIndustryId());
+				}
+			}
+		}
+
+		// 一次性查询所有行业信息
+		Map<String, UserIndustry> userIndustryMap = new HashMap<String, UserIndustry>();
+		List<UserIndustry> userIndustryList = userService.getUserIndustryListByIds(userIndustryIds);
+		if (null != userIndustryList && userIndustryList.size() > 0) {
+			for (UserIndustry up : userIndustryList) {
+				userIndustryMap.put(up.getId().toString(), up);
+			}
+		}
         
         //一次性查询关注信息
         Map<String, String> followMap = new HashMap<String, String>();
@@ -1609,9 +1636,13 @@ public class ContentServiceImpl implements ContentService {
                         contentElement.setAcCount(acCount);
                     }
                     contentElement.setPrice((Integer)topic.get("price"));
-                    contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(), exchangeRate));
+                    //contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(), exchangeRate));
 					contentElement.setShowPriceBrand(0); //
-					contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
+					//contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
+					contentElement.setOnlyFriend((Integer) topic.get("only_friend"));
+					if (userFriendMap.get(topic.get("uid").toString()) != null) {
+						contentElement.setIsFriend2King(1);
+					}
                 }
                 if(null != liveFavouriteMap.get(content.getForwardCid().toString())){
                 	contentElement.setFavorite(1);
@@ -1666,6 +1697,20 @@ public class ContentServiceImpl implements ContentService {
                         }else{
                             contentElement.setIsFollowMe(0);
                         }
+            			UserIndustry ui = userIndustryMap.get(String.valueOf(lastUserProfile.getIndustryId()));
+						if (ui != null) {
+							contentElement.setIndustry(ui.getIndustryName());
+						}
+						if (userFriendMap.get(String.valueOf(lastUserProfile.getUid())) != null) {
+							contentElement.setIsFriend(1);
+							UserFriend uf = userFriendMap.get(String.valueOf(lastUserProfile.getUid()));
+							if (uf.getFromUid() != 0) {
+								UserProfile fromExtUserProfile = profileMap.get(String.valueOf(uf.getFromUid()));
+								if (fromExtUserProfile != null) {
+									contentElement.setReason("来自" + fromExtUserProfile.getNickName());
+								}
+							}
+						}
             		}
             		int t = ((Integer)topicOutData.get("type")).intValue();
             		int contentType = ((Integer)topicOutData.get("content_type")).intValue();
@@ -3123,13 +3168,38 @@ public class ContentServiceImpl implements ContentService {
             }
         }
 
-        Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
-        List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
-        if(null != profileList && profileList.size() > 0){
-            for(UserProfile up : profileList){
-                profileMap.put(String.valueOf(up.getUid()), up);
-            }
-        }
+		// 一次性查询所有好友关系
+		Map<String, UserFriend> userFriendMap = new HashMap<String, UserFriend>();
+		List<UserFriend> userFriendList = userService.getUserFriendBySourceUidListAndTargetUid(uidList, uid);
+		if (null != userFriendList && userFriendList.size() > 0) {
+			for (UserFriend up : userFriendList) {
+				userFriendMap.put(up.getSourceUid().toString(), up);
+				if (up.getFromUid() != 0 && !uidList.contains(up.getFromUid())) {
+					uidList.add(up.getFromUid());
+				}
+			}
+		}
+
+		List<Long> userIndustryIds = new ArrayList<Long>();
+		Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+		List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+		if (null != profileList && profileList.size() > 0) {
+			for (UserProfile up : profileList) {
+				profileMap.put(String.valueOf(up.getUid()), up);
+				if (up.getIndustryId() != 0) {
+					userIndustryIds.add(up.getIndustryId());
+				}
+			}
+		}
+
+		// 一次性查询所有行业信息
+		Map<String, UserIndustry> userIndustryMap = new HashMap<String, UserIndustry>();
+		List<UserIndustry> userIndustryList = userService.getUserIndustryListByIds(userIndustryIds);
+		if (null != userIndustryList && userIndustryList.size() > 0) {
+			for (UserIndustry up : userIndustryList) {
+				userIndustryMap.put(up.getId().toString(), up);
+			}
+		}
 
         //一次性查询关注信息
         Map<String, String> followMap = new HashMap<String, String>();
@@ -3332,9 +3402,13 @@ public class ContentServiceImpl implements ContentService {
                         contentElement.setAcCount(acCount);
                     }
 					contentElement.setPrice((Integer) topic.get("price"));
-					contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(),exchangeRate));
+					//contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(),exchangeRate));
 					contentElement.setShowPriceBrand(0); // 首页只显示RMB吊牌
-					contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
+					//contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
+					contentElement.setOnlyFriend((Integer) topic.get("only_friend"));
+					if (userFriendMap.get(topic.get("uid").toString()) != null) {
+						contentElement.setIsFriend2King(1);
+					}
                 }
                 contentElement.setLiveStatus(0);
                 if(null != reviewCountMap.get(content.getForwardCid().toString())){
@@ -3406,6 +3480,20 @@ public class ContentServiceImpl implements ContentService {
                         }else{
                             contentElement.setIsFollowMe(0);
                         }
+                    	UserIndustry ui = userIndustryMap.get(String.valueOf(lastUserProfile.getIndustryId()));
+						if (ui != null) {
+							contentElement.setIndustry(ui.getIndustryName());
+						}
+						if (userFriendMap.get(String.valueOf(lastUserProfile.getUid())) != null) {
+							contentElement.setIsFriend(1);
+							UserFriend uf = userFriendMap.get(String.valueOf(lastUserProfile.getUid()));
+							if (uf.getFromUid() != 0) {
+								UserProfile fromExtUserProfile = profileMap.get(String.valueOf(uf.getFromUid()));
+								if (fromExtUserProfile != null) {
+									contentElement.setReason("来自" + fromExtUserProfile.getNickName());
+								}
+							}
+						}
             		}
             		
             		int type = ((Integer)topicOutData.get("type")).intValue();
@@ -9401,14 +9489,39 @@ public class ContentServiceImpl implements ContentService {
 	        		}
 	        	}
 	        }
-	        
-	        Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
-	        List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
-	        if(null != profileList && profileList.size() > 0){
-	            for(UserProfile up : profileList){
-	                profileMap.put(String.valueOf(up.getUid()), up);
-	            }
-	        }
+
+		// 一次性查询所有好友关系
+		Map<String, UserFriend> userFriendMap = new HashMap<String, UserFriend>();
+		List<UserFriend> userFriendList = userService.getUserFriendBySourceUidListAndTargetUid(uidList, uid);
+		if (null != userFriendList && userFriendList.size() > 0) {
+			for (UserFriend up : userFriendList) {
+				userFriendMap.put(up.getSourceUid().toString(), up);
+				if (up.getFromUid() != 0 && !uidList.contains(up.getFromUid())) {
+					uidList.add(up.getFromUid());
+				}
+			}
+		}
+
+		List<Long> userIndustryIds = new ArrayList<Long>();
+		Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+		List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+		if (null != profileList && profileList.size() > 0) {
+			for (UserProfile up : profileList) {
+				profileMap.put(String.valueOf(up.getUid()), up);
+				if (up.getIndustryId() != 0) {
+					userIndustryIds.add(up.getIndustryId());
+				}
+			}
+		}
+
+		// 一次性查询所有行业信息
+		Map<String, UserIndustry> userIndustryMap = new HashMap<String, UserIndustry>();
+		List<UserIndustry> userIndustryList = userService.getUserIndustryListByIds(userIndustryIds);
+		if (null != userIndustryList && userIndustryList.size() > 0) {
+			for (UserIndustry up : userIndustryList) {
+				userIndustryMap.put(up.getId().toString(), up);
+			}
+		}
 	        
 	        //一次性查询关注信息
 	        Map<String, String> followMap = new HashMap<String, String>();
@@ -9658,9 +9771,13 @@ public class ContentServiceImpl implements ContentService {
 	                        contentElement.setAcCount(acCount);
 	                    }
 	                    contentElement.setPrice((Integer)topic.get("price"));
-	                    contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(), exchangeRate));
+	                    //contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(), exchangeRate));
 	                    contentElement.setShowPriceBrand(0);
-	        			contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
+	        			//contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
+	    				contentElement.setOnlyFriend((Integer)topic.get("only_friend"));
+						if (userFriendMap.get(topic.get("uid").toString()) != null) {
+							contentElement.setIsFriend2King(1);
+						}
 	                }
 	                if(null != liveFavouriteMap.get(content.getForwardCid().toString())){
 	                	contentElement.setFavorite(1);
@@ -9715,6 +9832,20 @@ public class ContentServiceImpl implements ContentService {
 	                        }else{
 	                            contentElement.setIsFollowMe(0);
 	                        }
+							UserIndustry ui = userIndustryMap.get(String.valueOf(lastUserProfile.getIndustryId()));
+							if (ui != null) {
+								contentElement.setIndustry(ui.getIndustryName());
+							}
+							if (userFriendMap.get(String.valueOf(lastUserProfile.getUid())) != null) {
+								contentElement.setIsFriend(1);
+								UserFriend uf = userFriendMap.get(String.valueOf(lastUserProfile.getUid()));
+								if (uf.getFromUid() != 0) {
+									UserProfile fromExtUserProfile = profileMap.get(String.valueOf(uf.getFromUid()));
+									if (fromExtUserProfile != null) {
+										contentElement.setReason("来自" + fromExtUserProfile.getNickName());
+									}
+								}
+							}
 	            		}
 	            		int t = ((Integer)topicOutData.get("type")).intValue();
 	            		int contentType = ((Integer)topicOutData.get("content_type")).intValue();
@@ -9906,15 +10037,37 @@ public class ContentServiceImpl implements ContentService {
 					}
 				}
 			}
-
+			//一次性查询所有好友关系
+			Map<String, UserFriend> userFriendMap = new HashMap<String, UserFriend>();
+			List<UserFriend> userFriendList = userService.getUserFriendBySourceUidListAndTargetUid(uidList, uid);
+			if (null != userFriendList && userFriendList.size() > 0) {
+				for (UserFriend up : userFriendList) {
+					userFriendMap.put(up.getSourceUid().toString(), up);
+					if (up.getFromUid()!=0 && !uidList.contains(up.getFromUid())) {
+						uidList.add(up.getFromUid());
+					}
+				}
+			}
+			List<Long> userIndustryIds = new ArrayList<Long>();
 			Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
 			List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
 			if (null != profileList && profileList.size() > 0) {
 				for (UserProfile up : profileList) {
 					profileMap.put(String.valueOf(up.getUid()), up);
+					if(up.getIndustryId()!=0){
+						userIndustryIds.add(up.getIndustryId());
+					}
 				}
 			}
-
+			//一次性查询所有行业信息
+			Map<String, UserIndustry> userIndustryMap = new HashMap<String, UserIndustry>();
+			List<UserIndustry> userIndustryList = userService.getUserIndustryListByIds(userIndustryIds);
+			if (null != userIndustryList && userIndustryList.size() > 0) {
+				for (UserIndustry up : userIndustryList) {
+					userIndustryMap.put(up.getId().toString(), up);
+				}
+			}
+			
 			// 一次性查询关注信息
 			Map<String, String> followMap = new HashMap<String, String>();
 			List<UserFollow> userFollowList = userService.getAllFollows(uid, uidList);
@@ -10094,7 +10247,6 @@ public class ContentServiceImpl implements ContentService {
 								}
 							}
 						}
-
 						int internalStatust = this.getInternalStatus(topic, uid);
 						if (internalStatust == Specification.SnsCircle.OUT.index) {
 							if (liveFavouriteMap.get(String.valueOf(topic.get("id"))) != null) {
@@ -10123,10 +10275,15 @@ public class ContentServiceImpl implements ContentService {
 							contentElement.setAcCount(acCount);
 						}
 						contentElement.setPrice((Integer) topic.get("price"));
-						 contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(),exchangeRate));
-						 contentElement.setShowPriceBrand(0); // 首页只显示RMB吊牌
-							contentElement.setShowRMBBrand(contentElement.getPriceRMB() >= minRmb ? 1 : 0);// 显示吊牌
+						// contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice(),exchangeRate));
+						contentElement.setShowPriceBrand(0); // 首页只显示RMB吊牌
+						// contentElement.setShowRMBBrand(contentElement.getPriceRMB()
 						// >= minRmb ? 1 : 0);// 显示吊牌
+						// >= minRmb ? 1 : 0);// 显示吊牌
+						contentElement.setOnlyFriend((Integer)topic.get("only_friend"));
+						if (userFriendMap.get(topic.get("uid").toString()) != null) {
+							contentElement.setIsFriend2King(1);
+						}
 					}
 					contentElement.setLiveStatus(0);
 					if (null != reviewCountMap.get(content.getForwardCid().toString())) {
@@ -10199,6 +10356,22 @@ public class ContentServiceImpl implements ContentService {
 							} else {
 								contentElement.setIsFollowMe(0);
 							}
+							contentElement.setIndustryId(lastUserProfile.getIndustryId());
+							UserIndustry ui = userIndustryMap.get(String.valueOf(lastUserProfile.getIndustryId()));
+							if (ui != null) {
+								contentElement.setIndustry(ui.getIndustryName());
+							}
+							if (userFriendMap.get(String.valueOf(lastUserProfile.getUid())) != null) {
+								contentElement.setIsFriend(1);
+								UserFriend uf = userFriendMap.get(String.valueOf(lastUserProfile.getUid()));
+								if (uf.getFromUid() != 0) {
+									UserProfile fromExtUserProfile = profileMap.get(String.valueOf(uf.getFromUid()));
+									if (fromExtUserProfile != null) {
+										contentElement.setReason("来自" + fromExtUserProfile.getNickName());
+									}
+								}
+							}
+							
 						}
 
 						int type = ((Integer) topicOutData.get("type")).intValue();
