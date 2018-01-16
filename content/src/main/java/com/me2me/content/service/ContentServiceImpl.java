@@ -1505,14 +1505,6 @@ public class ContentServiceImpl implements ContentService {
         Map<String, Object> kingdomCategory = null;
         for (Content content : contents){
             ShowMyPublishDto.MyPublishElement contentElement = ShowMyPublishDto.createElement();
-            userProfile = profileMap.get(String.valueOf(content.getUid()));
-            contentElement.setV_lv(userProfile.getvLv());
-            contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-            if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
-            	contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
-            }
-            contentElement.setNickName(userProfile.getNickName());
-            contentElement.setLevel(userProfile.getLevel());
             contentElement.setUid(content.getUid());
             contentElement.setTag(content.getFeeling());
             String contentStr = content.getContent();
@@ -1533,17 +1525,6 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setType(content.getType());
             contentElement.setReadCount(content.getReadCountDummy());
 
-            //判断人员是否关注
-            if(null != followMap.get(uid+"_"+content.getUid())){
-                contentElement.setIsFollowed(1);
-            }else{
-                contentElement.setIsFollowed(0);
-            }
-            if(null != followMap.get(content.getUid()+"_"+uid)){
-                contentElement.setIsFollowMe(1);
-            }else{
-                contentElement.setIsFollowMe(0);
-            }
             
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
@@ -1678,39 +1659,6 @@ public class ContentServiceImpl implements ContentService {
             		lastUserProfile = profileMap.get(String.valueOf(topicOutData.get("uid")));
             		if(null != lastUserProfile){//这里放上最近发言的那个人的头像
             			contentElement.setUid(lastUserProfile.getUid());
-            			contentElement.setNickName(lastUserProfile.getNickName());
-            			contentElement.setV_lv(lastUserProfile.getvLv());
-            			contentElement.setLevel(lastUserProfile.getLevel());
-            			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
-            			if(!StringUtils.isEmpty(lastUserProfile.getAvatarFrame())){
-            				contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatarFrame());
-            			}else{
-            				contentElement.setAvatarFrame(null);
-            			}
-            			if(null != followMap.get(uid+"_"+lastUserProfile.getUid())){
-                            contentElement.setIsFollowed(1);
-                        }else{
-                            contentElement.setIsFollowed(0);
-                        }
-                        if(null != followMap.get(lastUserProfile.getUid()+"_"+uid)){
-                            contentElement.setIsFollowMe(1);
-                        }else{
-                            contentElement.setIsFollowMe(0);
-                        }
-            			UserIndustry ui = userIndustryMap.get(String.valueOf(lastUserProfile.getIndustryId()));
-						if (ui != null) {
-							contentElement.setIndustry(ui.getIndustryName());
-						}
-						if (userFriendMap.get(String.valueOf(lastUserProfile.getUid())) != null) {
-							contentElement.setIsFriend(1);
-							UserFriend uf = userFriendMap.get(String.valueOf(lastUserProfile.getUid()));
-							if (uf.getFromUid() != 0) {
-								UserProfile fromExtUserProfile = profileMap.get(String.valueOf(uf.getFromUid()));
-								if (fromExtUserProfile != null) {
-									contentElement.setReason("来自" + fromExtUserProfile.getNickName());
-								}
-							}
-						}
             		}
             		int t = ((Integer)topicOutData.get("type")).intValue();
             		int contentType = ((Integer)topicOutData.get("content_type")).intValue();
@@ -1802,6 +1750,44 @@ public class ContentServiceImpl implements ContentService {
             		}
             	}
             }
+			userProfile = profileMap.get(contentElement.getUid());
+			if (null != userProfile) {// 这里放上最近发言的那个人的头像
+				contentElement.setUid(userProfile.getUid());
+				contentElement.setNickName(userProfile.getNickName());
+				contentElement.setV_lv(userProfile.getvLv());
+				contentElement.setLevel(userProfile.getLevel());
+				contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+				if (!StringUtils.isEmpty(userProfile.getAvatarFrame())) {
+					contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+				} else {
+					contentElement.setAvatarFrame(null);
+				}
+				if (null != followMap.get(uid + "_" + userProfile.getUid())) {
+					contentElement.setIsFollowed(1);
+				} else {
+					contentElement.setIsFollowed(0);
+				}
+				if (null != followMap.get(userProfile.getUid() + "_" + uid)) {
+					contentElement.setIsFollowMe(1);
+				} else {
+					contentElement.setIsFollowMe(0);
+				}
+				contentElement.setIndustryId(userProfile.getIndustryId());
+				UserIndustry ui = userIndustryMap.get(String.valueOf(userProfile.getIndustryId()));
+				if (ui != null) {
+					contentElement.setIndustry(ui.getIndustryName());
+				}
+				if (userFriendMap.get(String.valueOf(userProfile.getUid())) != null) {
+					contentElement.setIsFriend(1);
+					UserFriend uf = userFriendMap.get(String.valueOf(userProfile.getUid()));
+					if (uf.getFromUid() != 0) {
+						UserProfile fromExtUserProfile = profileMap.get(String.valueOf(uf.getFromUid()));
+						if (fromExtUserProfile != null) {
+							contentElement.setReason("来自" + fromExtUserProfile.getNickName());
+						}
+					}
+				}
+			}
             showMyPublishDto.getMyPublishElements().add(contentElement);
         }
         return Response.success(showMyPublishDto);
@@ -3293,16 +3279,6 @@ public class ContentServiceImpl implements ContentService {
 
             contentElement.setId(content.getId());
             contentElement.setUid(content.getUid());
-            // 获取用户信息
-            userProfile = profileMap.get(String.valueOf(content.getUid()));
-            contentElement.setFinalUpdateTime(content.getUpdateTime());
-            contentElement.setV_lv(userProfile.getvLv());
-            contentElement.setLevel(userProfile.getLevel());
-            contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-            if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
-            	contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
-            }
-            contentElement.setNickName(userProfile.getNickName());
             contentElement.setCreateTime(content.getUpdateTime());
             String contentStr = content.getContent();
             if(contentStr.length() > 100){
@@ -3427,17 +3403,6 @@ public class ContentServiceImpl implements ContentService {
                 	contentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
                 }
             }
-            //判断人员是否关注
-            if(null != followMap.get(uid+"_"+content.getUid())){
-                contentElement.setIsFollowed(1);
-            }else{
-                contentElement.setIsFollowed(0);
-            }
-            if(null != followMap.get(content.getUid()+"_"+uid)){
-                contentElement.setIsFollowMe(1);
-            }else{
-                contentElement.setIsFollowMe(0);
-            }
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
             contentElement.setForwardUrl(content.getForwardUrl());
@@ -3461,39 +3426,6 @@ public class ContentServiceImpl implements ContentService {
             		lastUserProfile = profileMap.get(String.valueOf(topicOutData.get("uid")));
             		if(null != lastUserProfile){//这里放上最近发言的那个人的头像
             			contentElement.setUid(lastUserProfile.getUid());
-            			contentElement.setNickName(lastUserProfile.getNickName());
-            			contentElement.setV_lv(lastUserProfile.getvLv());
-            			contentElement.setLevel(lastUserProfile.getLevel());
-            			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
-            			if(!StringUtils.isEmpty(lastUserProfile.getAvatarFrame())){
-                        	contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatarFrame());
-                        }else{
-                        	contentElement.setAvatarFrame(null);
-                        }
-            			if(null != followMap.get(uid+"_"+lastUserProfile.getUid())){
-                            contentElement.setIsFollowed(1);
-                        }else{
-                            contentElement.setIsFollowed(0);
-                        }
-                        if(null != followMap.get(lastUserProfile.getUid()+"_"+uid)){
-                            contentElement.setIsFollowMe(1);
-                        }else{
-                            contentElement.setIsFollowMe(0);
-                        }
-                    	UserIndustry ui = userIndustryMap.get(String.valueOf(lastUserProfile.getIndustryId()));
-						if (ui != null) {
-							contentElement.setIndustry(ui.getIndustryName());
-						}
-						if (userFriendMap.get(String.valueOf(lastUserProfile.getUid())) != null) {
-							contentElement.setIsFriend(1);
-							UserFriend uf = userFriendMap.get(String.valueOf(lastUserProfile.getUid()));
-							if (uf.getFromUid() != 0) {
-								UserProfile fromExtUserProfile = profileMap.get(String.valueOf(uf.getFromUid()));
-								if (fromExtUserProfile != null) {
-									contentElement.setReason("来自" + fromExtUserProfile.getNickName());
-								}
-							}
-						}
             		}
             		
             		int type = ((Integer)topicOutData.get("type")).intValue();
@@ -3604,7 +3536,44 @@ public class ContentServiceImpl implements ContentService {
             		}
             	}
             }
-            
+			userProfile = profileMap.get(contentElement.getUid());
+			if (null != userProfile) {// 这里放上最近发言的那个人的头像
+				contentElement.setUid(userProfile.getUid());
+				contentElement.setNickName(userProfile.getNickName());
+				contentElement.setV_lv(userProfile.getvLv());
+				contentElement.setLevel(userProfile.getLevel());
+				contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+				if (!StringUtils.isEmpty(userProfile.getAvatarFrame())) {
+					contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+				} else {
+					contentElement.setAvatarFrame(null);
+				}
+				if (null != followMap.get(uid + "_" + userProfile.getUid())) {
+					contentElement.setIsFollowed(1);
+				} else {
+					contentElement.setIsFollowed(0);
+				}
+				if (null != followMap.get(userProfile.getUid() + "_" + uid)) {
+					contentElement.setIsFollowMe(1);
+				} else {
+					contentElement.setIsFollowMe(0);
+				}
+				contentElement.setIndustryId(userProfile.getIndustryId());
+				UserIndustry ui = userIndustryMap.get(String.valueOf(userProfile.getIndustryId()));
+				if (ui != null) {
+					contentElement.setIndustry(ui.getIndustryName());
+				}
+				if (userFriendMap.get(String.valueOf(userProfile.getUid())) != null) {
+					contentElement.setIsFriend(1);
+					UserFriend uf = userFriendMap.get(String.valueOf(userProfile.getUid()));
+					if (uf.getFromUid() != 0) {
+						UserProfile fromExtUserProfile = profileMap.get(String.valueOf(uf.getFromUid()));
+						if (fromExtUserProfile != null) {
+							contentElement.setReason("来自" + fromExtUserProfile.getNickName());
+						}
+					}
+				}
+			}
             showNewestDto.getNewestData().add(contentElement);
         }
         return Response.success(showNewestDto);
@@ -9642,14 +9611,6 @@ public class ContentServiceImpl implements ContentService {
 	        	
 	        	Content content = contents.get(j);
 	        	TagDetailDto.MyPublishElement contentElement = new TagDetailDto.MyPublishElement();
-	            userProfile = profileMap.get(String.valueOf(content.getUid()));
-	            contentElement.setV_lv(userProfile.getvLv());
-	            contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-	            if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
-	            	contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
-	            }
-	            contentElement.setNickName(userProfile.getNickName());
-	            contentElement.setLevel(userProfile.getLevel());
 	            contentElement.setUid(content.getUid());
 	            contentElement.setTag(content.getFeeling());
 	            String contentStr = content.getContent();
@@ -9670,18 +9631,6 @@ public class ContentServiceImpl implements ContentService {
 	            contentElement.setType(content.getType());
 	            contentElement.setReadCount(content.getReadCountDummy());
 
-	            //判断人员是否关注
-	            if(null != followMap.get(uid+"_"+content.getUid())){
-	                contentElement.setIsFollowed(1);
-	            }else{
-	                contentElement.setIsFollowed(0);
-	            }
-	            if(null != followMap.get(content.getUid()+"_"+uid)){
-	                contentElement.setIsFollowMe(1);
-	            }else{
-	                contentElement.setIsFollowMe(0);
-	            }
-	            
 	            contentElement.setForwardUrl(content.getForwardUrl());
 	            contentElement.setForwardTitle(content.getForwardTitle());
 	            String cover = content.getConverImage();
@@ -9813,39 +9762,6 @@ public class ContentServiceImpl implements ContentService {
 	            		lastUserProfile = profileMap.get(String.valueOf(topicOutData.get("uid")));
 	            		if(null != lastUserProfile){//这里放上最近发言的那个人的头像
 	            			contentElement.setUid(lastUserProfile.getUid());
-	            			contentElement.setNickName(lastUserProfile.getNickName());
-	            			contentElement.setV_lv(lastUserProfile.getvLv());
-	            			contentElement.setLevel(lastUserProfile.getLevel());
-	            			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
-	            			if(!StringUtils.isEmpty(lastUserProfile.getAvatarFrame())){
-	            				contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatarFrame());
-	            			}else{
-	            				contentElement.setAvatarFrame(null);
-	            			}
-	            			if(null != followMap.get(uid+"_"+lastUserProfile.getUid())){
-	                            contentElement.setIsFollowed(1);
-	                        }else{
-	                            contentElement.setIsFollowed(0);
-	                        }
-	                        if(null != followMap.get(lastUserProfile.getUid()+"_"+uid)){
-	                            contentElement.setIsFollowMe(1);
-	                        }else{
-	                            contentElement.setIsFollowMe(0);
-	                        }
-							UserIndustry ui = userIndustryMap.get(String.valueOf(lastUserProfile.getIndustryId()));
-							if (ui != null) {
-								contentElement.setIndustry(ui.getIndustryName());
-							}
-							if (userFriendMap.get(String.valueOf(lastUserProfile.getUid())) != null) {
-								contentElement.setIsFriend(1);
-								UserFriend uf = userFriendMap.get(String.valueOf(lastUserProfile.getUid()));
-								if (uf.getFromUid() != 0) {
-									UserProfile fromExtUserProfile = profileMap.get(String.valueOf(uf.getFromUid()));
-									if (fromExtUserProfile != null) {
-										contentElement.setReason("来自" + fromExtUserProfile.getNickName());
-									}
-								}
-							}
 	            		}
 	            		int t = ((Integer)topicOutData.get("type")).intValue();
 	            		int contentType = ((Integer)topicOutData.get("content_type")).intValue();
@@ -9937,6 +9853,44 @@ public class ContentServiceImpl implements ContentService {
 	            		}
 	            	}
 	            }
+			userProfile = profileMap.get(contentElement.getUid());
+			if (null != userProfile) {// 这里放上最近发言的那个人的头像
+				contentElement.setUid(userProfile.getUid());
+				contentElement.setNickName(userProfile.getNickName());
+				contentElement.setV_lv(userProfile.getvLv());
+				contentElement.setLevel(userProfile.getLevel());
+				contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+				if (!StringUtils.isEmpty(userProfile.getAvatarFrame())) {
+					contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+				} else {
+					contentElement.setAvatarFrame(null);
+				}
+				if (null != followMap.get(uid + "_" + userProfile.getUid())) {
+					contentElement.setIsFollowed(1);
+				} else {
+					contentElement.setIsFollowed(0);
+				}
+				if (null != followMap.get(userProfile.getUid() + "_" + uid)) {
+					contentElement.setIsFollowMe(1);
+				} else {
+					contentElement.setIsFollowMe(0);
+				}
+				contentElement.setIndustryId(userProfile.getIndustryId());
+				UserIndustry ui = userIndustryMap.get(String.valueOf(userProfile.getIndustryId()));
+				if (ui != null) {
+					contentElement.setIndustry(ui.getIndustryName());
+				}
+				if (userFriendMap.get(String.valueOf(userProfile.getUid())) != null) {
+					contentElement.setIsFriend(1);
+					UserFriend uf = userFriendMap.get(String.valueOf(userProfile.getUid()));
+					if (uf.getFromUid() != 0) {
+						UserProfile fromExtUserProfile = profileMap.get(String.valueOf(uf.getFromUid()));
+						if (fromExtUserProfile != null) {
+							contentElement.setReason("来自" + fromExtUserProfile.getNickName());
+						}
+					}
+				}
+			}
 	            dto.getTagKingdomList().add(contentElement);
 	        }
 	        
@@ -10163,16 +10117,6 @@ public class ContentServiceImpl implements ContentService {
 				contentElement.setId(content.getId());
 				contentElement.setCid(content.getId());
 				contentElement.setUid(content.getUid());
-				// 获取用户信息
-				userProfile = profileMap.get(String.valueOf(content.getUid()));
-				contentElement.setFinalUpdateTime(content.getUpdateTime());
-				contentElement.setV_lv(userProfile.getvLv());
-				contentElement.setLevel(userProfile.getLevel());
-				contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-				if (!StringUtils.isEmpty(userProfile.getAvatarFrame())) {
-					contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
-				}
-				contentElement.setNickName(userProfile.getNickName());
 				contentElement.setCreateTime(content.getUpdateTime());
 				String contentStr = content.getContent();
 				if (contentStr.length() > 100) {
@@ -10304,17 +10248,6 @@ public class ContentServiceImpl implements ContentService {
 								.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
 					}
 				}
-				// 判断人员是否关注
-				if (null != followMap.get(uid + "_" + content.getUid())) {
-					contentElement.setIsFollowed(1);
-				} else {
-					contentElement.setIsFollowed(0);
-				}
-				if (null != followMap.get(content.getUid() + "_" + uid)) {
-					contentElement.setIsFollowMe(1);
-				} else {
-					contentElement.setIsFollowMe(0);
-				}
 				contentElement.setLikeCount(content.getLikeCount());
 				contentElement.setPersonCount(content.getPersonCount());
 				contentElement.setForwardUrl(content.getForwardUrl());
@@ -10336,42 +10269,6 @@ public class ContentServiceImpl implements ContentService {
 						lastUserProfile = profileMap.get(String.valueOf(topicOutData.get("uid")));
 						if (null != lastUserProfile) {// 这里放上最近发言的那个人的头像
 							contentElement.setUid(lastUserProfile.getUid());
-							contentElement.setNickName(lastUserProfile.getNickName());
-							contentElement.setV_lv(lastUserProfile.getvLv());
-							contentElement.setLevel(lastUserProfile.getLevel());
-							contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
-							if (!StringUtils.isEmpty(lastUserProfile.getAvatarFrame())) {
-								contentElement
-										.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatarFrame());
-							} else {
-								contentElement.setAvatarFrame(null);
-							}
-							if (null != followMap.get(uid + "_" + lastUserProfile.getUid())) {
-								contentElement.setIsFollowed(1);
-							} else {
-								contentElement.setIsFollowed(0);
-							}
-							if (null != followMap.get(lastUserProfile.getUid() + "_" + uid)) {
-								contentElement.setIsFollowMe(1);
-							} else {
-								contentElement.setIsFollowMe(0);
-							}
-							contentElement.setIndustryId(lastUserProfile.getIndustryId());
-							UserIndustry ui = userIndustryMap.get(String.valueOf(lastUserProfile.getIndustryId()));
-							if (ui != null) {
-								contentElement.setIndustry(ui.getIndustryName());
-							}
-							if (userFriendMap.get(String.valueOf(lastUserProfile.getUid())) != null) {
-								contentElement.setIsFriend(1);
-								UserFriend uf = userFriendMap.get(String.valueOf(lastUserProfile.getUid()));
-								if (uf.getFromUid() != 0) {
-									UserProfile fromExtUserProfile = profileMap.get(String.valueOf(uf.getFromUid()));
-									if (fromExtUserProfile != null) {
-										contentElement.setReason("来自" + fromExtUserProfile.getNickName());
-									}
-								}
-							}
-							
 						}
 
 						int type = ((Integer) topicOutData.get("type")).intValue();
@@ -10469,6 +10366,46 @@ public class ContentServiceImpl implements ContentService {
 							}
 						}
 					}
+				}
+				userProfile = profileMap.get(contentElement.getUid());
+				if (null != userProfile) {// 这里放上最近发言的那个人的头像
+					contentElement.setUid(userProfile.getUid());
+					contentElement.setNickName(userProfile.getNickName());
+					contentElement.setV_lv(userProfile.getvLv());
+					contentElement.setLevel(userProfile.getLevel());
+					contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+					if (!StringUtils.isEmpty(userProfile.getAvatarFrame())) {
+						contentElement
+								.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+					} else {
+						contentElement.setAvatarFrame(null);
+					}
+					if (null != followMap.get(uid + "_" + userProfile.getUid())) {
+						contentElement.setIsFollowed(1);
+					} else {
+						contentElement.setIsFollowed(0);
+					}
+					if (null != followMap.get(userProfile.getUid() + "_" + uid)) {
+						contentElement.setIsFollowMe(1);
+					} else {
+						contentElement.setIsFollowMe(0);
+					}
+					contentElement.setIndustryId(userProfile.getIndustryId());
+					UserIndustry ui = userIndustryMap.get(String.valueOf(userProfile.getIndustryId()));
+					if (ui != null) {
+						contentElement.setIndustry(ui.getIndustryName());
+					}
+					if (userFriendMap.get(String.valueOf(userProfile.getUid())) != null) {
+						contentElement.setIsFriend(1);
+						UserFriend uf = userFriendMap.get(String.valueOf(userProfile.getUid()));
+						if (uf.getFromUid() != 0) {
+							UserProfile fromExtUserProfile = profileMap.get(String.valueOf(uf.getFromUid()));
+							if (fromExtUserProfile != null) {
+								contentElement.setReason("来自" + fromExtUserProfile.getNickName());
+							}
+						}
+					}
+					
 				}
 				showAcKingdomDto.getAcKingdomList().add(contentElement);
 			}
