@@ -1,6 +1,7 @@
 package com.me2me.user.dto;
 
 import com.me2me.common.web.BaseEntity;
+
 import lombok.Data;
 
 /**
@@ -40,4 +41,9 @@ public class LoginSuccessDto implements BaseEntity {
     private int isNew;
     
     private int level;
+    
+    private String avatarFrame;
+    
+    private long industryId;
+	private String industry;
 }
