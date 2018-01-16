@@ -1750,9 +1750,8 @@ public class ContentServiceImpl implements ContentService {
             		}
             	}
             }
-			userProfile = profileMap.get(contentElement.getUid());
-			if (null != userProfile) {// 这里放上最近发言的那个人的头像
-				contentElement.setUid(userProfile.getUid());
+            userProfile = profileMap.get(String.valueOf(contentElement.getUid()));
+			if (null != userProfile) {
 				contentElement.setNickName(userProfile.getNickName());
 				contentElement.setV_lv(userProfile.getvLv());
 				contentElement.setLevel(userProfile.getLevel());
@@ -3536,9 +3535,8 @@ public class ContentServiceImpl implements ContentService {
             		}
             	}
             }
-			userProfile = profileMap.get(contentElement.getUid());
-			if (null != userProfile) {// 这里放上最近发言的那个人的头像
-				contentElement.setUid(userProfile.getUid());
+        	userProfile = profileMap.get(String.valueOf(contentElement.getUid()));
+			if (null != userProfile) {
 				contentElement.setNickName(userProfile.getNickName());
 				contentElement.setV_lv(userProfile.getvLv());
 				contentElement.setLevel(userProfile.getLevel());
@@ -9853,9 +9851,8 @@ public class ContentServiceImpl implements ContentService {
 	            		}
 	            	}
 	            }
-			userProfile = profileMap.get(contentElement.getUid());
-			if (null != userProfile) {// 这里放上最近发言的那个人的头像
-				contentElement.setUid(userProfile.getUid());
+			userProfile = profileMap.get(String.valueOf(contentElement.getUid()));
+			if (null != userProfile) {
 				contentElement.setNickName(userProfile.getNickName());
 				contentElement.setV_lv(userProfile.getvLv());
 				contentElement.setLevel(userProfile.getLevel());
@@ -10367,9 +10364,8 @@ public class ContentServiceImpl implements ContentService {
 						}
 					}
 				}
-				userProfile = profileMap.get(contentElement.getUid());
-				if (null != userProfile) {// 这里放上最近发言的那个人的头像
-					contentElement.setUid(userProfile.getUid());
+				userProfile = profileMap.get(String.valueOf(contentElement.getUid()));
+				if (null != userProfile) {
 					contentElement.setNickName(userProfile.getNickName());
 					contentElement.setV_lv(userProfile.getvLv());
 					contentElement.setLevel(userProfile.getLevel());
