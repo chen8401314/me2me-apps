@@ -3,7 +3,9 @@ package com.me2me.web.handler;
 import com.alibaba.dubbo.common.json.JSON;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.security.SecurityUtils;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.core.exception.AccessSignNotMatchException;
 import com.me2me.core.exception.AppIdException;
 import com.me2me.core.exception.TokenNullException;
@@ -24,6 +26,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +45,8 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
 	
     @Autowired
     private UserService userService;
+    @Autowired
+    private CacheService cacheService;
 
     private static List<String> WHITE_LIST = Lists.newArrayList();
 
@@ -234,6 +239,15 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
 		dto.setStartTime(startTime.get());
 		dto.setEndTime(currentTime);
 		userService.saveUserHttpAccess(dto);
+		
+		//记录用户请求时间
+		if(longuid > 0){
+			Date now = new Date();
+			String timeStr = DateUtil.date2string(now, "yyyy-MM-dd HH:mm:ss");
+			
+			String key = "USER:LASTTIME:" + longuid;
+			cacheService.set(key, timeStr);
+		}
     }
 
 }
