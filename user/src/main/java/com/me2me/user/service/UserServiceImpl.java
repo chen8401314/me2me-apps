@@ -679,13 +679,22 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setGender(userProfile.getGender());
                 loginSuccessDto.setMeNumber(userMybatisDao.getUserNoByUid(user.getUid()).getMeNumber().toString());
                 loginSuccessDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
-                log.info("user avatar :" +loginSuccessDto.getAvatar());
+                if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                	loginSuccessDto.setAvatarFrame(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatarFrame());
+                }
                 loginSuccessDto.setToken(userToken.getToken());
                 loginSuccessDto.setYearId(userProfile.getYearsId());
                 loginSuccessDto.setFansCount(userMybatisDao.getUserFansCount(user.getUid()));
                 loginSuccessDto.setFollowedCount(userMybatisDao.getUserFollowCount(user.getUid()));
                 loginSuccessDto.setIntroduced(userProfile.getIntroduced());
                 loginSuccessDto.setLevel(userProfile.getLevel());
+                loginSuccessDto.setIndustryId(userProfile.getIndustryId());
+                if(userProfile.getIndustryId().longValue() > 0){
+                	UserIndustry industry = userMybatisDao.getUserIndustryById(userProfile.getIndustryId());
+                	if(null != industry){
+                		loginSuccessDto.setIndustry(industry.getIndustryName());
+                	}
+                }
                 //保存用户的设备token和用户平台信息
                 UserDevice device = new UserDevice();
                 device.setDeviceNo(userLoginDto.getDeviceNo());
@@ -778,13 +787,22 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setGender(userProfile.getGender());
                 loginSuccessDto.setMeNumber(userMybatisDao.getUserNoByUid(user.getUid()).getMeNumber().toString());
                 loginSuccessDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
-                log.info("user avatar :" +loginSuccessDto.getAvatar());
+                if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                	loginSuccessDto.setAvatarFrame(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatarFrame());
+                }
                 loginSuccessDto.setToken(userToken.getToken());
                 loginSuccessDto.setYearId(userProfile.getYearsId());
                 loginSuccessDto.setFansCount(userMybatisDao.getUserFansCount(user.getUid()));
                 loginSuccessDto.setFollowedCount(userMybatisDao.getUserFollowCount(user.getUid()));
                 loginSuccessDto.setIntroduced(userProfile.getIntroduced());
                 loginSuccessDto.setLevel(userProfile.getLevel());
+                loginSuccessDto.setIndustryId(userProfile.getIndustryId());
+                if(userProfile.getIndustryId().longValue() > 0){
+                	UserIndustry industry = userMybatisDao.getUserIndustryById(userProfile.getIndustryId());
+                	if(null != industry){
+                		loginSuccessDto.setIndustry(industry.getIndustryName());
+                	}
+                }
                 //保存用户的设备token和用户平台信息
                 UserDevice device = new UserDevice();
                 device.setDeviceNo(userLoginDto.getDeviceNo());
@@ -2657,6 +2675,13 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setNickName(userProfile.getNickName());
                 loginSuccessDto.setToken(userToken.getToken());
                 loginSuccessDto.setLevel(userProfile.getLevel());
+                loginSuccessDto.setIndustryId(userProfile.getIndustryId());
+                if(userProfile.getIndustryId().longValue() > 0){
+                	UserIndustry industry = userMybatisDao.getUserIndustryById(userProfile.getIndustryId());
+                	if(null != industry){
+                		loginSuccessDto.setIndustry(industry.getIndustryName());
+                	}
+                }
                 if(checkUserDisable(loginSuccessDto.getUid())){
                 	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
@@ -2689,6 +2714,13 @@ public class UserServiceImpl implements UserService {
                     loginSuccessDto.setNickName(userProfile.getNickName());
                     loginSuccessDto.setToken(userToken.getToken());
                     loginSuccessDto.setLevel(userProfile.getLevel());
+                    loginSuccessDto.setIndustryId(userProfile.getIndustryId());
+                    if(userProfile.getIndustryId().longValue() > 0){
+                    	UserIndustry industry = userMybatisDao.getUserIndustryById(userProfile.getIndustryId());
+                    	if(null != industry){
+                    		loginSuccessDto.setIndustry(industry.getIndustryName());
+                    	}
+                    }
                     if(checkUserDisable(loginSuccessDto.getUid())){
                     	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                     }
@@ -2760,6 +2792,13 @@ public class UserServiceImpl implements UserService {
                     loginSuccessDto.setNickName(userProfile.getNickName());
                     loginSuccessDto.setToken(userToken.getToken());
                     loginSuccessDto.setLevel(userProfile.getLevel());
+                    loginSuccessDto.setIndustryId(userProfile.getIndustryId());
+                    if(userProfile.getIndustryId().longValue() > 0){
+                    	UserIndustry industry = userMybatisDao.getUserIndustryById(userProfile.getIndustryId());
+                    	if(null != industry){
+                    		loginSuccessDto.setIndustry(industry.getIndustryName());
+                    	}
+                    }
                     //h5先登录了 app未登录过 为首次登录 返回注册过了 但是值是1需要修改昵称
 //                    loginSuccessDto.setIsClientLogin(userProfile.getIsClientLogin());
                     //openId没有unionId有的情况 肯定是h5微信登录的 所以要修改昵称 前台检测过传来的

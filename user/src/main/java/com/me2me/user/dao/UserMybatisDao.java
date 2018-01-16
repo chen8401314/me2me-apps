@@ -487,6 +487,10 @@ public class UserMybatisDao {
         return userIndustryMapper.selectByExample(example);
     }
     
+    public UserIndustry getUserIndustryById(long id){
+    	return userIndustryMapper.selectByPrimaryKey(id);
+    }
+    
     public List<UserProfile> getUserProfilesByMobiles(List<String> mobile){
     	UserProfileExample example = new UserProfileExample();
         UserProfileExample.Criteria criteria = example.createCriteria();
