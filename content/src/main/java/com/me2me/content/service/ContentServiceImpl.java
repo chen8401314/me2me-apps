@@ -1524,7 +1524,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
             contentElement.setReadCount(content.getReadCountDummy());
-
+            contentElement.setFinalUpdateTime(content.getUpdateTime());
             
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
